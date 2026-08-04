@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kairos Baut — 4 Draft Desain</title>
+<style>
+  :root {
+    --bg: #F7F9F6; --card: #fff; --ink: #0C1710; --body: #4A5850;
+    --muted: #7C8A81; --line: #DFE7DE; --green: #1E9E4A; --green-d: #146B33;
+    --sans: "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0C1410; --card:#141D18; --ink:#E9F1EA; --body:#AFBDB3;
+            --muted:#83918A; --line:rgba(255,255,255,.11); --green:#35BC63; --green-d:#7EDC9C; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+         font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width: 1080px; margin-inline:auto; padding: clamp(40px,7vw,88px) clamp(20px,5vw,48px); }
+  .tag { font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+         color:var(--green-d); margin:0 0 18px; }
+  h1 { font-size: clamp(32px,5vw,54px); font-weight:800; letter-spacing:-0.035em; line-height:1.02; margin:0; }
+  .sub { color:var(--body); max-width:62ch; margin-top:18px; }
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:44px; }
+  @media (max-width:760px){ .grid{ grid-template-columns:1fr; } }
+  .card { display:block; background:var(--card); border:1px solid var(--line); border-radius:14px;
+          padding:26px 24px 24px; text-decoration:none; color:inherit;
+          transition:transform .25s, box-shadow .25s, border-color .25s; }
+  .card:hover { transform:translateY(-4px); border-color:var(--green);
+                box-shadow:0 14px 36px rgba(16,40,24,.10); }
+  .card .n { font-family:var(--mono); font-size:11px; letter-spacing:.16em; color:var(--muted); }
+  .card h2 { font-size:22px; font-weight:800; letter-spacing:-0.025em; margin:10px 0 8px; }
+  .card p { margin:0; font-size:14.5px; color:var(--body); }
+  .swatch { display:flex; gap:5px; margin-top:18px; }
+  .swatch i { width:26px; height:26px; border-radius:6px; border:1px solid rgba(0,0,0,.08); }
+  .note { margin-top:48px; padding-top:22px; border-top:1px solid var(--line);
+          font-size:14px; color:var(--muted); max-width:70ch; }
+  .note strong { color:var(--body); }
+  a:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="tag">PT Kairos Multi Sejahtera · Redesign</p>
+  <h1>Empat arah desain.</h1>
+  <p class="sub">Masing-masing draft adalah halaman Home yang lengkap dan responsif. Buka di desktop
+     dan di ponsel — beberapa animasi (rail horizontal, hover panel) hanya aktif di layar besar.</p>
+
+  <div class="grid">
+    <a class="card" href="draft-1-presisi.html">
+      <div class="n">DRAFT 01</div>
+      <h2>Presisi</h2>
+      <p>Turunan ASML. Garis grid permanen, hijau hutan pekat, panel yang melebar saat di-scroll, dan accordion industri saat hover.</p>
+      <div class="swatch"><i style="background:#10231A"></i><i style="background:#2C8F45"></i><i style="background:#7ED321"></i><i style="background:#F7F9F6"></i></div>
+    </a>
+    <a class="card" href="draft-2-katalog.html">
+      <div class="n">DRAFT 02</div>
+      <h2>Katalog</h2>
+      <p>Lembar gambar teknik. Baut yang menggambar dirinya sendiri, anotasi dimensi, title block, dan produk sebagai indeks tabel yang bisa difilter.</p>
+      <div class="swatch"><i style="background:#FAFBF8"></i><i style="background:#1F7A3A"></i><i style="background:#59635A"></i><i style="background:#CDD5CB"></i></div>
+    </a>
+    <a class="card" href="draft-3-material.html">
+      <div class="n">DRAFT 03</div>
+      <h2>Material</h2>
+      <p>Ruang pamer gelap. Hero baja tergores yang hidup mengikuti kursor, rail produk horizontal yang dikunci saat scroll.</p>
+      <div class="swatch"><i style="background:#070C09"></i><i style="background:#0B8F4C"></i><i style="background:#9FF0C0"></i><i style="background:#C8D2CC"></i></div>
+    </a>
+    <a class="card" href="draft-4-terang.html">
+      <div class="n">DRAFT 04</div>
+      <h2>Terang</h2>
+      <p>Terang dan komersial. Hero dengan pencarian produk, tile kategori besar, alur pemesanan tiga langkah, band statistik hijau.</p>
+      <div class="swatch"><i style="background:#FFFFFF"></i><i style="background:#1E9E4A"></i><i style="background:#146B33"></i><i style="background:#E7F4EB"></i></div>
+    </a>
+  </div>
+
+  <p class="note"><strong>Catatan:</strong> semua gambar produk masih placeholder yang digambar dengan
+     SVG/CSS — bukan foto asli. Font memakai system stack, bukan typeface berlisensi. Keduanya diganti
+     saat pembangunan situs sebenarnya.</p>
+</div>
+</body>
+</html>

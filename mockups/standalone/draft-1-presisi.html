@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kairos Baut — Draft 1 "Presisi"</title>
+
+<style>
+  /* ============================================================
+     DRAFT 1 — "PRESISI"
+     Direction: ASML-derived industrial precision.
+     Persistent grid rules, deep forest grounds, signal-green
+     accent underlines, hairline discipline, restrained motion.
+     ============================================================ */
+
+  :root {
+    /* Grounds — neutrals biased green, never pure grey */
+    --paper:      #F7F9F6;
+    --paper-2:    #EDF1EB;
+    --white:      #FFFFFF;
+    --forest:     #10231A;
+    --forest-2:   #0A1712;
+
+    /* Brand */
+    --green:      #2C8F45;   /* logo green, primary */
+    --signal:     #7ED321;   /* accent rules + underlines only */
+    --steel:      #8A9490;   /* secondary: the material itself */
+
+    /* Type colors */
+    --ink:        #0C1710;
+    --body:       #3D4A42;
+    --muted:      #737F77;
+    --rule:       #D9E1D7;
+    --rule-dark:  rgba(255,255,255,.14);
+
+    /* Section-level tokens (components read only these) */
+    --bg:         var(--paper);
+    --bg-alt:     var(--white);
+    --fg:         var(--ink);
+    --fg-2:       var(--body);
+    --fg-3:       var(--muted);
+    --line:       var(--rule);
+
+    --display: "Helvetica Neue", Helvetica, "Inter", "Segoe UI", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+    --gut: clamp(20px, 4.5vw, 72px);
+    --maxw: 1600px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:   #0C1611;
+      --paper-2: #101E17;
+      --white:   #09120D;
+      --ink:     #EAF2EA;
+      --body:    #B3C2B7;
+      --muted:   #7E8D83;
+      --rule:    rgba(255,255,255,.13);
+      --green:   #48B463;
+      --steel:   #7E8A86;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:   #0C1611;
+    --paper-2: #101E17;
+    --white:   #09120D;
+    --ink:     #EAF2EA;
+    --body:    #B3C2B7;
+    --muted:   #7E8D83;
+    --rule:    rgba(255,255,255,.13);
+    --green:   #48B463;
+    --steel:   #7E8A86;
+  }
+  :root[data-theme="light"] {
+    --paper:   #F7F9F6;
+    --paper-2: #EDF1EB;
+    --white:   #FFFFFF;
+    --ink:     #0C1710;
+    --body:    #3D4A42;
+    --muted:   #737F77;
+    --rule:    #D9E1D7;
+    --green:   #2C8F45;
+    --steel:   #8A9490;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--display);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- The signature: persistent vertical grid ---------- */
+  .gridlines {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: var(--gut);
+  }
+  .gridlines span { border-left: 1px solid rgba(128,150,132,.20); }
+  .gridlines span:first-child { border-left: 0; }
+  @media (max-width: 860px) {
+    .gridlines { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .wrap {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: var(--gut);
+  }
+
+  /* ---------- Type system ---------- */
+  h1, h2, h3 {
+    font-weight: 800;
+    letter-spacing: -0.032em;
+    line-height: 0.96;
+    text-wrap: balance;
+    margin: 0;
+  }
+  h1 { font-size: clamp(44px, 7.2vw, 108px); }
+  h2 { font-size: clamp(32px, 4.4vw, 62px); }
+  h3 { font-size: clamp(20px, 1.7vw, 27px); letter-spacing: -0.022em; line-height: 1.1; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+    margin: 0 0 20px;
+  }
+  .lede { font-size: clamp(17px, 1.35vw, 21px); color: var(--fg-2); max-width: 60ch; }
+  p { margin: 0 0 1em; }
+
+  /* Signal underline — the one accent, used only on actions */
+  .ulink {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    color: inherit;
+    text-decoration: none;
+    padding-bottom: 7px;
+    background-image: linear-gradient(var(--signal), var(--signal));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 28px 3px;
+    transition: background-size .35s cubic-bezier(.2,.7,.3,1);
+  }
+  .ulink:hover, .ulink:focus-visible { background-size: 100% 3px; }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 70;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: background .3s, border-color .3s;
+  }
+  header.stuck { border-bottom-color: var(--line); }
+  .bar {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: 16px var(--gut);
+    display: flex; align-items: center; gap: 36px;
+  }
+  .logo { display: flex; align-items: center; gap: 11px; text-decoration: none; color: var(--fg); }
+  .logo svg { display: block; }
+  .logo b { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+  .logo b span { color: var(--green); }
+
+  nav.main { margin-left: auto; display: flex; gap: 30px; align-items: center; }
+  nav.main a {
+    font-size: 14px; font-weight: 600; letter-spacing: -0.005em;
+    color: var(--fg-2); text-decoration: none;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+    transition: color .2s, border-color .2s;
+  }
+  nav.main a:hover { color: var(--fg); border-bottom-color: var(--signal); }
+  .lang {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+    color: var(--fg-3); border: 1px solid var(--line);
+    padding: 6px 10px; border-radius: 2px; text-decoration: none;
+  }
+  @media (max-width: 980px) { nav.main { display: none; } }
+  .burger {
+    margin-left: auto; display: none;
+    background: none; border: 0; cursor: pointer; padding: 8px;
+  }
+  .burger span { display: block; width: 26px; height: 2px; background: var(--fg); margin: 5px 0; }
+  @media (max-width: 980px) { .burger { display: block; } }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 96vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    background: var(--forest);
+    color: #fff;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  /* Machined-metal stand-in for the hero photograph */
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(120% 80% at 72% 30%, rgba(124,163,133,.30), transparent 62%),
+      radial-gradient(70% 55% at 22% 88%, rgba(44,143,69,.28), transparent 70%),
+      repeating-linear-gradient(102deg, rgba(255,255,255,.045) 0 2px, transparent 2px 13px),
+      linear-gradient(160deg, #16301F 0%, #0B1A12 58%, #060D09 100%);
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(6,13,9,.92) 0%, rgba(6,13,9,.35) 42%, transparent 72%);
+  }
+  .hero > * { position: relative; z-index: 2; }
+
+  .hero-copy { padding-top: 190px; padding-bottom: 64px; }
+  .hero .eyebrow { color: rgba(255,255,255,.6); }
+  .hero h1 { max-width: 15ch; }
+  .hero h1 em {
+    font-style: normal;
+    color: transparent;
+    -webkit-text-stroke: 2px rgba(255,255,255,.55);
+  }
+  .hero .lede { color: rgba(255,255,255,.78); margin-top: 26px; max-width: 46ch; }
+
+  /* Quick links strip pinned to the hero base — ASML pattern */
+  .quick {
+    border-top: 1px solid var(--rule-dark);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .quick a {
+    padding: 26px 24px 30px 0;
+    text-decoration: none; color: #fff;
+    display: flex; flex-direction: column; gap: 14px;
+    border-left: 1px solid var(--rule-dark);
+    padding-left: 24px;
+    transition: background .3s;
+  }
+  .quick a:first-child { border-left: 0; padding-left: 0; }
+  .quick a:hover { background: rgba(255,255,255,.05); }
+  .quick .qi { color: var(--signal); }
+  .quick .qt { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; }
+  .quick .qt::after {
+    content: ""; display: block; width: 26px; height: 3px;
+    background: var(--signal); margin-top: 9px;
+    transition: width .35s cubic-bezier(.2,.7,.3,1);
+  }
+  .quick a:hover .qt::after { width: 64px; }
+  @media (max-width: 760px) {
+    .quick { grid-template-columns: repeat(2, 1fr); }
+    .quick a { border-left: 0; padding-left: 0; padding-right: 16px; }
+    .quick a:nth-child(3), .quick a:nth-child(4) { border-top: 1px solid var(--rule-dark); }
+  }
+
+  /* ---------- Generic section ---------- */
+  section { position: relative; }
+  .sec { padding-block: clamp(72px, 9vw, 150px); }
+  .sec--alt { background: var(--bg-alt); }
+  .sec--dark { background: var(--forest); color: #fff; }
+  .sec--dark .eyebrow { color: rgba(255,255,255,.52); }
+  .sec--dark .lede { color: rgba(255,255,255,.75); }
+
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(28px, 5vw, 90px);
+    align-items: start;
+  }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+
+  /* ---------- Statement + figures ---------- */
+  .figs {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--line);
+    border-block: 1px solid var(--line);
+    margin-top: 56px;
+  }
+  .fig { background: var(--bg); padding: 30px 24px 30px 0; }
+  .fig:not(:first-child) { padding-left: 24px; }
+  .fig .n {
+    font-size: clamp(34px, 4vw, 56px); font-weight: 800;
+    letter-spacing: -0.04em; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .fig .n i { font-style: normal; color: var(--green); }
+  .fig .l { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-3); margin-top: 12px; }
+  @media (max-width: 700px) { .figs { grid-template-columns: 1fr; } .fig:not(:first-child) { padding-left: 0; } }
+
+  /* ---------- Product catalogue ---------- */
+  .cat {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-top: 60px;
+  }
+  @media (max-width: 1080px) { .cat { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px)  { .cat { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--bg);
+    padding: 0 0 26px;
+    text-decoration: none; color: inherit;
+    display: flex; flex-direction: column;
+    transition: background .3s;
+  }
+  .card:hover { background: var(--bg-alt); }
+  .thumb {
+    aspect-ratio: 4 / 3;
+    background:
+      radial-gradient(90% 70% at 50% 42%, rgba(255,255,255,.85), rgba(214,222,215,.5) 55%, rgba(178,190,180,.35) 100%),
+      linear-gradient(180deg, #E9EEE8, #D2DBD2);
+    display: grid; place-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+  @media (prefers-color-scheme: dark) {
+    .thumb { background: linear-gradient(180deg, #16241C, #0E1913); }
+  }
+  :root[data-theme="dark"] .thumb { background: linear-gradient(180deg, #16241C, #0E1913); }
+  .thumb svg { width: 56%; height: auto; transition: transform .5s cubic-bezier(.2,.7,.3,1); }
+  .card:hover .thumb svg { transform: scale(1.07) rotate(-3deg); }
+  .card .meta { padding: 22px 22px 0; }
+  .card .code { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; color: var(--fg-3); }
+  .card h3 { margin: 9px 0 10px; }
+  .card p { font-size: 14px; color: var(--fg-2); margin: 0; }
+
+  /* ---------- Scroll-expanding feature panel ---------- */
+  .expand-stage { padding-block: clamp(60px, 8vw, 120px); }
+  .expander {
+    height: clamp(340px, 56vh, 620px);
+    margin-inline: auto;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 30% 20%, rgba(126,211,33,.16), transparent 60%),
+      repeating-linear-gradient(96deg, rgba(255,255,255,.05) 0 3px, transparent 3px 16px),
+      linear-gradient(150deg, #1A3524 0%, #0C1B13 60%, #060D09 100%);
+    display: grid; place-items: center;
+    will-change: width;
+  }
+  .expander .cap {
+    color: #fff; text-align: center; max-width: 22ch;
+    padding: 0 24px;
+  }
+  .expander .cap h2 { font-size: clamp(28px, 3.6vw, 52px); }
+  .expander .cap p { color: rgba(255,255,255,.72); margin-top: 16px; font-size: 15px; }
+
+  /* ---------- Industry panels (hover-expand accordion) ---------- */
+  .panels { display: flex; height: clamp(380px, 52vh, 560px); gap: 1px; margin-top: 56px; }
+  .panel {
+    position: relative; flex: 1 1 0; min-width: 0;
+    overflow: hidden; cursor: pointer;
+    transition: flex-grow .55s cubic-bezier(.22,.75,.28,1);
+    display: flex; align-items: flex-end;
+    border: 0; padding: 0; text-align: left; color: #fff;
+    font-family: inherit;
+  }
+  .panel:nth-child(1) { background: linear-gradient(180deg, #1E4029, #0B1710); }
+  .panel:nth-child(2) { background: linear-gradient(180deg, #24513A, #0B1710); }
+  .panel:nth-child(3) { background: linear-gradient(180deg, #17321F, #0B1710); }
+  .panel:nth-child(4) { background: linear-gradient(180deg, #2A5C36, #0B1710); }
+  .panel::before {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(110deg, rgba(255,255,255,.05) 0 2px, transparent 2px 14px);
+  }
+  .panel-in { position: relative; padding: 26px; width: 100%; }
+  .panel h3 { margin: 0; }
+  .panel h3::after {
+    content: ""; display: block; width: 26px; height: 3px;
+    background: var(--signal); margin-top: 10px;
+  }
+  .panel .body {
+    max-height: 0; opacity: 0; overflow: hidden;
+    transition: max-height .5s ease, opacity .35s ease, margin-top .5s ease;
+    font-size: 14px; color: rgba(255,255,255,.8); max-width: 34ch;
+  }
+  .panels:hover .panel { flex-grow: .72; }
+  .panel:hover, .panel:focus-visible { flex-grow: 2.6 !important; }
+  .panel:hover .body, .panel:focus-visible .body { max-height: 200px; opacity: 1; margin-top: 14px; }
+  @media (max-width: 860px) {
+    .panels { flex-direction: column; height: auto; }
+    .panel { flex: none; min-height: 128px; }
+    .panel .body { max-height: 200px; opacity: 1; margin-top: 14px; }
+  }
+
+  /* ---------- Clients ---------- */
+  .clients { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 48px; }
+  .client {
+    background: var(--bg); padding: 40px 20px; text-align: center;
+    font-weight: 700; letter-spacing: -0.015em; font-size: 15px; color: var(--fg-2);
+    transition: color .25s, background .25s;
+  }
+  .client:hover { color: var(--green); background: var(--bg-alt); }
+  .client small { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; color: var(--fg-3); margin-top: 8px; font-weight: 400; }
+  @media (max-width: 700px) { .clients { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ---------- Blog — deliberately compact ---------- */
+  .posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border-block: 1px solid var(--line); margin-top: 48px; }
+  .post {
+    background: var(--bg); padding: 28px 24px 30px 0; text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: background .25s;
+  }
+  .post:not(:first-child) { padding-left: 24px; }
+  .post:hover { background: var(--bg-alt); }
+  .post .date { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; color: var(--fg-3); }
+  .post h3 { font-size: 19px; line-height: 1.22; }
+  .post .rd { font-size: 13px; font-weight: 700; color: var(--green); margin-top: auto; padding-top: 14px; }
+  @media (max-width: 800px) { .posts { grid-template-columns: 1fr; } .post:not(:first-child) { padding-left: 0; } }
+
+  /* ---------- Quotation ---------- */
+  .quote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 80px); align-items: center; }
+  @media (max-width: 900px) { .quote-grid { grid-template-columns: 1fr; } }
+  .form { display: grid; gap: 16px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+  .field label {
+    display: block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: rgba(255,255,255,.55); margin-bottom: 8px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%; background: transparent; color: #fff;
+    border: 0; border-bottom: 1px solid var(--rule-dark);
+    padding: 10px 0; font-family: inherit; font-size: 16px;
+    transition: border-color .25s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none; border-bottom-color: var(--signal);
+  }
+  .field select option { background: var(--forest); color: #fff; }
+  .btn {
+    justify-self: start; margin-top: 10px;
+    background: var(--signal); color: #0B1A10;
+    border: 0; padding: 15px 30px;
+    font-family: inherit; font-weight: 800; font-size: 15px; letter-spacing: -0.01em;
+    cursor: pointer; border-radius: 2px;
+    transition: transform .2s, filter .2s;
+  }
+  .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--forest-2); color: rgba(255,255,255,.72); padding-block: 72px 34px; }
+  .fgrid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
+  @media (max-width: 900px) { .fgrid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .fgrid { grid-template-columns: 1fr; } }
+  footer h4 { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.45); margin: 0 0 16px; font-weight: 400; }
+  footer p, footer a { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,.72); text-decoration: none; }
+  footer a:hover { color: var(--signal); }
+  .fbot { margin-top: 56px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.1); display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,.42); }
+
+  /* ---------- WhatsApp floating CTA ---------- */
+  .wa {
+    position: fixed; right: 22px; bottom: 22px; z-index: 90;
+    display: flex; align-items: center; gap: 0;
+    background: #1FA855; color: #fff; text-decoration: none;
+    border-radius: 999px; padding: 14px;
+    box-shadow: 0 10px 34px rgba(6,30,15,.34);
+    transition: gap .38s cubic-bezier(.2,.7,.3,1), padding .38s cubic-bezier(.2,.7,.3,1);
+  }
+  .wa svg { flex: none; }
+  .wa span {
+    max-width: 0; overflow: hidden; white-space: nowrap;
+    font-weight: 700; font-size: 15px;
+    transition: max-width .38s cubic-bezier(.2,.7,.3,1);
+  }
+  .wa:hover, .wa:focus-visible { gap: 10px; padding-right: 22px; }
+  .wa:hover span, .wa:focus-visible span { max-width: 220px; }
+
+  /* ---------- Reveal on scroll ---------- */
+  .rv { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.7,.3,1), transform .7s cubic-bezier(.2,.7,.3,1); }
+  .rv.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition-duration: .01ms !important; }
+    .rv { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gridlines" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+<header id="hdr">
+  <div class="bar">
+    <a class="logo" href="#">
+      <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+        <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#2C8F45"/>
+        <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="#0C1710"/>
+        <rect x="13" y="1" width="1.2" height="6" fill="#0C1710"/>
+      </svg>
+      <b>KAIROS<span>BAUT</span></b>
+    </a>
+    <nav class="main">
+      <a href="#produk">Produk</a>
+      <a href="#industri">Industri</a>
+      <a href="#blog">Blog</a>
+      <a href="#tentang">Tentang Kami</a>
+      <a href="#kontak">Kontak</a>
+      <a class="lang" href="#">ID / EN</a>
+    </nav>
+    <button class="burger" aria-label="Buka menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-copy">
+    <p class="eyebrow">PT Kairos Multi Sejahtera — sejak 2009</p>
+    <h1>Setiap sambungan<br>menahan <em>beban</em>.</h1>
+    <p class="lede">Distributor baut &amp; mur terlengkap di Indonesia. Stok siap kirim, dokumen sertifikat lengkap, harga terjangkau.</p>
+  </div>
+  <div class="wrap">
+    <div class="quick">
+      <a href="#produk">
+        <span class="qi">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 2.5 4.5 7v10L12 21.5 19.5 17V7z"/><circle cx="12" cy="12" r="3.2"/></svg>
+        </span>
+        <span class="qt">Katalog Produk</span>
+      </a>
+      <a href="#sertifikat">
+        <span class="qi">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="4" y="3" width="16" height="14" rx="1"/><path d="M8 21l4-2.5 4 2.5V16H8z"/><path d="M8 8h8M8 11.5h5"/></svg>
+        </span>
+        <span class="qt">Sertifikat &amp; Mill Cert</span>
+      </a>
+      <a href="#pengiriman">
+        <span class="qi">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 7h11v9H2z"/><path d="M13 10h4.5L21 13.5V16h-8z"/><circle cx="6.5" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg>
+        </span>
+        <span class="qt">Pengiriman Nasional</span>
+      </a>
+      <a href="#kontak">
+        <span class="qi">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 5.5C3 4.7 3.7 4 4.5 4h3l1.6 4-2.1 1.5a13 13 0 0 0 6.5 6.5L15 13.9l4 1.6v3c0 .8-.7 1.5-1.5 1.5A15.5 15.5 0 0 1 3 5.5z"/></svg>
+        </span>
+        <span class="qt">Minta Penawaran</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ POSITIONING ============ -->
+<section class="sec" id="tentang">
+  <div class="wrap">
+    <div class="split rv">
+      <div>
+        <p class="eyebrow">Tentang Kami</p>
+        <h2>Bukan sekadar<br>pemasok baut.</h2>
+      </div>
+      <div>
+        <p class="lede">Kami menyuplai fastener untuk proyek konstruksi, manufaktur mesin, otomotif, dan kelistrikan di seluruh Indonesia. Setiap pengiriman disertai dokumen mill certificate dan hasil uji material — karena di lapangan, satu baut yang salah grade berarti satu kegagalan struktur.</p>
+        <a class="ulink" href="#">Selengkapnya tentang kami</a>
+      </div>
+    </div>
+
+    <div class="figs rv">
+      <div class="fig"><div class="n">15<i>+</i></div><div class="l">Tahun melayani industri</div></div>
+      <div class="fig"><div class="n">2<i>.400</i></div><div class="l">Item stok siap kirim</div></div>
+      <div class="fig"><div class="n">34</div><div class="l">Provinsi terjangkau</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCTS ============ -->
+<section class="sec sec--alt" id="produk">
+  <div class="wrap">
+    <div class="split rv">
+      <div>
+        <p class="eyebrow">Katalog</p>
+        <h2>Produk berkualitas,<br>sertifikat lengkap.</h2>
+      </div>
+      <div style="align-self:end">
+        <p class="lede">Delapan kategori utama, tersedia dalam material carbon steel, stainless steel 304/316, dan hot-dip galvanized.</p>
+        <a class="ulink" href="#">Lihat seluruh katalog</a>
+      </div>
+    </div>
+
+    <div class="cat rv">
+      <a class="card" href="#">
+        <div class="thumb">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <path d="M18 26 L30 20 L42 26 L42 54 L30 60 L18 54 Z" fill="#7E8A86"/>
+            <path d="M18 26 L30 32 L42 26 L30 20 Z" fill="#A6B0AC"/>
+            <rect x="42" y="34" width="58" height="12" fill="#8E9995"/>
+            <g fill="#6F7B77">
+              <rect x="48" y="34" width="2.5" height="12"/><rect x="56" y="34" width="2.5" height="12"/>
+              <rect x="64" y="34" width="2.5" height="12"/><rect x="72" y="34" width="2.5" height="12"/>
+              <rect x="80" y="34" width="2.5" height="12"/><rect x="88" y="34" width="2.5" height="12"/>
+            </g>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="code">HB · DIN 933</div>
+          <h3>Hex Bolt</h3>
+          <p>Grade 4.8 hingga 12.9, M4–M48.</p>
+        </div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <ellipse cx="34" cy="40" rx="17" ry="19" fill="#A6B0AC"/>
+            <ellipse cx="34" cy="40" rx="10" ry="11" fill="#8E9995"/>
+            <rect x="30" y="34" width="8" height="12" fill="#6F7B77"/>
+            <rect x="46" y="34" width="54" height="12" fill="#8E9995"/>
+            <g fill="#6F7B77">
+              <rect x="52" y="34" width="2.5" height="12"/><rect x="60" y="34" width="2.5" height="12"/>
+              <rect x="68" y="34" width="2.5" height="12"/><rect x="76" y="34" width="2.5" height="12"/>
+              <rect x="84" y="34" width="2.5" height="12"/>
+            </g>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="code">CB · DIN 603</div>
+          <h3>Carriage Bolt</h3>
+          <p>Kepala bulat, leher persegi.</p>
+        </div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <path d="M60 14 L84 27 L84 53 L60 66 L36 53 L36 27 Z" fill="#A6B0AC"/>
+            <circle cx="60" cy="40" r="15" fill="#EDF1EB"/>
+            <circle cx="60" cy="40" r="15" fill="none" stroke="#6F7B77" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="code">HN · DIN 934</div>
+          <h3>Hex Nut &amp; Mur</h3>
+          <p>Mur biasa, nylock, dan flange.</p>
+        </div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <path d="M60 16 a24 24 0 1 1 -10 45" fill="none" stroke="#8E9995" stroke-width="9" stroke-linecap="round"/>
+            <circle cx="61" cy="16" r="5" fill="#A6B0AC"/>
+            <circle cx="49" cy="60" r="5" fill="#A6B0AC"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="code">SR · DIN 471</div>
+          <h3>Snap Ring</h3>
+          <p>External, internal, dan E-clip.</p>
+        </div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <rect x="14" y="34" width="92" height="12" fill="#8E9995"/>
+            <g fill="#6F7B77">
+              <rect x="18" y="34" width="2.5" height="12"/><rect x="26" y="34" width="2.5" height="12"/>
+              <rect x="34" y="34" width="2.5" height="12"/><rect x="42" y="34" width="2.5" height="12"/>
+              <rect x="50" y="34" width="2.5" height="12"/><rect x="58" y="34" width="2.5" height="12"/>
+              <rect x="66" y="34" width="2.5" height="12"/><rect x="74" y="34" width="2.5" height="12"/>
+              <rect x="82" y="34" width="2.5" height="12"/><rect x="90" y="34" width="2.5" height="12"/>
+              <rect x="98" y="34" width="2.5" height="12"/>
+            </g>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="code">AD · DIN 975</div>
+          <h3>As Drat / Stud</h3>
+          <p>Batang ulir 1 m, SS &amp; galvanis.</p>
+        </div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <circle cx="60" cy="40" r="26" fill="#A6B0AC"/>
+            <circle cx="60" cy="40" r="11" fill="#EDF1EB"/>
+            <circle cx="60" cy="40" r="26" fill="none" stroke="#8E9995" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="code">WS · DIN 125</div>
+          <h3>Ring / Washer</h3>
+          <p>Plat, per, dan ring gigi.</p>
+        </div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <rect x="52" y="10" width="12" height="46" fill="#8E9995"/>
+            <path d="M52 56 L64 56 L70 70 L46 70 Z" fill="#A6B0AC"/>
+            <g fill="#6F7B77">
+              <rect x="52" y="14" width="12" height="2.5"/><rect x="52" y="21" width="12" height="2.5"/>
+              <rect x="52" y="28" width="12" height="2.5"/><rect x="52" y="35" width="12" height="2.5"/>
+            </g>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="code">AB · ASTM F1554</div>
+          <h3>Anchor Bolt</h3>
+          <p>J-bolt, L-bolt, dan angkur kimia.</p>
+        </div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">
+          <svg viewBox="0 0 120 80" aria-hidden="true">
+            <path d="M40 40 L56 24 L56 34 L88 34 L88 46 L56 46 L56 56 Z" fill="#8E9995"/>
+            <circle cx="30" cy="40" r="8" fill="none" stroke="#A6B0AC" stroke-width="3"/>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="code">CU · ORDER</div>
+          <h3>Custom Order</h3>
+          <p>Ukuran &amp; material non-standar.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCROLL-EXPANDING PANEL ============ -->
+<section class="expand-stage" id="sertifikat">
+  <div class="expander" id="expander">
+    <div class="cap">
+      <h2>Setiap batch, ada buktinya.</h2>
+      <p>Mill certificate, hasil uji tarik, dan laporan dimensi menyertai setiap pengiriman.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INDUSTRIES ============ -->
+<section class="sec" id="industri">
+  <div class="wrap">
+    <div class="split rv">
+      <div>
+        <p class="eyebrow">Industri yang kami layani</p>
+        <h2>Empat sektor,<br>satu standar.</h2>
+      </div>
+      <div style="align-self:end">
+        <p class="lede">Kami berkomitmen memberikan pelayanan yang lebih dari yang diharapkan — mulai dari konsultasi spesifikasi sampai pengiriman ke lokasi proyek.</p>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="panels rv">
+      <button class="panel" type="button">
+        <div class="panel-in">
+          <h3>Machinery</h3>
+          <div class="body">Fastener presisi untuk perakitan dan perawatan mesin produksi, dengan toleransi ketat dan stok berkelanjutan.</div>
+        </div>
+      </button>
+      <button class="panel" type="button">
+        <div class="panel-in">
+          <h3>Automotive</h3>
+          <div class="body">Baut bodi, chassis, dan engine mounting untuk workshop dan manufaktur komponen kendaraan.</div>
+        </div>
+      </button>
+      <button class="panel" type="button">
+        <div class="panel-in">
+          <h3>Konstruksi</h3>
+          <div class="body">Baut struktur A325 dan A490, angkur, serta as drat galvanis untuk proyek gedung dan infrastruktur.</div>
+        </div>
+      </button>
+      <button class="panel" type="button">
+        <div class="panel-in">
+          <h3>Elektrikal</h3>
+          <div class="body">Fastener tahan korosi untuk tower transmisi, panel, dan instalasi kelistrikan luar ruang.</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLIENTS ============ -->
+<section class="sec sec--alt">
+  <div class="wrap">
+    <p class="eyebrow rv">Kami telah bekerja sama dengan</p>
+    <h2 class="rv">Dipercaya kontraktor<br>dan manufaktur nasional.</h2>
+    <div class="clients rv">
+      <div class="client">Adhi Karya<small>KONSTRUKSI</small></div>
+      <div class="client">Karya Logam Agung<small>MANUFAKTUR</small></div>
+      <div class="client">IHI Power Electric<small>ENERGI</small></div>
+      <div class="client">Wijaya Karya<small>INFRASTRUKTUR</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUOTATION ============ -->
+<section class="sec sec--dark" id="kontak">
+  <div class="wrap">
+    <div class="quote-grid">
+      <div class="rv" id="pengiriman">
+        <p class="eyebrow">Pengiriman</p>
+        <h2>Ke seluruh<br>Indonesia.</h2>
+        <p class="lede" style="margin-top:24px">Kirim spesifikasi Anda — tim kami membalas penawaran dalam 1×24 jam kerja. Untuk kebutuhan mendesak, hubungi langsung via WhatsApp.</p>
+        <div style="margin-top:28px; display:flex; gap:28px; flex-wrap:wrap">
+          <div><div class="eyebrow" style="margin-bottom:6px">Telepon</div><div style="font-weight:700">+62 21 6500 888</div></div>
+          <div><div class="eyebrow" style="margin-bottom:6px">WhatsApp</div><div style="font-weight:700">+62 877 8408 5400</div></div>
+        </div>
+      </div>
+      <form class="form rv" onsubmit="event.preventDefault(); this.querySelector('.btn').textContent='Terkirim';">
+        <div class="row2">
+          <div class="field"><label for="n1">Nama</label><input id="n1" placeholder="Nama lengkap"></div>
+          <div class="field"><label for="n2">Perusahaan</label><input id="n2" placeholder="Nama perusahaan"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="n3">Email</label><input id="n3" type="email" placeholder="nama@perusahaan.co.id"></div>
+          <div class="field"><label for="n4">Kategori</label>
+            <select id="n4">
+              <option>Hex Bolt</option><option>Carriage Bolt</option><option>Mur &amp; Ring</option>
+              <option>As Drat / Stud</option><option>Anchor Bolt</option><option>Lainnya</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label for="n5">Spesifikasi &amp; jumlah</label><textarea id="n5" rows="3" placeholder="Contoh: Hex bolt M16 x 60 grade 8.8 galvanis, 500 pcs"></textarea></div>
+        <button class="btn" type="submit">Minta Penawaran</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOG — compact ============ -->
+<section class="sec" id="blog">
+  <div class="wrap">
+    <div class="split rv">
+      <div>
+        <p class="eyebrow">Artikel</p>
+        <h2>Catatan teknis.</h2>
+      </div>
+      <div style="align-self:end">
+        <p class="lede">Panduan singkat memilih grade, material, dan standar fastener yang tepat.</p>
+        <a class="ulink" href="#">Semua artikel</a>
+      </div>
+    </div>
+    <div class="posts rv">
+      <a class="post" href="#">
+        <div class="date">22 SEP 2022 · 4 MIN</div>
+        <h3>Apa itu snap ring? Ini beberapa jenisnya</h3>
+        <div class="rd">Baca →</div>
+      </a>
+      <a class="post" href="#">
+        <div class="date">08 MAR 2023 · 6 MIN</div>
+        <h3>As drat stainless steel: keunggulan dan kekurangan</h3>
+        <div class="rd">Baca →</div>
+      </a>
+      <a class="post" href="#">
+        <div class="date">02 AGU 2023 · 5 MIN</div>
+        <h3>Membaca grade baut 8.8, 10.9, dan 12.9</h3>
+        <div class="rd">Baca →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <a class="logo" href="#" style="color:#fff">
+          <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+            <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#7ED321"/>
+            <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="#fff"/>
+            <rect x="13" y="1" width="1.2" height="6" fill="#fff"/>
+          </svg>
+          <b>KAIROS<span style="color:#7ED321">BAUT</span></b>
+        </a>
+        <p style="margin-top:18px; max-width:32ch">PT Kairos Multi Sejahtera — distributor baut &amp; mur untuk industri Indonesia.</p>
+      </div>
+      <div>
+        <h4>Kantor</h4>
+        <p>Perkantoran Mega Sunter<br>Blok B No. 32, Jl. Danau Sunter Selatan<br>Jakarta 14350</p>
+        <p><a href="tel:+62216500888">+62 21 6500 888</a></p>
+      </div>
+      <div>
+        <h4>Workshop</h4>
+        <p>Kawasan Industri Jababeka 1<br>Blok C 17 A, Pasirgombong<br>Cikarang Utara, Bekasi 17530</p>
+        <p><a href="tel:+622189832622">+62 21 8983 2622</a></p>
+      </div>
+      <div>
+        <h4>Jam Kerja</h4>
+        <p>Senin – Jumat 08.00 – 17.00<br>Sabtu 08.00 – 12.00</p>
+        <h4 style="margin-top:22px">Email</h4>
+        <p><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></p>
+      </div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 PT Kairos Multi Sejahtera</span>
+      <span>Draft 1 — “Presisi” · mockup, bukan situs final</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa" href="#" aria-label="Hubungi via WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm0 18.15a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.22 8.22 0 1 1 6.98 3.86z"/>
+  </svg>
+  <span>Chat WhatsApp</span>
+</a>
+
+<script>
+  // Header hairline on scroll
+  const hdr = document.getElementById('hdr');
+  const onScrollHdr = () => hdr.classList.toggle('stuck', window.scrollY > 24);
+  onScrollHdr();
+
+  // Scroll-linked width expansion — the ASML "image grows to full bleed" move
+  const ex = document.getElementById('expander');
+  const gut = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gut')) || 40;
+
+  function sizeExpander() {
+    const r = ex.parentElement.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // progress: 0 when the panel first enters view, 1 when it is centred
+    const raw = (vh - r.top) / (vh * 0.85);
+    const p = Math.max(0, Math.min(1, raw));
+    const eased = p * p * (3 - 2 * p);
+    const startW = Math.min(1100, window.innerWidth - gut() * 2);
+    const endW = window.innerWidth;
+    ex.style.width = (startW + (endW - startW) * eased) + 'px';
+  }
+
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { onScrollHdr(); sizeExpander(); ticking = false; });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', sizeExpander);
+  sizeExpander();
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.rv').forEach((el, i) => {
+    el.style.transitionDelay = (i % 3) * 70 + 'ms';
+    io.observe(el);
+  });
+</script>
+
+</body>
+</html>

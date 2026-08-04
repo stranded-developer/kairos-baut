@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kairos Baut — Draft 3 "Material"</title>
+
+<style>
+  /* ============================================================
+     DRAFT 3 — "MATERIAL"
+     Direction: the showroom. Committed dark ground, brushed-steel
+     hero, a scroll-pinned horizontal product rail, and oversized
+     editorial numerals. Green appears as deep jade and mint —
+     used sparingly against metal, the way it reads on real stock.
+     Single-theme by intent: this direction is a dark room.
+     ============================================================ */
+
+  :root {
+    --void:    #070C09;
+    --panel:   #0D1410;
+    --panel-2: #121B16;
+    --jade:    #0B8F4C;
+    --mint:    #9FF0C0;
+    --steel:   #C8D2CC;
+    --steel-d: #6E7B74;
+    --hair:    rgba(200,210,204,.14);
+    --hair-2:  rgba(200,210,204,.07);
+
+    --sans: "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+    --gut: clamp(20px, 4.5vw, 76px);
+    --maxw: 1680px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    color: var(--steel);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
+
+  /* ---------- Type ---------- */
+  h1, h2, h3 { margin: 0; font-weight: 800; letter-spacing: -0.038em; line-height: .95; color: #fff; text-wrap: balance; }
+  h1 { font-size: clamp(46px, 9vw, 146px); }
+  h2 { font-size: clamp(34px, 5.4vw, 84px); }
+  h3 { font-size: clamp(19px, 1.6vw, 25px); letter-spacing: -0.022em; line-height: 1.15; }
+  p { margin: 0 0 1em; }
+
+  .kicker {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .26em;
+    text-transform: uppercase; color: var(--jade); margin: 0 0 22px;
+  }
+  .lede { font-size: clamp(17px, 1.3vw, 20px); color: rgba(200,210,204,.72); max-width: 58ch; }
+
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--mint); outline-offset: 3px;
+  }
+
+  .arrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 15px; font-weight: 700; letter-spacing: -0.01em;
+    color: #fff; text-decoration: none;
+    padding: 14px 0; border-bottom: 1px solid var(--hair);
+    transition: border-color .3s, color .3s;
+  }
+  .arrow i {
+    font-style: normal; width: 30px; height: 30px; flex: none;
+    border: 1px solid var(--hair); border-radius: 50%;
+    display: grid; place-items: center; font-size: 13px;
+    transition: background .3s, color .3s, border-color .3s, transform .3s;
+  }
+  .arrow:hover { color: var(--mint); border-bottom-color: var(--mint); }
+  .arrow:hover i { background: var(--mint); border-color: var(--mint); color: var(--void); transform: translateX(4px); }
+
+  /* ---------- Header ---------- */
+  header {
+    position: fixed; inset: 0 0 auto; z-index: 80;
+    transition: background .4s, backdrop-filter .4s, border-color .4s;
+    border-bottom: 1px solid transparent;
+  }
+  header.stuck { background: rgba(7,12,9,.82); backdrop-filter: blur(16px); border-bottom-color: var(--hair-2); }
+  .bar { max-width: var(--maxw); margin-inline: auto; padding: 20px var(--gut); display: flex; align-items: center; gap: 34px; }
+  .logo { display: flex; align-items: center; gap: 11px; text-decoration: none; color: #fff; }
+  .logo b { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+  .logo b i { font-style: normal; color: var(--jade); }
+  nav.main { margin-left: auto; display: flex; gap: 32px; align-items: center; }
+  nav.main a {
+    font-size: 14px; font-weight: 600; color: rgba(200,210,204,.7);
+    text-decoration: none; position: relative; padding: 3px 0;
+    transition: color .25s;
+  }
+  nav.main a::after {
+    content: ""; position: absolute; left: 0; right: 100%; bottom: 0;
+    height: 1px; background: var(--mint); transition: right .3s cubic-bezier(.2,.7,.3,1);
+  }
+  nav.main a:hover { color: #fff; }
+  nav.main a:hover::after { right: 0; }
+  .cta-sm {
+    font-size: 13px; font-weight: 700; color: var(--void); background: var(--mint);
+    padding: 10px 18px; border-radius: 999px; text-decoration: none;
+    transition: filter .25s, transform .25s;
+  }
+  .cta-sm:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  @media (max-width: 1040px) { nav.main a:not(.cta-sm) { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; min-height: 100svh; display: grid; align-items: center; overflow: hidden; }
+  #metal { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(85% 65% at 18% 46%, rgba(7,12,9,.86) 0%, rgba(7,12,9,.55) 45%, transparent 76%),
+      linear-gradient(to bottom, rgba(7,12,9,.7) 0%, transparent 26%, transparent 62%, rgba(7,12,9,.94) 100%);
+    pointer-events: none;
+  }
+  .hero-in { position: relative; z-index: 3; padding-top: 120px; padding-bottom: 60px; }
+  .hero h1 { max-width: 11ch; }
+  .hero h1 span { display: block; color: var(--jade); }
+  .hero .lede { margin-top: 30px; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 40px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 17px 30px; border-radius: 999px; text-decoration: none;
+    font-weight: 700; font-size: 15px; letter-spacing: -0.01em;
+    background: var(--mint); color: var(--void); border: 1px solid var(--mint);
+    transition: filter .25s, transform .25s;
+  }
+  .btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
+  .btn--line { background: transparent; color: #fff; border-color: var(--hair); }
+  .btn--line:hover { border-color: #fff; filter: none; }
+
+  .scrollhint {
+    position: absolute; left: var(--gut); bottom: 34px; z-index: 4;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .24em;
+    text-transform: uppercase; color: rgba(200,210,204,.45);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .scrollhint::before {
+    content: ""; width: 44px; height: 1px; background: currentColor;
+    transform-origin: left; animation: sweep 2.6s ease-in-out infinite;
+  }
+  @keyframes sweep { 0%,100% { transform: scaleX(.3); opacity: .4; } 50% { transform: scaleX(1); opacity: 1; } }
+
+  /* ---------- Sections ---------- */
+  .sec { padding-block: clamp(88px, 12vw, 190px); position: relative; }
+  .sec--panel { background: var(--panel); }
+
+  .statement { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(30px, 6vw, 100px); align-items: end; }
+  @media (max-width: 940px) { .statement { grid-template-columns: 1fr; align-items: start; } }
+
+  /* ---------- Oversized figures ---------- */
+  .counts { margin-top: clamp(56px, 8vw, 110px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hair-2); }
+  .count { background: var(--void); padding: 40px 30px 40px 0; }
+  .count:not(:first-child) { padding-left: 30px; }
+  .sec--panel .count { background: var(--panel); }
+  .count .num {
+    font-size: clamp(56px, 8.4vw, 128px); font-weight: 800;
+    letter-spacing: -0.055em; line-height: .86; color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .count .num em { font-style: normal; color: var(--jade); }
+  .count .cap { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--steel-d); margin-top: 18px; }
+  @media (max-width: 760px) { .counts { grid-template-columns: 1fr; } .count:not(:first-child) { padding-left: 0; } }
+
+  /* ---------- Pinned horizontal product rail ---------- */
+  .rail-outer { position: relative; }
+  .rail-sticky { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+  .rail-head { padding: 0 var(--gut) 34px; max-width: var(--maxw); margin-inline: auto; width: 100%; }
+  .rail-head .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .progress { width: 180px; height: 2px; background: var(--hair); position: relative; }
+  .progress span { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--mint); }
+  .rail { display: flex; gap: 22px; padding-inline: var(--gut); will-change: transform; }
+  .item {
+    flex: none; width: clamp(250px, 27vw, 380px);
+    background: var(--panel-2); border: 1px solid var(--hair-2);
+    display: flex; flex-direction: column; text-decoration: none; color: inherit;
+    transition: border-color .35s, transform .35s;
+  }
+  .item:hover { border-color: rgba(159,240,192,.4); transform: translateY(-5px); }
+  .item .shot {
+    aspect-ratio: 5 / 4; display: grid; place-items: center; overflow: hidden;
+    background:
+      radial-gradient(80% 70% at 50% 32%, rgba(200,210,204,.16), transparent 66%),
+      repeating-linear-gradient(97deg, rgba(255,255,255,.035) 0 2px, transparent 2px 11px),
+      linear-gradient(160deg, #1B2621 0%, #0C130F 100%);
+  }
+  .item .shot svg { width: 62%; height: auto; transition: transform .55s cubic-bezier(.2,.7,.3,1); }
+  .item:hover .shot svg { transform: scale(1.08) rotate(-4deg); }
+  .item .info { padding: 22px 22px 26px; border-top: 1px solid var(--hair-2); }
+  .item .std { font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; color: var(--jade); }
+  .item h3 { margin: 10px 0 8px; }
+  .item p { font-size: 14px; color: rgba(200,210,204,.6); margin: 0; }
+  @media (max-width: 820px) {
+    .rail-outer { height: auto !important; }
+    .rail-sticky { position: static; height: auto; padding-bottom: 20px; }
+    .rail { overflow-x: auto; transform: none !important; scroll-snap-type: x mandatory; padding-bottom: 16px; }
+    .item { scroll-snap-align: start; width: 78vw; }
+    .progress { display: none; }
+  }
+
+  /* ---------- Sectors — full-bleed alternating bands ---------- */
+  .band {
+    display: grid; grid-template-columns: 1fr 1fr; align-items: stretch;
+    border-top: 1px solid var(--hair-2);
+  }
+  .band:last-child { border-bottom: 1px solid var(--hair-2); }
+  .band .txt { padding: clamp(40px, 5.5vw, 84px) clamp(24px, 4vw, 70px); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+  .band .txt p { margin: 0; color: rgba(200,210,204,.66); font-size: 15px; max-width: 44ch; }
+  .band .vis { min-height: 260px; position: relative; overflow: hidden; border-left: 1px solid var(--hair-2); }
+  .band:nth-child(even) .vis { order: -1; border-left: 0; border-right: 1px solid var(--hair-2); }
+  .band .vis::before {
+    content: ""; position: absolute; inset: 0;
+    transform: scale(1.04); transition: transform .8s cubic-bezier(.2,.7,.3,1);
+  }
+  .band:hover .vis::before { transform: scale(1.11); }
+  .band:nth-child(1) .vis::before { background: radial-gradient(70% 60% at 40% 40%, rgba(11,143,76,.4), transparent 66%), linear-gradient(150deg,#16241D,#080E0B); }
+  .band:nth-child(2) .vis::before { background: radial-gradient(70% 60% at 60% 45%, rgba(159,240,192,.22), transparent 66%), linear-gradient(150deg,#1A2822,#080E0B); }
+  .band:nth-child(3) .vis::before { background: radial-gradient(70% 60% at 45% 55%, rgba(11,143,76,.3), transparent 66%), linear-gradient(150deg,#131F19,#080E0B); }
+  .band:nth-child(4) .vis::before { background: radial-gradient(70% 60% at 55% 40%, rgba(200,210,204,.16), transparent 66%), linear-gradient(150deg,#1C2A24,#080E0B); }
+  .band .vis::after {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(104deg, rgba(255,255,255,.04) 0 2px, transparent 2px 13px);
+  }
+  .band .idx { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--jade); }
+  @media (max-width: 860px) {
+    .band { grid-template-columns: 1fr; }
+    .band:nth-child(even) .vis { order: 0; border-right: 0; }
+    .band .vis { min-height: 180px; border-left: 0; border-top: 1px solid var(--hair-2); }
+  }
+
+  /* ---------- Clients marquee ---------- */
+  .marquee { overflow: hidden; border-block: 1px solid var(--hair-2); padding-block: 30px; }
+  .marquee-track { display: flex; gap: 72px; width: max-content; animation: slide 30s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  .marquee b { font-size: clamp(20px, 2.4vw, 34px); font-weight: 800; letter-spacing: -0.03em; color: rgba(200,210,204,.34); white-space: nowrap; transition: color .3s; }
+  .marquee b:hover { color: var(--mint); }
+
+  /* ---------- Editorial blog — compact two-column ---------- */
+  .journal { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(28px, 5vw, 80px); }
+  @media (max-width: 860px) { .journal { grid-template-columns: 1fr; } }
+  .entry {
+    display: grid; gap: 8px; padding: 24px 0;
+    border-top: 1px solid var(--hair-2); text-decoration: none; color: inherit;
+    transition: padding-left .3s;
+  }
+  .entry:hover { padding-left: 10px; }
+  .entry .em { font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--steel-d); display: flex; gap: 14px; }
+  .entry .em s { text-decoration: none; color: var(--jade); }
+  .entry h3 { font-size: 20px; transition: color .25s; }
+  .entry:hover h3 { color: var(--mint); }
+
+  /* ---------- Quote block ---------- */
+  .qgrid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(30px, 5vw, 84px); }
+  @media (max-width: 900px) { .qgrid { grid-template-columns: 1fr; } }
+  .form { display: grid; gap: 22px; }
+  .r2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 520px) { .r2 { grid-template-columns: 1fr; } }
+  .f label { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--steel-d); margin-bottom: 10px; }
+  .f input, .f textarea, .f select {
+    width: 100%; background: transparent; color: #fff;
+    border: 0; border-bottom: 1px solid var(--hair); padding: 12px 0;
+    font-family: inherit; font-size: 16px; transition: border-color .3s;
+  }
+  .f input:focus, .f textarea:focus, .f select:focus { outline: none; border-bottom-color: var(--mint); }
+  .f select option { background: var(--panel); }
+  .contactlist { display: grid; gap: 0; margin-top: 40px; }
+  .cl { display: flex; justify-content: space-between; gap: 20px; padding: 18px 0; border-top: 1px solid var(--hair-2); font-size: 15px; }
+  .cl span:first-child { font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--steel-d); }
+  .cl span:last-child { color: #fff; font-weight: 600; text-align: right; }
+
+  /* ---------- Footer ---------- */
+  footer { background: #050908; padding-block: 70px 30px; border-top: 1px solid var(--hair-2); }
+  .fg { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 36px; }
+  @media (max-width: 880px) { .fg { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .fg { grid-template-columns: 1fr; } }
+  footer h4 { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--steel-d); margin: 0 0 14px; font-weight: 400; }
+  footer p { font-size: 14px; color: rgba(200,210,204,.6); line-height: 1.7; margin: 0 0 .6em; }
+  footer a { color: rgba(200,210,204,.6); text-decoration: none; }
+  footer a:hover { color: var(--mint); }
+  .fb { margin-top: 52px; padding-top: 20px; border-top: 1px solid var(--hair-2); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--steel-d); }
+
+  /* ---------- WhatsApp CTA — mint disc ---------- */
+  .wa {
+    position: fixed; right: 24px; bottom: 24px; z-index: 95;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--mint); color: var(--void);
+    display: grid; place-items: center; text-decoration: none;
+    box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    transition: transform .3s cubic-bezier(.2,.7,.3,1);
+  }
+  .wa::after {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%;
+    border: 1px solid var(--mint); opacity: .5;
+    animation: ping 2.8s cubic-bezier(.2,.7,.3,1) infinite;
+  }
+  @keyframes ping { 0% { transform: scale(.9); opacity: .6; } 70%,100% { transform: scale(1.35); opacity: 0; } }
+  .wa:hover { transform: scale(1.08); }
+
+  .rv { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.2,.7,.3,1), transform .8s cubic-bezier(.2,.7,.3,1); }
+  .rv.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition-duration: .01ms !important; }
+    .rv { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="bar">
+    <a class="logo" href="#">
+      <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+        <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#0B8F4C"/>
+        <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="#fff"/>
+        <rect x="13" y="1" width="1.2" height="6" fill="#fff"/>
+      </svg>
+      <b>KAIROS<i>BAUT</i></b>
+    </a>
+    <nav class="main">
+      <a href="#produk">Produk</a>
+      <a href="#industri">Industri</a>
+      <a href="#jurnal">Blog</a>
+      <a href="#kontak">Kontak</a>
+      <a class="cta-sm" href="#kontak">Minta Penawaran</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <canvas id="metal" aria-hidden="true"></canvas>
+  <div class="wrap hero-in">
+    <p class="kicker">PT Kairos Multi Sejahtera · Sejak 2009</p>
+    <h1>Baja yang<br>bisa <span>dipercaya.</span></h1>
+    <p class="lede">Distributor baut &amp; mur terlengkap di Indonesia. Kami menyuplai fastener bersertifikat untuk konstruksi, manufaktur, otomotif, dan kelistrikan — dari Jakarta ke 34 provinsi.</p>
+    <div class="hero-cta">
+      <a class="btn" href="#produk">Lihat Produk</a>
+      <a class="btn btn--line" href="#kontak">Minta Penawaran</a>
+    </div>
+  </div>
+  <div class="scrollhint">Gulir</div>
+</section>
+
+<!-- ============ STATEMENT ============ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="statement rv">
+      <div>
+        <p class="kicker">Tentang Kami</p>
+        <h2>Satu baut yang salah<br>grade sudah cukup.</h2>
+      </div>
+      <div>
+        <p class="lede">Itu sebabnya setiap pengiriman kami disertai mill certificate, hasil uji tarik, dan laporan dimensi. Bukan formalitas — itu yang membedakan pemasok baut dengan mitra teknis. Lima belas tahun kami melayani kontraktor dan pabrik yang tidak punya ruang untuk menebak.</p>
+        <a class="arrow" href="#">Selengkapnya tentang kami <i>→</i></a>
+      </div>
+    </div>
+
+    <div class="counts rv">
+      <div class="count"><div class="num" data-to="15">0<em>+</em></div><div class="cap">Tahun melayani industri</div></div>
+      <div class="count"><div class="num" data-to="2400">0</div><div class="cap">Item stok siap kirim</div></div>
+      <div class="count"><div class="num" data-to="34">0</div><div class="cap">Provinsi terjangkau</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PINNED PRODUCT RAIL ============ -->
+<section class="rail-outer sec--panel" id="produk">
+  <div class="rail-sticky">
+    <div class="rail-head">
+      <div class="row">
+        <div>
+          <p class="kicker">Katalog</p>
+          <h2>Delapan kategori.</h2>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="railbar"></span></div>
+      </div>
+    </div>
+    <div class="rail" id="rail">
+      <a class="item" href="#">
+        <div class="shot"><svg viewBox="0 0 120 80" aria-hidden="true">
+          <path d="M18 26 L30 20 L42 26 L42 54 L30 60 L18 54 Z" fill="#94A29B"/>
+          <path d="M18 26 L30 32 L42 26 L30 20 Z" fill="#C2CDC6"/>
+          <rect x="42" y="34" width="58" height="12" fill="#7E8C85"/>
+          <g fill="#5C6863"><rect x="48" y="34" width="2.5" height="12"/><rect x="56" y="34" width="2.5" height="12"/><rect x="64" y="34" width="2.5" height="12"/><rect x="72" y="34" width="2.5" height="12"/><rect x="80" y="34" width="2.5" height="12"/><rect x="88" y="34" width="2.5" height="12"/></g>
+        </svg></div>
+        <div class="info"><div class="std">DIN 933 · M4–M48</div><h3>Hex Bolt</h3><p>Grade 4.8 hingga 12.9, carbon &amp; stainless.</p></div>
+      </a>
+      <a class="item" href="#">
+        <div class="shot"><svg viewBox="0 0 120 80" aria-hidden="true">
+          <ellipse cx="34" cy="40" rx="17" ry="19" fill="#C2CDC6"/>
+          <ellipse cx="34" cy="40" rx="10" ry="11" fill="#94A29B"/>
+          <rect x="46" y="34" width="54" height="12" fill="#7E8C85"/>
+          <g fill="#5C6863"><rect x="52" y="34" width="2.5" height="12"/><rect x="60" y="34" width="2.5" height="12"/><rect x="68" y="34" width="2.5" height="12"/><rect x="76" y="34" width="2.5" height="12"/><rect x="84" y="34" width="2.5" height="12"/></g>
+        </svg></div>
+        <div class="info"><div class="std">DIN 603 · M6–M20</div><h3>Carriage Bolt</h3><p>Kepala bulat dengan leher persegi.</p></div>
+      </a>
+      <a class="item" href="#">
+        <div class="shot"><svg viewBox="0 0 120 80" aria-hidden="true">
+          <path d="M60 14 L84 27 L84 53 L60 66 L36 53 L36 27 Z" fill="#C2CDC6"/>
+          <circle cx="60" cy="40" r="15" fill="#111A15"/>
+        </svg></div>
+        <div class="info"><div class="std">DIN 934 · M4–M48</div><h3>Hex Nut &amp; Mur</h3><p>Mur biasa, nylock, dan flange.</p></div>
+      </a>
+      <a class="item" href="#">
+        <div class="shot"><svg viewBox="0 0 120 80" aria-hidden="true">
+          <circle cx="60" cy="40" r="26" fill="#C2CDC6"/><circle cx="60" cy="40" r="11" fill="#111A15"/>
+        </svg></div>
+        <div class="info"><div class="std">DIN 125 · M4–M42</div><h3>Ring / Washer</h3><p>Plat, per, dan ring gigi.</p></div>
+      </a>
+      <a class="item" href="#">
+        <div class="shot"><svg viewBox="0 0 120 80" aria-hidden="true">
+          <path d="M60 16 a24 24 0 1 1 -10 45" fill="none" stroke="#94A29B" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="61" cy="16" r="5" fill="#C2CDC6"/><circle cx="49" cy="60" r="5" fill="#C2CDC6"/>
+        </svg></div>
+        <div class="info"><div class="std">DIN 471 · 3–120 mm</div><h3>Snap Ring</h3><p>External, internal, dan E-clip.</p></div>
+      </a>
+      <a class="item" href="#">
+        <div class="shot"><svg viewBox="0 0 120 80" aria-hidden="true">
+          <rect x="14" y="34" width="92" height="12" fill="#7E8C85"/>
+          <g fill="#5C6863"><rect x="18" y="34" width="2.5" height="12"/><rect x="26" y="34" width="2.5" height="12"/><rect x="34" y="34" width="2.5" height="12"/><rect x="42" y="34" width="2.5" height="12"/><rect x="50" y="34" width="2.5" height="12"/><rect x="58" y="34" width="2.5" height="12"/><rect x="66" y="34" width="2.5" height="12"/><rect x="74" y="34" width="2.5" height="12"/><rect x="82" y="34" width="2.5" height="12"/><rect x="90" y="34" width="2.5" height="12"/><rect x="98" y="34" width="2.5" height="12"/></g>
+        </svg></div>
+        <div class="info"><div class="std">DIN 975 · M6–M36</div><h3>As Drat / Stud</h3><p>Batang ulir 1 m, SS &amp; galvanis.</p></div>
+      </a>
+      <a class="item" href="#">
+        <div class="shot"><svg viewBox="0 0 120 80" aria-hidden="true">
+          <rect x="52" y="10" width="12" height="46" fill="#7E8C85"/>
+          <path d="M52 56 L64 56 L70 70 L46 70 Z" fill="#C2CDC6"/>
+          <g fill="#5C6863"><rect x="52" y="14" width="12" height="2.5"/><rect x="52" y="21" width="12" height="2.5"/><rect x="52" y="28" width="12" height="2.5"/><rect x="52" y="35" width="12" height="2.5"/></g>
+        </svg></div>
+        <div class="info"><div class="std">ASTM F1554 · M12–M42</div><h3>Anchor Bolt</h3><p>J-bolt, L-bolt, dan angkur kimia.</p></div>
+      </a>
+      <a class="item" href="#">
+        <div class="shot"><svg viewBox="0 0 120 80" aria-hidden="true">
+          <path d="M40 40 L56 24 L56 34 L88 34 L88 46 L56 46 L56 56 Z" fill="#7E8C85"/>
+          <circle cx="30" cy="40" r="8" fill="none" stroke="#C2CDC6" stroke-width="3"/>
+        </svg></div>
+        <div class="info"><div class="std">Custom · Indent</div><h3>Pesanan Khusus</h3><p>Ukuran &amp; material non-standar.</p></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTOR BANDS ============ -->
+<section id="industri">
+  <div class="wrap sec" style="padding-bottom: clamp(40px,5vw,70px)">
+    <div class="statement rv">
+      <div>
+        <p class="kicker">Industri</p>
+        <h2>Empat sektor,<br>satu standar.</h2>
+      </div>
+      <div>
+        <p class="lede">Kami berkomitmen memberikan pelayanan yang lebih dari yang diharapkan — dari konsultasi spesifikasi sampai pengiriman ke lokasi proyek.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="band rv">
+    <div class="txt"><span class="idx">01 — MACHINERY</span><h3>Mesin produksi</h3><p>Fastener presisi dengan toleransi ketat dan stok berkelanjutan, supaya penggantian saat downtime tidak perlu menunggu impor.</p></div>
+    <div class="vis"></div>
+  </div>
+  <div class="band rv">
+    <div class="txt"><span class="idx">02 — AUTOMOTIVE</span><h3>Otomotif</h3><p>Baut bodi, chassis, dan engine mounting untuk workshop maupun manufaktur komponen kendaraan.</p></div>
+    <div class="vis"></div>
+  </div>
+  <div class="band rv">
+    <div class="txt"><span class="idx">03 — KONSTRUKSI</span><h3>Konstruksi</h3><p>Baut struktur A325 dan A490, angkur, serta as drat galvanis untuk proyek gedung dan infrastruktur.</p></div>
+    <div class="vis"></div>
+  </div>
+  <div class="band rv">
+    <div class="txt"><span class="idx">04 — ELEKTRIKAL</span><h3>Kelistrikan</h3><p>Fastener tahan korosi untuk tower transmisi, panel distribusi, dan instalasi luar ruang.</p></div>
+    <div class="vis"></div>
+  </div>
+</section>
+
+<!-- ============ CLIENTS ============ -->
+<section class="sec" style="padding-block: clamp(60px,8vw,110px)">
+  <div class="wrap" style="margin-bottom:34px">
+    <p class="kicker rv" style="margin:0">Kami telah bekerja sama dengan</p>
+  </div>
+  <div class="marquee">
+    <div class="marquee-track">
+      <b>Adhi Karya</b><b>Karya Logam Agung</b><b>IHI Power Electric</b><b>Wijaya Karya</b>
+      <b>Adhi Karya</b><b>Karya Logam Agung</b><b>IHI Power Electric</b><b>Wijaya Karya</b>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUOTE ============ -->
+<section class="sec sec--panel" id="kontak">
+  <div class="wrap">
+    <div class="qgrid">
+      <div class="rv">
+        <p class="kicker">Penawaran</p>
+        <h2>Kirim spesifikasi,<br>kami hitung.</h2>
+        <p class="lede" style="margin-top:26px">Belum yakin spesifikasinya? Kirim gambar kerja atau foto barang lama — tim kami bantu identifikasi standar dan grade-nya.</p>
+        <div class="contactlist">
+          <div class="cl"><span>Telepon</span><span>+62 21 6500 888</span></div>
+          <div class="cl"><span>WhatsApp</span><span>+62 877 8408 5400</span></div>
+          <div class="cl"><span>Email</span><span>marketing@kairosbaut.com</span></div>
+          <div class="cl"><span>Respons</span><span>1×24 jam kerja</span></div>
+        </div>
+      </div>
+      <form class="form rv" onsubmit="event.preventDefault(); this.querySelector('.btn').textContent='Terkirim';">
+        <div class="r2">
+          <div class="f"><label for="m1">Nama</label><input id="m1" placeholder="Nama lengkap"></div>
+          <div class="f"><label for="m2">Perusahaan</label><input id="m2" placeholder="PT / CV"></div>
+        </div>
+        <div class="r2">
+          <div class="f"><label for="m3">Email</label><input id="m3" type="email" placeholder="nama@perusahaan.co.id"></div>
+          <div class="f"><label for="m4">Kategori</label>
+            <select id="m4"><option>Hex Bolt</option><option>Carriage Bolt</option><option>Mur &amp; Ring</option><option>As Drat / Stud</option><option>Anchor Bolt</option><option>Lainnya</option></select>
+          </div>
+        </div>
+        <div class="f"><label for="m5">Spesifikasi &amp; jumlah</label><textarea id="m5" rows="3" placeholder="Hex bolt M16 × 60, grade 8.8, HDG — 500 pcs"></textarea></div>
+        <button class="btn" type="submit" style="justify-self:start">Kirim Permintaan</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JOURNAL ============ -->
+<section class="sec" id="jurnal">
+  <div class="wrap">
+    <div class="statement rv" style="margin-bottom:44px">
+      <div>
+        <p class="kicker">Jurnal</p>
+        <h2>Catatan teknis.</h2>
+      </div>
+      <div style="align-self:end">
+        <a class="arrow" href="#">Semua artikel <i>→</i></a>
+      </div>
+    </div>
+    <div class="journal rv">
+      <a class="entry" href="#"><div class="em"><span>22 SEP 2022</span><s>Komponen</s></div><h3>Apa itu snap ring? Ini beberapa jenisnya</h3></a>
+      <a class="entry" href="#"><div class="em"><span>08 MAR 2023</span><s>Material</s></div><h3>As drat stainless steel: keunggulan dan kekurangan</h3></a>
+      <a class="entry" href="#"><div class="em"><span>02 AGU 2023</span><s>Standar</s></div><h3>Membaca grade baut 8.8, 10.9, dan 12.9</h3></a>
+      <a class="entry" href="#"><div class="em"><span>17 NOV 2023</span><s>Material</s></div><h3>Hot-dip galvanized atau zinc plating?</h3></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fg">
+      <div>
+        <a class="logo" href="#">
+          <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+            <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#0B8F4C"/>
+            <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="#fff"/><rect x="13" y="1" width="1.2" height="6" fill="#fff"/>
+          </svg>
+          <b>KAIROS<i>BAUT</i></b>
+        </a>
+        <p style="margin-top:16px; max-width:30ch">PT Kairos Multi Sejahtera — distributor baut &amp; mur untuk industri Indonesia.</p>
+      </div>
+      <div><h4>Kantor</h4><p>Perkantoran Mega Sunter Blok B No. 32<br>Jl. Danau Sunter Selatan, Jakarta 14350</p><p><a href="tel:+62216500888">+62 21 6500 888</a></p></div>
+      <div><h4>Workshop</h4><p>Kawasan Industri Jababeka 1 Blok C 17 A<br>Pasirgombong, Cikarang Utara, Bekasi 17530</p><p><a href="tel:+622189832622">+62 21 8983 2622</a></p></div>
+      <div><h4>Jam Kerja</h4><p>Senin – Jumat 08.00 – 17.00<br>Sabtu 08.00 – 12.00</p><p><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></p></div>
+    </div>
+    <div class="fb"><span>© 2026 PT Kairos Multi Sejahtera</span><span>Draft 3 — “Material” · mockup</span></div>
+  </div>
+</footer>
+
+<a class="wa" href="#" aria-label="Hubungi via WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+  </svg>
+</a>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- Brushed-steel hero canvas: stand-in for the product photograph ---- */
+  (function metal() {
+    const cv = document.getElementById('metal');
+    const ctx = cv.getContext('2d', { alpha: false });
+    let w, h, grain;
+
+    function buildGrain() {
+      // horizontal brush striations, rendered once then reused
+      const g = document.createElement('canvas');
+      g.width = w; g.height = h;
+      const c = g.getContext('2d');
+      c.fillStyle = '#0E1712'; c.fillRect(0, 0, w, h);
+      for (let i = 0; i < h; i += 1) {
+        const v = 14 + Math.random() * 26;
+        c.fillStyle = `rgba(${v + 10},${v + 20},${v + 14},${0.5 + Math.random() * 0.5})`;
+        c.fillRect(0, i, w, 1);
+      }
+      for (let i = 0; i < 260; i++) {
+        const y = Math.random() * h;
+        c.fillStyle = `rgba(190,206,196,${Math.random() * 0.05})`;
+        c.fillRect(Math.random() * w * 0.4, y, w * (0.3 + Math.random() * 0.7), 1);
+      }
+      grain = g;
+    }
+
+    function resize() {
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      w = cv.clientWidth; h = cv.clientHeight;
+      cv.width = w * dpr; cv.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      buildGrain();
+      draw(0.5, 0.42);
+    }
+
+    let mx = 0.62, my = 0.42, tx = 0.62, ty = 0.42;
+
+    function draw(px, py) {
+      ctx.drawImage(grain, 0, 0, w, h);
+      // specular sweep
+      const g = ctx.createLinearGradient(px * w - h * 0.9, 0, px * w + h * 0.9, h);
+      g.addColorStop(0.00, 'rgba(200,214,206,0)');
+      g.addColorStop(0.42, 'rgba(200,214,206,0.10)');
+      g.addColorStop(0.50, 'rgba(226,238,231,0.20)');
+      g.addColorStop(0.58, 'rgba(200,214,206,0.10)');
+      g.addColorStop(1.00, 'rgba(200,214,206,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      // jade bloom follows the pointer
+      const r = ctx.createRadialGradient(px * w, py * h, 0, px * w, py * h, Math.max(w, h) * 0.42);
+      r.addColorStop(0, 'rgba(11,143,76,0.24)');
+      r.addColorStop(1, 'rgba(11,143,76,0)');
+      ctx.fillStyle = r; ctx.fillRect(0, 0, w, h);
+    }
+
+    addEventListener('resize', resize);
+    addEventListener('pointermove', e => {
+      const r = cv.getBoundingClientRect();
+      tx = (e.clientX - r.left) / r.width;
+      ty = (e.clientY - r.top) / r.height;
+    }, { passive: true });
+
+    resize();
+    if (!reduce) {
+      (function loop() {
+        mx += (tx - mx) * 0.05;
+        my += (ty - my) * 0.05;
+        draw(mx, my);
+        requestAnimationFrame(loop);
+      })();
+    }
+  })();
+
+  /* ---- Header ---- */
+  const hdr = document.getElementById('hdr');
+
+  /* ---- Pinned horizontal rail ---- */
+  const railOuter = document.querySelector('.rail-outer');
+  const rail = document.getElementById('rail');
+  const railbar = document.getElementById('railbar');
+  let railTravel = 0;
+
+  function measureRail() {
+    if (innerWidth <= 820) { railOuter.style.height = ''; rail.style.transform = ''; return; }
+    railTravel = Math.max(0, rail.scrollWidth - innerWidth + 40);
+    railOuter.style.height = (innerHeight + railTravel * 1.15) + 'px';
+  }
+
+  function updateRail() {
+    if (innerWidth <= 820 || !railTravel) return;
+    const r = railOuter.getBoundingClientRect();
+    const p = Math.max(0, Math.min(1, -r.top / (railOuter.offsetHeight - innerHeight)));
+    rail.style.transform = `translate3d(${-p * railTravel}px,0,0)`;
+    railbar.style.width = (p * 100) + '%';
+  }
+
+  let tick = false;
+  addEventListener('scroll', () => {
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(() => {
+      hdr.classList.toggle('stuck', scrollY > 30);
+      updateRail();
+      tick = false;
+    });
+  }, { passive: true });
+  addEventListener('resize', () => { measureRail(); updateRail(); });
+  measureRail(); updateRail();
+
+  /* ---- Counters ---- */
+  function countUp(el) {
+    const to = +el.dataset.to;
+    const suffix = el.querySelector('em') ? '<em>+</em>' : '';
+    if (reduce) { el.innerHTML = to.toLocaleString('id-ID') + suffix; return; }
+    const t0 = performance.now(), dur = 1400;
+    (function step(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.innerHTML = Math.round(to * e).toLocaleString('id-ID') + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+
+  /* ---- Reveal ---- */
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      e.target.querySelectorAll?.('.num[data-to]').forEach(countUp);
+      io.unobserve(e.target);
+    });
+  }, { threshold: .15 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

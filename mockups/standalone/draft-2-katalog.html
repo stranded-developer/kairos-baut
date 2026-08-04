@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kairos Baut — Draft 2 "Katalog"</title>
+
+<style>
+  /* ============================================================
+     DRAFT 2 — "KATALOG"
+     Direction: the engineering drawing sheet.
+     Light ground, hairline construction, dimension annotations,
+     a title block, and products as a technical index rather
+     than a card grid. Green is functional, never decorative.
+     ============================================================ */
+
+  :root {
+    --paper:    #FAFBF8;
+    --sheet:    #FFFFFF;
+    --ink:      #10160F;
+    --graphite: #59635A;
+    --faint:    #8B948B;
+    --hair:     #CDD5CB;
+    --hair-2:   #E4E9E2;
+    --green:    #1F7A3A;
+    --green-lt: #37B45D;
+    --green-wash: #EEF6F0;
+
+    --bg:    var(--paper);
+    --panel: var(--sheet);
+    --fg:    var(--ink);
+    --fg-2:  var(--graphite);
+    --fg-3:  var(--faint);
+    --line:  var(--hair);
+    --line-2:var(--hair-2);
+
+    --sans: "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+    --gut: clamp(18px, 3.6vw, 56px);
+    --maxw: 1560px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0E120E; --sheet: #131813; --ink: #E7EEE6;
+      --graphite: #A3AEA3; --faint: #78827A;
+      --hair: rgba(255,255,255,.16); --hair-2: rgba(255,255,255,.08);
+      --green: #4DBF6C; --green-lt: #6BD98A; --green-wash: rgba(77,191,108,.09);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0E120E; --sheet: #131813; --ink: #E7EEE6;
+    --graphite: #A3AEA3; --faint: #78827A;
+    --hair: rgba(255,255,255,.16); --hair-2: rgba(255,255,255,.08);
+    --green: #4DBF6C; --green-lt: #6BD98A; --green-wash: rgba(77,191,108,.09);
+  }
+  :root[data-theme="light"] {
+    --paper: #FAFBF8; --sheet: #FFFFFF; --ink: #10160F;
+    --graphite: #59635A; --faint: #8B948B;
+    --hair: #CDD5CB; --hair-2: #E4E9E2;
+    --green: #1F7A3A; --green-lt: #37B45D; --green-wash: #EEF6F0;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    /* faint drafting graph, the ground the whole sheet sits on */
+    background-image:
+      linear-gradient(var(--line-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-2) 1px, transparent 1px);
+    background-size: 88px 88px, 88px 88px;
+  }
+
+  .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
+
+  /* ---------- Type ---------- */
+  h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.028em; line-height: 1.02; text-wrap: balance; }
+  h1 { font-size: clamp(38px, 5.6vw, 82px); }
+  h2 { font-size: clamp(27px, 3.2vw, 46px); }
+  h3 { font-size: 18px; letter-spacing: -0.015em; line-height: 1.25; }
+  p { margin: 0 0 1em; }
+
+  .tag {
+    font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--fg-3);
+  }
+  .lede { font-size: clamp(16px, 1.2vw, 19px); color: var(--fg-2); max-width: 62ch; }
+
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--green-lt); outline-offset: 2px;
+  }
+
+  /* Technical link: bracketed, mono, no underline swell */
+  .tlink {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--green); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid currentColor; padding-bottom: 3px;
+    transition: gap .25s;
+  }
+  .tlink::after { content: "→"; transition: transform .25s; }
+  .tlink:hover::after { transform: translateX(4px); }
+
+  /* ---------- Registration marks — sheet corners ---------- */
+  .regmark { position: fixed; width: 18px; height: 18px; z-index: 55; pointer-events: none; opacity: .5; }
+  .regmark::before, .regmark::after { content: ""; position: absolute; background: var(--fg-3); }
+  .regmark::before { left: 8px; top: 0; width: 1px; height: 18px; }
+  .regmark::after { top: 8px; left: 0; height: 1px; width: 18px; }
+  .rm-tl { top: 74px; left: 14px; }
+  .rm-tr { top: 74px; right: 14px; }
+  .rm-bl { bottom: 14px; left: 14px; }
+  .rm-br { bottom: 14px; right: 14px; }
+  @media (max-width: 900px) { .regmark { display: none; } }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 70;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { max-width: var(--maxw); margin-inline: auto; padding: 12px var(--gut); display: flex; align-items: center; gap: 30px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--fg); }
+  .logo b { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .06em; }
+  .logo b i { font-style: normal; color: var(--green); }
+  nav.main { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+  nav.main a {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--fg-2); text-decoration: none; padding: 8px 12px;
+    border: 1px solid transparent; transition: border-color .2s, color .2s;
+  }
+  nav.main a:hover { color: var(--fg); border-color: var(--line); }
+  nav.main a.on { color: var(--green); border-color: var(--green); }
+  @media (max-width: 1000px) { nav.main { display: none; } }
+  .burger { margin-left: auto; display: none; background: none; border: 1px solid var(--line); padding: 9px 10px; cursor: pointer; }
+  .burger span { display: block; width: 20px; height: 1.5px; background: var(--fg); margin: 4px 0; }
+  @media (max-width: 1000px) { .burger { display: block; } }
+
+  /* ---------- Hero: the drawing sheet ---------- */
+  .hero { border-bottom: 1px solid var(--line); background: var(--panel); }
+  .hero-in {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: 78vh; align-items: center; gap: 40px;
+    padding-block: clamp(48px, 7vw, 92px);
+  }
+  @media (max-width: 980px) { .hero-in { grid-template-columns: 1fr; min-height: 0; } }
+
+  .hero h1 { max-width: 13ch; margin-top: 18px; }
+  .hero h1 mark { background: none; color: var(--green); }
+  .hero .lede { margin-top: 22px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .btn {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+    padding: 14px 22px; border: 1px solid var(--green); background: var(--green); color: #fff;
+    text-decoration: none; cursor: pointer; transition: background .2s, color .2s;
+  }
+  .btn:hover { background: transparent; color: var(--green); }
+  .btn--ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+  .btn--ghost:hover { border-color: var(--fg); background: transparent; color: var(--fg); }
+
+  /* Drawing figure + dimension annotations */
+  .figure { position: relative; aspect-ratio: 1 / 1; display: grid; place-items: center; }
+  .figure svg { width: 100%; height: auto; overflow: visible; }
+  .draw path, .draw line, .draw circle, .draw rect, .draw polyline {
+    stroke-dasharray: 1200; stroke-dashoffset: 1200;
+    animation: draw 2.1s cubic-bezier(.35,.8,.35,1) forwards;
+  }
+  .draw .d2 { animation-delay: .35s; }
+  .draw .d3 { animation-delay: .7s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .dimtext { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; fill: var(--green); opacity: 0; animation: fadeIn .6s ease 1.5s forwards; }
+  .dimline { stroke: var(--green); stroke-width: .7; opacity: 0; animation: fadeIn .6s ease 1.4s forwards; }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  /* Title block — bottom right of the drawing, as on a real sheet */
+  .titleblock {
+    position: absolute; right: 0; bottom: 0;
+    border: 1px solid var(--line); background: var(--panel);
+    display: grid; grid-template-columns: repeat(3, minmax(72px, auto));
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase;
+  }
+  .titleblock div { padding: 8px 12px; border-left: 1px solid var(--line-2); color: var(--fg-3); }
+  .titleblock div:first-child { border-left: 0; }
+  .titleblock strong { display: block; color: var(--fg); font-weight: 700; letter-spacing: .06em; margin-top: 3px; }
+  @media (max-width: 620px) { .titleblock { position: static; margin-top: 24px; } }
+
+  /* ---------- Section frame ---------- */
+  .sec { padding-block: clamp(56px, 7vw, 108px); border-bottom: 1px solid var(--line); }
+  .sec--panel { background: var(--panel); }
+  .sechead { display: flex; align-items: baseline; justify-content: space-between; gap: 28px; flex-wrap: wrap; margin-bottom: 40px; }
+  .sechead .n { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--fg-3); }
+
+  /* ---------- Spec strip ---------- */
+  .specs { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); background: var(--line); gap: 1px; }
+  .spec { background: var(--panel); padding: 24px 20px; }
+  .spec dt { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-3); }
+  .spec dd { margin: 10px 0 0; font-size: 15px; color: var(--fg); line-height: 1.45; }
+  @media (max-width: 860px) { .specs { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .specs { grid-template-columns: 1fr; } }
+
+  /* ---------- Product index (a table, not cards) ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+  .chip {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    padding: 9px 14px; border: 1px solid var(--line); background: transparent; color: var(--fg-2);
+    cursor: pointer; transition: all .2s;
+  }
+  .chip:hover { border-color: var(--fg-2); color: var(--fg); }
+  .chip[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: #fff; }
+
+  .indexwrap { overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
+  table.index { width: 100%; border-collapse: collapse; min-width: 720px; }
+  table.index th {
+    text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--fg-3); font-weight: 400;
+    padding: 14px 18px; border-bottom: 1px solid var(--line);
+  }
+  table.index td { padding: 0; border-bottom: 1px solid var(--line-2); vertical-align: middle; }
+  table.index tr:last-child td { border-bottom: 0; }
+  table.index tbody tr { transition: background .18s; }
+  table.index tbody tr:hover { background: var(--green-wash); }
+  td .cell { padding: 16px 18px; display: block; }
+  td.namecell .cell { display: flex; align-items: center; gap: 16px; }
+  .mini {
+    width: 46px; height: 34px; flex: none; border: 1px solid var(--line-2);
+    display: grid; place-items: center; background: var(--bg);
+  }
+  .mini svg { width: 34px; height: auto; }
+  .pname { font-weight: 700; letter-spacing: -0.012em; }
+  .pdesc { font-size: 13px; color: var(--fg-3); margin-top: 2px; }
+  .mono { font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+  .stock { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-lt); flex: none; }
+  .dot--low { background: #C9922B; }
+  .rowlink { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--green); text-decoration: none; white-space: nowrap; }
+  tr.hide { display: none; }
+
+  /* ---------- Sectors as annotated rows ---------- */
+  .sector { display: grid; grid-template-columns: 56px 1fr 1.3fr; gap: 24px; padding: 26px 0; border-top: 1px solid var(--line-2); align-items: start; }
+  .sector:last-child { border-bottom: 1px solid var(--line-2); }
+  .sector .idx { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; color: var(--fg-3); padding-top: 5px; }
+  .sector p { margin: 0; color: var(--fg-2); font-size: 15px; }
+  .sector h3 { transition: color .2s; }
+  .sector:hover h3 { color: var(--green); }
+  @media (max-width: 780px) { .sector { grid-template-columns: 40px 1fr; } .sector p { grid-column: 2; } }
+
+  /* ---------- Clients ---------- */
+  .clients { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); gap: 1px; background: var(--line); }
+  .client { background: var(--panel); padding: 30px 20px; }
+  .client .cn { font-weight: 700; letter-spacing: -0.015em; }
+  .client .cs { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-3); margin-top: 6px; }
+  @media (max-width: 760px) { .clients { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ---------- Blog: a reference list, tight ---------- */
+  .reflist { border-top: 1px solid var(--line); }
+  .ref {
+    display: grid; grid-template-columns: 120px 1fr auto; gap: 20px; align-items: baseline;
+    padding: 18px 0; border-bottom: 1px solid var(--line-2);
+    text-decoration: none; color: inherit; transition: padding-left .25s, background .2s;
+  }
+  .ref:hover { padding-left: 12px; background: var(--green-wash); }
+  .ref .rdate { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--fg-3); }
+  .ref .rtitle { font-weight: 700; letter-spacing: -0.015em; font-size: 17px; }
+  .ref .rmeta { font-family: var(--mono); font-size: 11px; color: var(--fg-3); white-space: nowrap; }
+  @media (max-width: 700px) {
+    .ref { grid-template-columns: 1fr auto; }
+    .ref .rdate { grid-column: 1 / -1; }
+  }
+
+  /* ---------- Quote ---------- */
+  .quote { display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(28px, 5vw, 72px); }
+  @media (max-width: 900px) { .quote { grid-template-columns: 1fr; } }
+  .form { display: grid; gap: 0; border: 1px solid var(--line); background: var(--panel); }
+  .field { border-bottom: 1px solid var(--line-2); display: grid; grid-template-columns: 150px 1fr; align-items: center; }
+  .field:last-of-type { border-bottom: 0; }
+  .field label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--fg-3); padding: 0 16px; border-right: 1px solid var(--line-2); align-self: stretch;
+    display: flex; align-items: center;
+  }
+  .field input, .field textarea, .field select {
+    border: 0; background: transparent; color: var(--fg);
+    font-family: var(--sans); font-size: 15px; padding: 15px 16px; width: 100%;
+  }
+  .field textarea { resize: vertical; font-family: var(--sans); }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; background: var(--green-wash); }
+  @media (max-width: 560px) {
+    .field { grid-template-columns: 1fr; }
+    .field label { border-right: 0; border-bottom: 1px solid var(--line-2); padding: 10px 16px; }
+  }
+  .formfoot { padding: 16px; border-top: 1px solid var(--line-2); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--panel); padding-block: 56px 26px; }
+  .fgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  @media (max-width: 860px) { .fgrid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .fgrid { grid-template-columns: 1fr; } }
+  footer h4 { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg-3); margin: 0 0 12px; font-weight: 400; }
+  footer p { font-size: 14px; color: var(--fg-2); line-height: 1.65; margin: 0 0 .7em; }
+  footer a { color: var(--fg-2); text-decoration: none; }
+  footer a:hover { color: var(--green); }
+  .fbot {
+    margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line-2);
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3);
+  }
+
+  /* ---------- WhatsApp CTA — squared, technical ---------- */
+  .wa {
+    position: fixed; right: 20px; bottom: 20px; z-index: 90;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--green); color: #fff; text-decoration: none;
+    padding: 13px 17px; border: 1px solid var(--green);
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase;
+    box-shadow: 0 6px 26px rgba(10,40,20,.22);
+    transition: background .22s, color .22s;
+  }
+  .wa:hover { background: var(--panel); color: var(--green); }
+  .wa svg { flex: none; }
+  @media (max-width: 560px) { .wa span { display: none; } .wa { padding: 14px; } }
+
+  .rv { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1); }
+  .rv.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
+    .draw path, .draw line, .draw circle, .draw rect, .draw polyline { stroke-dashoffset: 0; }
+    .dimtext, .dimline { opacity: 1; }
+    .rv { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<span class="regmark rm-tl" aria-hidden="true"></span>
+<span class="regmark rm-tr" aria-hidden="true"></span>
+<span class="regmark rm-bl" aria-hidden="true"></span>
+<span class="regmark rm-br" aria-hidden="true"></span>
+
+<header>
+  <div class="bar">
+    <a class="logo" href="#">
+      <svg width="26" height="23" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+        <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1F7A3A"/>
+        <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/>
+        <rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+      </svg>
+      <b>KAIROS<i>BAUT</i></b>
+    </a>
+    <nav class="main">
+      <a class="on" href="#">Home</a>
+      <a href="#katalog">Produk</a>
+      <a href="#sektor">Industri</a>
+      <a href="#artikel">Blog</a>
+      <a href="#kontak">Kontak</a>
+      <a href="#">ID</a>
+    </nav>
+    <button class="burger" aria-label="Buka menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-in">
+    <div>
+      <p class="tag">PT Kairos Multi Sejahtera · Jakarta · Est. 2009</p>
+      <h1>Baut yang <mark>terukur</mark>, bukan sekadar tersedia.</h1>
+      <p class="lede">Setiap item dalam katalog kami punya standar, grade, dan dokumen yang bisa Anda verifikasi sebelum dipasang. 2.400 item stok siap kirim ke seluruh Indonesia.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#katalog">Buka Katalog</a>
+        <a class="btn btn--ghost" href="#kontak">Minta Penawaran</a>
+      </div>
+    </div>
+
+    <div class="figure">
+      <svg viewBox="0 0 400 400" fill="none" role="img" aria-label="Gambar teknik baut hex M16">
+        <g class="draw" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+          <!-- hex head, front -->
+          <path d="M60 140 L94 120 L128 140 L128 180 L94 200 L60 180 Z"/>
+          <path class="d2" d="M60 140 L94 160 L128 140"/>
+          <path class="d2" d="M94 160 L94 200"/>
+          <!-- shank -->
+          <path class="d2" d="M128 146 L300 146 L300 174 L128 174"/>
+          <!-- thread ticks -->
+          <g class="d3" stroke-width="1">
+            <path d="M180 146 L188 174"/><path d="M196 146 L204 174"/>
+            <path d="M212 146 L220 174"/><path d="M228 146 L236 174"/>
+            <path d="M244 146 L252 174"/><path d="M260 146 L268 174"/>
+            <path d="M276 146 L284 174"/><path d="M292 146 L300 174"/>
+          </g>
+          <!-- chamfer -->
+          <path class="d3" d="M300 152 L308 160 L300 168"/>
+          <!-- section view: nut, below -->
+          <path class="d3" d="M120 268 L154 248 L188 268 L188 308 L154 328 L120 308 Z"/>
+          <circle class="d3" cx="154" cy="288" r="17"/>
+          <!-- washer -->
+          <ellipse class="d3" cx="268" cy="288" rx="42" ry="18"/>
+          <ellipse class="d3" cx="268" cy="288" rx="17" ry="7"/>
+        </g>
+
+        <!-- dimension annotations -->
+        <g>
+          <line class="dimline" x1="128" y1="216" x2="300" y2="216"/>
+          <line class="dimline" x1="128" y1="210" x2="128" y2="222"/>
+          <line class="dimline" x1="300" y1="210" x2="300" y2="222"/>
+          <text class="dimtext" x="188" y="232">L = 60 mm</text>
+
+          <line class="dimline" x1="330" y1="146" x2="330" y2="174"/>
+          <line class="dimline" x1="324" y1="146" x2="336" y2="146"/>
+          <line class="dimline" x1="324" y1="174" x2="336" y2="174"/>
+          <text class="dimtext" x="340" y="163">⌀ M16</text>
+
+          <line class="dimline" x1="94" y1="104" x2="94" y2="118"/>
+          <text class="dimtext" x="66" y="98">HEX 24</text>
+
+          <text class="dimtext" x="120" y="348">DIN 934</text>
+          <text class="dimtext" x="240" y="330">DIN 125</text>
+          <text class="dimtext" x="60" y="118" opacity="0"></text>
+        </g>
+      </svg>
+
+      <div class="titleblock">
+        <div>Standar<strong>DIN 933</strong></div>
+        <div>Grade<strong>8.8</strong></div>
+        <div>Finish<strong>HDG</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SPEC STRIP ============ -->
+<section class="sec sec--panel">
+  <div class="wrap">
+    <div class="sechead rv">
+      <div>
+        <p class="tag">Ringkasan</p>
+        <h2>Yang Anda dapat<br>di setiap pengiriman.</h2>
+      </div>
+      <span class="n">01 / 06</span>
+    </div>
+    <dl class="specs rv">
+      <div class="spec"><dt>Dokumen</dt><dd>Mill certificate, hasil uji tarik, dan laporan dimensi per batch.</dd></div>
+      <div class="spec"><dt>Material</dt><dd>Carbon steel, stainless 304 &amp; 316, hot-dip galvanized.</dd></div>
+      <div class="spec"><dt>Rentang ukuran</dt><dd>M4 sampai M48, panjang 10 mm hingga 1000 mm.</dd></div>
+      <div class="spec"><dt>Respons penawaran</dt><dd>Dibalas dalam 1×24 jam kerja, termasuk stok dan lead time.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PRODUCT INDEX ============ -->
+<section class="sec" id="katalog">
+  <div class="wrap">
+    <div class="sechead rv">
+      <div>
+        <p class="tag">Katalog</p>
+        <h2>Indeks produk.</h2>
+      </div>
+      <span class="n">02 / 06</span>
+    </div>
+
+    <div class="filters rv" role="group" aria-label="Filter kategori">
+      <button class="chip" data-f="all" aria-pressed="true">Semua</button>
+      <button class="chip" data-f="baut" aria-pressed="false">Baut</button>
+      <button class="chip" data-f="mur" aria-pressed="false">Mur &amp; Ring</button>
+      <button class="chip" data-f="batang" aria-pressed="false">Batang Ulir</button>
+      <button class="chip" data-f="angkur" aria-pressed="false">Angkur</button>
+    </div>
+
+    <div class="indexwrap rv">
+      <table class="index">
+        <thead>
+          <tr>
+            <th scope="col">Produk</th>
+            <th scope="col">Standar</th>
+            <th scope="col">Ukuran</th>
+            <th scope="col">Grade</th>
+            <th scope="col">Stok</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-c="baut">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9 L12 5 L20 9 L20 21 L12 25 L4 21 Z"/><path d="M20 11 L52 11 L52 19 L20 19"/><path d="M30 11 L33 19M38 11 L41 19M46 11 L49 19"/></svg></span>
+              <span><span class="pname">Hex Bolt</span><span class="pdesc">Baut kepala segi enam</span></span>
+            </span></td>
+            <td><span class="cell mono">DIN 933 / 931</span></td>
+            <td><span class="cell mono">M4 – M48</span></td>
+            <td><span class="cell mono">4.8 · 8.8 · 10.9 · 12.9</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot"></span>Ready</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+          <tr data-c="baut">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="12" cy="15" rx="8" ry="10"/><path d="M20 11 L52 11 L52 19 L20 19"/><path d="M30 11 L33 19M38 11 L41 19M46 11 L49 19"/></svg></span>
+              <span><span class="pname">Carriage Bolt</span><span class="pdesc">Kepala bulat, leher persegi</span></span>
+            </span></td>
+            <td><span class="cell mono">DIN 603</span></td>
+            <td><span class="cell mono">M6 – M20</span></td>
+            <td><span class="cell mono">4.8 · 8.8</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot"></span>Ready</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+          <tr data-c="baut">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="15" r="9"/><path d="M8 11 L16 19M16 11 L8 19"/><path d="M21 11 L52 11 L52 19 L21 19"/></svg></span>
+              <span><span class="pname">Socket Head Cap</span><span class="pdesc">Baut L / inbus</span></span>
+            </span></td>
+            <td><span class="cell mono">DIN 912</span></td>
+            <td><span class="cell mono">M3 – M24</span></td>
+            <td><span class="cell mono">8.8 · 12.9</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot"></span>Ready</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+          <tr data-c="mur">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18 6 L34 6 L42 15 L34 24 L18 24 L10 15 Z"/><circle cx="26" cy="15" r="6"/></svg></span>
+              <span><span class="pname">Hex Nut</span><span class="pdesc">Mur biasa, nylock, flange</span></span>
+            </span></td>
+            <td><span class="cell mono">DIN 934 / 985</span></td>
+            <td><span class="cell mono">M4 – M48</span></td>
+            <td><span class="cell mono">Class 6 · 8 · 10</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot"></span>Ready</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+          <tr data-c="mur">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="30" cy="15" rx="20" ry="9"/><ellipse cx="30" cy="15" rx="7" ry="3.5"/></svg></span>
+              <span><span class="pname">Ring / Washer</span><span class="pdesc">Plat, per, dan ring gigi</span></span>
+            </span></td>
+            <td><span class="cell mono">DIN 125 / 127</span></td>
+            <td><span class="cell mono">M4 – M42</span></td>
+            <td><span class="cell mono">SS304 · SS316 · HDG</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot"></span>Ready</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+          <tr data-c="mur">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M30 5 a10 10 0 1 1 -6 18" stroke-linecap="round"/><circle cx="30.5" cy="5" r="2"/><circle cx="24" cy="23" r="2"/></svg></span>
+              <span><span class="pname">Snap Ring</span><span class="pdesc">External, internal, E-clip</span></span>
+            </span></td>
+            <td><span class="cell mono">DIN 471 / 472</span></td>
+            <td><span class="cell mono">3 – 120 mm</span></td>
+            <td><span class="cell mono">Carbon · SS</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot dot--low"></span>Terbatas</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+          <tr data-c="batang">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 11 L54 11 L54 19 L6 19 Z"/><path d="M14 11 L17 19M22 11 L25 19M30 11 L33 19M38 11 L41 19M46 11 L49 19"/></svg></span>
+              <span><span class="pname">As Drat / Stud</span><span class="pdesc">Batang ulir 1 meter</span></span>
+            </span></td>
+            <td><span class="cell mono">DIN 975</span></td>
+            <td><span class="cell mono">M6 – M36</span></td>
+            <td><span class="cell mono">4.8 · 8.8 · SS304</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot"></span>Ready</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+          <tr data-c="angkur">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M26 3 L26 20 a6 6 0 0 0 12 0"/><path d="M22 6 L30 6M22 10 L30 10M22 14 L30 14"/></svg></span>
+              <span><span class="pname">Anchor Bolt</span><span class="pdesc">J-bolt, L-bolt, angkur kimia</span></span>
+            </span></td>
+            <td><span class="cell mono">ASTM F1554</span></td>
+            <td><span class="cell mono">M12 – M42</span></td>
+            <td><span class="cell mono">Gr. 36 · 55 · 105</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot"></span>Ready</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+          <tr data-c="baut">
+            <td class="namecell"><span class="cell">
+              <span class="mini"><svg viewBox="0 0 60 30" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9 L12 5 L20 9 L20 21 L12 25 L4 21 Z"/><path d="M20 11 L44 11 L44 19 L20 19"/><path d="M44 11 L52 15 L44 19"/></svg></span>
+              <span><span class="pname">Baut Struktur</span><span class="pdesc">Untuk sambungan baja berat</span></span>
+            </span></td>
+            <td><span class="cell mono">ASTM A325 / A490</span></td>
+            <td><span class="cell mono">M16 – M36</span></td>
+            <td><span class="cell mono">Type 1 · Type 3</span></td>
+            <td><span class="cell"><span class="stock"><span class="dot dot--low"></span>Indent</span></span></td>
+            <td><span class="cell"><a class="rowlink" href="#">Detail</a></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:20px"><a class="tlink" href="#">Unduh katalog lengkap (PDF)</a></p>
+  </div>
+</section>
+
+<!-- ============ SECTORS ============ -->
+<section class="sec sec--panel" id="sektor">
+  <div class="wrap">
+    <div class="sechead rv">
+      <div>
+        <p class="tag">Industri</p>
+        <h2>Empat sektor,<br>satu standar mutu.</h2>
+      </div>
+      <span class="n">03 / 06</span>
+    </div>
+    <div class="rv">
+      <div class="sector">
+        <div class="idx">MC</div>
+        <h3>Machinery</h3>
+        <p>Fastener presisi untuk perakitan dan perawatan mesin produksi — toleransi ketat, stok berkelanjutan, dan penggantian cepat saat downtime.</p>
+      </div>
+      <div class="sector">
+        <div class="idx">AU</div>
+        <h3>Automotive</h3>
+        <p>Baut bodi, chassis, dan engine mounting untuk workshop maupun manufaktur komponen kendaraan.</p>
+      </div>
+      <div class="sector">
+        <div class="idx">KN</div>
+        <h3>Konstruksi</h3>
+        <p>Baut struktur A325 dan A490, angkur, serta as drat galvanis untuk proyek gedung dan infrastruktur.</p>
+      </div>
+      <div class="sector">
+        <div class="idx">EL</div>
+        <h3>Elektrikal</h3>
+        <p>Fastener tahan korosi untuk tower transmisi, panel distribusi, dan instalasi kelistrikan luar ruang.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLIENTS ============ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead rv">
+      <div>
+        <p class="tag">Referensi</p>
+        <h2>Kami telah bekerja<br>sama dengan.</h2>
+      </div>
+      <span class="n">04 / 06</span>
+    </div>
+    <div class="clients rv">
+      <div class="client"><div class="cn">Adhi Karya</div><div class="cs">Konstruksi</div></div>
+      <div class="client"><div class="cn">Karya Logam Agung</div><div class="cs">Manufaktur</div></div>
+      <div class="client"><div class="cn">IHI Power Electric</div><div class="cs">Energi</div></div>
+      <div class="client"><div class="cn">Wijaya Karya</div><div class="cs">Infrastruktur</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUOTE ============ -->
+<section class="sec sec--panel" id="kontak">
+  <div class="wrap">
+    <div class="sechead rv">
+      <div>
+        <p class="tag">Penawaran</p>
+        <h2>Kirim spesifikasi,<br>kami hitung.</h2>
+      </div>
+      <span class="n">05 / 06</span>
+    </div>
+    <div class="quote">
+      <div class="rv">
+        <p class="lede">Cantumkan standar, ukuran, grade, dan jumlah. Kalau spesifikasinya belum pasti, kirim saja gambar kerja atau foto barang lamanya — tim kami bantu identifikasi.</p>
+        <div style="margin-top:28px; border-top:1px solid var(--line); padding-top:20px">
+          <p class="tag" style="margin-bottom:6px">Pengiriman</p>
+          <p style="margin:0; font-weight:700">Ke seluruh Indonesia — 34 provinsi</p>
+        </div>
+        <div style="margin-top:20px; border-top:1px solid var(--line); padding-top:20px">
+          <p class="tag" style="margin-bottom:6px">Telepon / WhatsApp</p>
+          <p style="margin:0; font-weight:700">+62 21 6500 888 · +62 877 8408 5400</p>
+        </div>
+      </div>
+      <form class="form rv" onsubmit="event.preventDefault(); this.querySelector('.btn').textContent='Terkirim';">
+        <div class="field"><label for="q1">Nama</label><input id="q1" placeholder="Nama lengkap"></div>
+        <div class="field"><label for="q2">Perusahaan</label><input id="q2" placeholder="PT / CV"></div>
+        <div class="field"><label for="q3">Email</label><input id="q3" type="email" placeholder="nama@perusahaan.co.id"></div>
+        <div class="field"><label for="q4">Kategori</label>
+          <select id="q4">
+            <option>Hex Bolt</option><option>Carriage Bolt</option><option>Socket Head Cap</option>
+            <option>Mur &amp; Ring</option><option>As Drat / Stud</option><option>Anchor Bolt</option>
+            <option>Baut Struktur</option><option>Lainnya</option>
+          </select>
+        </div>
+        <div class="field"><label for="q5">Spesifikasi</label><textarea id="q5" rows="3" placeholder="Hex bolt M16 × 60, grade 8.8, HDG — 500 pcs"></textarea></div>
+        <div class="formfoot">
+          <span class="tag">Dibalas dalam 1×24 jam kerja</span>
+          <button class="btn" type="submit">Kirim Permintaan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARTICLES ============ -->
+<section class="sec" id="artikel">
+  <div class="wrap">
+    <div class="sechead rv">
+      <div>
+        <p class="tag">Artikel</p>
+        <h2>Catatan teknis.</h2>
+      </div>
+      <span class="n">06 / 06</span>
+    </div>
+    <div class="reflist rv">
+      <a class="ref" href="#">
+        <span class="rdate">22.09.2022</span>
+        <span class="rtitle">Apa itu snap ring? Ini beberapa jenisnya</span>
+        <span class="rmeta">4 min · Komponen</span>
+      </a>
+      <a class="ref" href="#">
+        <span class="rdate">08.03.2023</span>
+        <span class="rtitle">As drat stainless steel: keunggulan dan kekurangan</span>
+        <span class="rmeta">6 min · Material</span>
+      </a>
+      <a class="ref" href="#">
+        <span class="rdate">02.08.2023</span>
+        <span class="rtitle">Membaca grade baut 8.8, 10.9, dan 12.9</span>
+        <span class="rmeta">5 min · Standar</span>
+      </a>
+      <a class="ref" href="#">
+        <span class="rdate">17.11.2023</span>
+        <span class="rtitle">Kapan harus pakai hot-dip galvanized, kapan cukup zinc plating</span>
+        <span class="rmeta">7 min · Material</span>
+      </a>
+    </div>
+    <p style="margin-top:22px"><a class="tlink" href="#">Semua artikel</a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <h4>Kairos Baut</h4>
+        <p>PT Kairos Multi Sejahtera<br>Distributor baut &amp; mur untuk industri Indonesia.</p>
+      </div>
+      <div>
+        <h4>Kantor</h4>
+        <p>Perkantoran Mega Sunter Blok B No. 32<br>Jl. Danau Sunter Selatan, Jakarta 14350</p>
+        <p><a href="tel:+62216500888">+62 21 6500 888</a></p>
+      </div>
+      <div>
+        <h4>Workshop</h4>
+        <p>Kawasan Industri Jababeka 1 Blok C 17 A<br>Pasirgombong, Cikarang Utara, Bekasi 17530</p>
+        <p><a href="tel:+622189832622">+62 21 8983 2622</a></p>
+      </div>
+      <div>
+        <h4>Jam Kerja</h4>
+        <p>Senin – Jumat 08.00 – 17.00<br>Sabtu 08.00 – 12.00</p>
+        <p><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></p>
+      </div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 PT Kairos Multi Sejahtera</span>
+      <span>Draft 2 — “Katalog” · mockup</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa" href="#" aria-label="Hubungi via WhatsApp">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+  </svg>
+  <span>WhatsApp</span>
+</a>
+
+<script>
+  // Catalogue filter
+  const chips = document.querySelectorAll('.chip');
+  const rows = document.querySelectorAll('table.index tbody tr');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.setAttribute('aria-pressed', String(c === chip)));
+      const f = chip.dataset.f;
+      rows.forEach(r => r.classList.toggle('hide', f !== 'all' && r.dataset.c !== f));
+    });
+  });
+
+  // Reveal
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: .1 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
