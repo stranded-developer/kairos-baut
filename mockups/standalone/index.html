@@ -1,70 +1,469 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kairos Baut Drafts</title>
+<title>Kairos Baut — Distributor Baut &amp; Mur Industri Indonesia</title>
+<meta name="description" content="PT Kairos Multi Sejahtera — 2.400 item baut, mur, dan ring siap kirim ke 34 provinsi, lengkap dengan mill certificate.">
+<link rel="stylesheet" href="kairos.css">
 <style>
-  :root {
-    --bg: #F7F9F6; --card: #fff; --ink: #0C1710; --body: #4A5850;
-    --muted: #7C8A81; --line: #DFE7DE; --green: #1E9E4A; --green-d: #146B33;
-    --sans: "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
-    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* ---------- Hero (halaman ini saja) ---------- */
+  .hero { padding-block: clamp(44px, 6vw, 84px) clamp(34px, 4vw, 56px); position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; z-index: 0; pointer-events: none;
+    width: 780px; height: 780px; right: -240px; top: -320px; border-radius: 50%;
+    background: radial-gradient(circle, var(--wash) 0%, transparent 66%);
   }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#0C1410; --card:#141D18; --ink:#E9F1EA; --body:#AFBDB3;
-            --muted:#83918A; --line:rgba(255,255,255,.11); --green:#35BC63; --green-d:#7EDC9C; }
+  .hero-in {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1.06fr .94fr; gap: clamp(32px, 5vw, 72px); align-items: center;
   }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
-         font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
-  .wrap { max-width: 1080px; margin-inline:auto; padding: clamp(40px,7vw,88px) clamp(20px,5vw,48px); }
-  .tag { font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
-         color:var(--green-d); margin:0 0 18px; }
-  h1 { font-size: clamp(32px,5vw,54px); font-weight:800; letter-spacing:-0.035em; line-height:1.02; margin:0; }
-  .sub { color:var(--body); max-width:62ch; margin-top:18px; }
-  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:44px; }
-  @media (max-width:760px){ .grid{ grid-template-columns:1fr; } }
-  .card { display:block; background:var(--card); border:1px solid var(--line); border-radius:14px;
-          padding:26px 24px 24px; text-decoration:none; color:inherit;
-          transition:transform .25s, box-shadow .25s, border-color .25s; }
-  .card:hover { transform:translateY(-4px); border-color:var(--green);
-                box-shadow:0 14px 36px rgba(16,40,24,.10); }
-  .card h2 { font-size:22px; font-weight:800; letter-spacing:-0.025em; margin:0 0 8px; }
-  .card p { margin:0; font-size:14.5px; color:var(--body); }
-  .swatch { display:flex; gap:5px; margin-top:18px; }
-  .swatch i { width:26px; height:26px; border-radius:6px; border:1px solid rgba(0,0,0,.08); }
-  a:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+  @media (max-width: 1000px) { .hero-in { grid-template-columns: 1fr; } }
+  .hero h1 { max-width: 15ch; }
+  .hero h1 mark { background: none; color: var(--green-ink); }
+  .hero .lede { margin-top: 20px; }
+
+  /* Search — perangkat konversi utama */
+  .search {
+    display: flex; align-items: center; gap: 10px; margin-top: 28px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 7px 7px 20px; box-shadow: var(--shadow);
+    max-width: 560px; transition: border-color .25s, box-shadow .25s;
+  }
+  .search:focus-within { border-color: var(--green-btn); box-shadow: 0 0 0 4px var(--wash); }
+  .search svg { flex: none; color: var(--muted); }
+  .search input { flex: 1; min-width: 0; border: 0; background: none; font-family: inherit; font-size: 16px; color: var(--ink); padding: 11px 0; }
+  .search input:focus { outline: none; }
+  .search input::placeholder { color: #93A099; }
+  .search .btn { padding: 13px 22px; }
+  @media (max-width: 560px) { .search { padding-left: 16px; } .search .btn span { display: none; } .search .btn { padding: 13px 16px; } }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .pill {
+    font-size: 13.5px; font-weight: 600; color: var(--body); text-decoration: none;
+    padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--white);
+    transition: border-color .2s, color .2s, background .2s;
+  }
+  .pill:hover { border-color: var(--green); color: var(--green-ink); background: var(--wash); }
+
+  /* Panel katalog — pengganti kartu melayang, lebih informatif */
+  .hpanel { background: var(--white); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow-lift); overflow: hidden; }
+  .hpanel .top {
+    display: flex; justify-content: space-between; gap: 14px; align-items: center;
+    padding: 13px 18px; border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
+  }
+  .hpanel .top b { color: var(--green-ink); font-weight: 400; }
+  .hgrid { display: grid; grid-template-columns: 1fr 1fr; }
+  .hcell {
+    padding: 22px 20px 18px; text-decoration: none; color: inherit;
+    border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2);
+    display: flex; flex-direction: column; gap: 10px; transition: background .25s;
+  }
+  .hcell:nth-child(2n) { border-right: 0; }
+  .hcell:nth-child(n+3) { border-bottom: 0; }
+  .hcell:hover { background: var(--off); }
+  .hcell .art { height: 74px; display: grid; place-items: center; }
+  .hcell .art svg { width: 84%; max-height: 74px; transition: transform .4s var(--ease); }
+  .hcell:hover .art svg { transform: scale(1.06); }
+  .hcell strong { font-size: 15px; letter-spacing: -0.02em; }
+  .hcell span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; color: var(--muted); }
+  .hpanel .foot {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 15px 18px; border-top: 1px solid var(--line); background: var(--off);
+    font-size: 14px; font-weight: 700; color: var(--ink);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 9px; vertical-align: 1px; }
+  @media (max-width: 1000px) { .hpanel { max-width: 560px; margin-inline: auto; } }
+
+  /* Tentang */
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 80px); align-items: end; }
+  @media (max-width: 940px) { .about { grid-template-columns: 1fr; align-items: start; } }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <p class="tag">PT Kairos Multi Sejahtera · Redesign</p>
-  <h1>Four design drafts.</h1>
-  <p class="sub">Each draft is a full, responsive home page.</p>
 
-  <div class="grid">
-    <a class="card" href="draft-1-presisi.html">
-      <h2>Draft 1</h2>
-      <p>Dark forest green with grid lines that stay visible. Panels widen as you scroll, and the product list opens like an accordion on hover.</p>
-      <div class="swatch"><i style="background:#10231A"></i><i style="background:#2C8F45"></i><i style="background:#7ED321"></i><i style="background:#F7F9F6"></i></div>
+<a class="skip" href="#main">Lompat ke konten</a>
+
+<header id="hdr">
+  <div class="bar">
+    <a class="logo" href="index.html" aria-label="Kairos Baut — beranda">
+      <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+        <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+        <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/>
+        <rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+      </svg>
+      <b>Kairos<i>Baut</i></b>
     </a>
-    <a class="card" href="draft-2-katalog.html">
-      <h2>Draft 2</h2>
-      <p> A bolt that draws itself, dimension marks, a title block, and products listed as a filterable table.</p>
-      <div class="swatch"><i style="background:#FAFBF8"></i><i style="background:#1F7A3A"></i><i style="background:#59635A"></i><i style="background:#CDD5CB"></i></div>
-    </a>
-    <a class="card" href="draft-3-material.html">
-      <h2>Draft 3</h2>
-      <p>Dark showroom look. The brushed steel hero shifts with the cursor, and the product row scrolls sideways while the page is held in place.</p>
-      <div class="swatch"><i style="background:#070C09"></i><i style="background:#0B8F4C"></i><i style="background:#9FF0C0"></i><i style="background:#C8D2CC"></i></div>
-    </a>
-    <a class="card" href="draft-4-terang.html">
-      <h2>Draft 4</h2>
-      <p>Bright and sales-focused. Product search in the hero, big category tiles, a three-step ordering flow, and a green stats band.</p>
-      <div class="swatch"><i style="background:#FFFFFF"></i><i style="background:#1E9E4A"></i><i style="background:#146B33"></i><i style="background:#E7F4EB"></i></div>
-    </a>
+    <nav class="main">
+      <a href="produk.html">Produk</a>
+      <a href="#industri">Industri</a>
+      <a href="blog.html">Blog</a>
+      <a href="#tentang">Tentang Kami</a>
+      <a class="btn btn--sm" href="#kontak">Minta Penawaran</a>
+    </nav>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mobnav">
+      <i aria-hidden="true"></i>Menu
+    </button>
   </div>
-</div>
+  <nav class="mobnav" id="mobnav" aria-label="Menu utama">
+    <a href="produk.html">Produk</a>
+    <a href="#industri">Industri</a>
+    <a href="blog.html">Blog</a>
+    <a href="#tentang">Tentang Kami</a>
+    <a class="btn" href="#kontak">Minta Penawaran</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-in">
+      <div>
+        <p class="eyebrow">PT Kairos Multi Sejahtera · Sejak 2009</p>
+        <h1>Cari baut yang tepat, <mark>sekali jalan.</mark></h1>
+        <p class="lede">2.400 item baut, mur, dan ring siap kirim ke seluruh Indonesia — lengkap dengan sertifikat material. Cari langsung di bawah, atau kirim spesifikasi Anda ke tim kami.</p>
+
+        <form class="search" role="search" action="produk.html" method="get">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" name="q" aria-label="Cari produk" placeholder="Cari: hex bolt M16, as drat SS304, snap ring…">
+          <button class="btn" type="submit">Cari<span> Produk</span></button>
+        </form>
+
+        <div class="pills">
+          <a class="pill" href="produk.html?q=hex%20bolt">Hex Bolt</a>
+          <a class="pill" href="produk.html?f=mur">Mur &amp; Ring</a>
+          <a class="pill" href="produk.html?f=batang">As Drat</a>
+          <a class="pill" href="produk.html?f=angkur">Anchor Bolt</a>
+          <a class="pill" href="produk.html?q=SS304">Stainless 304</a>
+          <a class="pill" href="produk.html?q=HDG">Galvanis</a>
+        </div>
+      </div>
+
+      <!-- Panel katalog: empat kategori tercepat + status stok -->
+      <div class="hpanel">
+        <div class="top"><span>Stok gudang</span><b>Jakarta · Cikarang</b></div>
+        <div class="hgrid">
+          <a class="hcell" href="produk.html#hex-bolt">
+            <div class="art"><svg viewBox="0 0 120 80" aria-hidden="true"><path d="M18 26 L30 20 L42 26 L42 54 L30 60 L18 54 Z" fill="#9BA8A0"/><path d="M18 26 L30 32 L42 26 L30 20 Z" fill="#C6D0C9"/><rect x="42" y="34" width="58" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="48" y="34" width="2.5" height="12"/><rect x="56" y="34" width="2.5" height="12"/><rect x="64" y="34" width="2.5" height="12"/><rect x="72" y="34" width="2.5" height="12"/><rect x="80" y="34" width="2.5" height="12"/><rect x="88" y="34" width="2.5" height="12"/></g></svg></div>
+            <strong>Hex Bolt</strong><span>DIN 933 · M4–M48</span>
+          </a>
+          <a class="hcell" href="produk.html#hex-nut">
+            <div class="art"><svg viewBox="0 0 120 80" aria-hidden="true"><path d="M60 14 L84 27 L84 53 L60 66 L36 53 L36 27 Z" fill="#C6D0C9"/><circle cx="60" cy="40" r="15" fill="#F5F8F4"/><circle cx="60" cy="40" r="15" fill="none" stroke="#8A968F" stroke-width="2"/></svg></div>
+            <strong>Hex Nut</strong><span>DIN 934 · M4–M48</span>
+          </a>
+          <a class="hcell" href="produk.html#as-drat">
+            <div class="art"><svg viewBox="0 0 120 80" aria-hidden="true"><rect x="14" y="34" width="92" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="18" y="34" width="2.5" height="12"/><rect x="26" y="34" width="2.5" height="12"/><rect x="34" y="34" width="2.5" height="12"/><rect x="42" y="34" width="2.5" height="12"/><rect x="50" y="34" width="2.5" height="12"/><rect x="58" y="34" width="2.5" height="12"/><rect x="66" y="34" width="2.5" height="12"/><rect x="74" y="34" width="2.5" height="12"/><rect x="82" y="34" width="2.5" height="12"/><rect x="90" y="34" width="2.5" height="12"/><rect x="98" y="34" width="2.5" height="12"/></g></svg></div>
+            <strong>As Drat</strong><span>DIN 975 · M6–M36</span>
+          </a>
+          <a class="hcell" href="produk.html#ring-washer">
+            <div class="art"><svg viewBox="0 0 120 80" aria-hidden="true"><circle cx="60" cy="40" r="26" fill="#C6D0C9"/><circle cx="60" cy="40" r="11" fill="#F5F8F4"/><circle cx="60" cy="40" r="26" fill="none" stroke="#8A968F" stroke-width="2"/></svg></div>
+            <strong>Ring / Washer</strong><span>DIN 125 · M4–M42</span>
+          </a>
+        </div>
+        <div class="foot">
+          <span><span class="dot" aria-hidden="true"></span>2.400 item ready stock</span>
+          <a class="textlink" href="produk.html">Indeks produk <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST STRIP ============ -->
+<section class="wrap" aria-label="Kenapa Kairos Baut">
+  <div class="trust rv">
+    <div>
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+      <div><strong>Sertifikat lengkap</strong>Mill cert &amp; uji tarik per batch</div>
+    </div>
+    <div>
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 7h11v9H2z"/><path d="M13 10h4.5L21 13.5V16h-8z"/><circle cx="6.5" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg>
+      <div><strong>Kirim 34 provinsi</strong>Dari Jakarta &amp; Cikarang</div>
+    </div>
+    <div>
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+      <div><strong>Balas 1×24 jam</strong>Penawaran pada hari kerja</div>
+    </div>
+    <div>
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg>
+      <div><strong>Gudang sendiri</strong>Stok fisik, bukan dropship</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TENTANG + ANGKA ============ -->
+<section class="sec" id="tentang">
+  <div class="wrap">
+    <div class="about rv">
+      <div>
+        <p class="eyebrow">Tentang kami</p>
+        <h2>Satu baut yang salah grade sudah cukup.</h2>
+      </div>
+      <div>
+        <p class="lede">Itu sebabnya setiap pengiriman kami disertai mill certificate, hasil uji tarik, dan laporan dimensi. Bukan formalitas — itu yang membedakan pemasok baut dengan mitra teknis. Lima belas tahun kami melayani kontraktor dan pabrik yang tidak punya ruang untuk menebak.</p>
+        <a class="textlink" href="#kontak" style="margin-top:6px">Bicara dengan tim teknis kami <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+
+    <div class="stats rv">
+      <div class="stat"><div class="n" data-to="15">0<em>+</em></div><div class="c">Tahun melayani industri</div></div>
+      <div class="stat"><div class="n" data-to="2400">0</div><div class="c">Item stok siap kirim</div></div>
+      <div class="stat"><div class="n" data-to="34">0</div><div class="c">Provinsi terjangkau</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KLIEN ============ -->
+<section class="sec sec--tight" style="padding-top:0" aria-label="Klien">
+  <div class="wrap" style="margin-bottom:22px">
+    <p class="eyebrow rv" style="margin:0">Kami telah bekerja sama dengan</p>
+  </div>
+  <div class="marquee">
+    <div class="marquee-track">
+      <b>Adhi Karya</b><b>Karya Logam Agung</b><b>IHI Power Electric</b><b>Wijaya Karya</b>
+      <b aria-hidden="true">Adhi Karya</b><b aria-hidden="true">Karya Logam Agung</b><b aria-hidden="true">IHI Power Electric</b><b aria-hidden="true">Wijaya Karya</b>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INDUSTRI ============ -->
+<section class="sec sec--dark" id="industri">
+  <div class="wrap">
+    <div class="sechead row rv">
+      <div>
+        <p class="eyebrow">Industri</p>
+        <h2>Empat sektor,<br>satu standar.</h2>
+      </div>
+      <p class="lede" style="max-width:44ch; margin:0">Kami berkomitmen memberikan pelayanan yang lebih dari yang diharapkan — mulai dari konsultasi spesifikasi sampai pengiriman ke lokasi proyek.</p>
+    </div>
+
+    <div class="panels rv">
+      <button class="panel" type="button" aria-expanded="false">
+        <div class="panel-in">
+          <span class="idx">01 — Machinery</span>
+          <h3>Mesin produksi</h3>
+          <div class="body">Fastener presisi dengan toleransi ketat dan stok berkelanjutan, supaya penggantian saat downtime tidak perlu menunggu impor.</div>
+        </div>
+      </button>
+      <button class="panel" type="button" aria-expanded="false">
+        <div class="panel-in">
+          <span class="idx">02 — Automotive</span>
+          <h3>Otomotif</h3>
+          <div class="body">Baut bodi, chassis, dan engine mounting untuk workshop maupun manufaktur komponen kendaraan.</div>
+        </div>
+      </button>
+      <button class="panel" type="button" aria-expanded="false">
+        <div class="panel-in">
+          <span class="idx">03 — Konstruksi</span>
+          <h3>Konstruksi</h3>
+          <div class="body">Baut struktur A325 dan A490, angkur, serta as drat galvanis untuk proyek gedung dan infrastruktur.</div>
+        </div>
+      </button>
+      <button class="panel" type="button" aria-expanded="false">
+        <div class="panel-in">
+          <span class="idx">04 — Elektrikal</span>
+          <h3>Kelistrikan</h3>
+          <div class="body">Fastener tahan korosi untuk tower transmisi, panel distribusi, dan instalasi luar ruang.</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KATEGORI PRODUK ============ -->
+<section class="sec sec--off" id="produk">
+  <div class="wrap">
+    <div class="sechead row rv">
+      <div>
+        <p class="eyebrow">Katalog</p>
+        <h2>Kategori produk.</h2>
+      </div>
+      <a class="textlink" href="produk.html">Lihat indeks lengkap <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div class="cats rv">
+      <a class="cat" href="produk.html#hex-bolt">
+        <div class="pic"><svg viewBox="0 0 120 80" aria-hidden="true"><path d="M18 26 L30 20 L42 26 L42 54 L30 60 L18 54 Z" fill="#9BA8A0"/><path d="M18 26 L30 32 L42 26 L30 20 Z" fill="#C6D0C9"/><rect x="42" y="34" width="58" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="48" y="34" width="2.5" height="12"/><rect x="56" y="34" width="2.5" height="12"/><rect x="64" y="34" width="2.5" height="12"/><rect x="72" y="34" width="2.5" height="12"/><rect x="80" y="34" width="2.5" height="12"/><rect x="88" y="34" width="2.5" height="12"/></g></svg></div>
+        <div class="txt"><div class="std">DIN 933 · M4–M48</div><h3>Hex Bolt</h3><p>Grade 4.8 sampai 12.9.</p><div class="go">Lihat detail <span aria-hidden="true">→</span></div></div>
+      </a>
+      <a class="cat" href="produk.html#carriage-bolt">
+        <div class="pic"><svg viewBox="0 0 120 80" aria-hidden="true"><ellipse cx="34" cy="40" rx="17" ry="19" fill="#C6D0C9"/><ellipse cx="34" cy="40" rx="10" ry="11" fill="#9BA8A0"/><rect x="46" y="34" width="54" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="52" y="34" width="2.5" height="12"/><rect x="60" y="34" width="2.5" height="12"/><rect x="68" y="34" width="2.5" height="12"/><rect x="76" y="34" width="2.5" height="12"/><rect x="84" y="34" width="2.5" height="12"/></g></svg></div>
+        <div class="txt"><div class="std">DIN 603 · M6–M20</div><h3>Carriage Bolt</h3><p>Kepala bulat, leher persegi.</p><div class="go">Lihat detail <span aria-hidden="true">→</span></div></div>
+      </a>
+      <a class="cat" href="produk.html#hex-nut">
+        <div class="pic"><svg viewBox="0 0 120 80" aria-hidden="true"><path d="M60 14 L84 27 L84 53 L60 66 L36 53 L36 27 Z" fill="#C6D0C9"/><circle cx="60" cy="40" r="15" fill="#F5F8F4"/><circle cx="60" cy="40" r="15" fill="none" stroke="#8A968F" stroke-width="2"/></svg></div>
+        <div class="txt"><div class="std">DIN 934 · M4–M48</div><h3>Hex Nut &amp; Mur</h3><p>Biasa, nylock, dan flange.</p><div class="go">Lihat detail <span aria-hidden="true">→</span></div></div>
+      </a>
+      <a class="cat" href="produk.html#ring-washer">
+        <div class="pic"><svg viewBox="0 0 120 80" aria-hidden="true"><circle cx="60" cy="40" r="26" fill="#C6D0C9"/><circle cx="60" cy="40" r="11" fill="#F5F8F4"/><circle cx="60" cy="40" r="26" fill="none" stroke="#8A968F" stroke-width="2"/></svg></div>
+        <div class="txt"><div class="std">DIN 125 · M4–M42</div><h3>Ring / Washer</h3><p>Plat, per, dan ring gigi.</p><div class="go">Lihat detail <span aria-hidden="true">→</span></div></div>
+      </a>
+      <a class="cat" href="produk.html#snap-ring">
+        <div class="pic"><svg viewBox="0 0 120 80" aria-hidden="true"><path d="M60 16 a24 24 0 1 1 -10 45" fill="none" stroke="#9BA8A0" stroke-width="9" stroke-linecap="round"/><circle cx="61" cy="16" r="5" fill="#C6D0C9"/><circle cx="49" cy="60" r="5" fill="#C6D0C9"/></svg></div>
+        <div class="txt"><div class="std">DIN 471 · 3–120 mm</div><h3>Snap Ring</h3><p>External, internal, E-clip.</p><div class="go">Lihat detail <span aria-hidden="true">→</span></div></div>
+      </a>
+      <a class="cat" href="produk.html#as-drat">
+        <div class="pic"><svg viewBox="0 0 120 80" aria-hidden="true"><rect x="14" y="34" width="92" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="18" y="34" width="2.5" height="12"/><rect x="26" y="34" width="2.5" height="12"/><rect x="34" y="34" width="2.5" height="12"/><rect x="42" y="34" width="2.5" height="12"/><rect x="50" y="34" width="2.5" height="12"/><rect x="58" y="34" width="2.5" height="12"/><rect x="66" y="34" width="2.5" height="12"/><rect x="74" y="34" width="2.5" height="12"/><rect x="82" y="34" width="2.5" height="12"/><rect x="90" y="34" width="2.5" height="12"/><rect x="98" y="34" width="2.5" height="12"/></g></svg></div>
+        <div class="txt"><div class="std">DIN 975 · M6–M36</div><h3>As Drat / Stud</h3><p>Batang ulir 1 meter.</p><div class="go">Lihat detail <span aria-hidden="true">→</span></div></div>
+      </a>
+      <a class="cat" href="produk.html#anchor-bolt">
+        <div class="pic"><svg viewBox="0 0 120 80" aria-hidden="true"><rect x="52" y="10" width="12" height="46" fill="#8A968F"/><path d="M52 56 L64 56 L70 70 L46 70 Z" fill="#C6D0C9"/><g fill="#68746E"><rect x="52" y="14" width="12" height="2.5"/><rect x="52" y="21" width="12" height="2.5"/><rect x="52" y="28" width="12" height="2.5"/><rect x="52" y="35" width="12" height="2.5"/></g></svg></div>
+        <div class="txt"><div class="std">ASTM F1554 · M12–M42</div><h3>Anchor Bolt</h3><p>J-bolt, L-bolt, angkur kimia.</p><div class="go">Lihat detail <span aria-hidden="true">→</span></div></div>
+      </a>
+      <a class="cat" href="#kontak">
+        <div class="pic"><svg viewBox="0 0 120 80" aria-hidden="true"><path d="M40 40 L56 24 L56 34 L88 34 L88 46 L56 46 L56 56 Z" fill="#8A968F"/><circle cx="30" cy="40" r="8" fill="none" stroke="#C6D0C9" stroke-width="3"/></svg></div>
+        <div class="txt"><div class="std">Custom · Indent</div><h3>Pesanan Khusus</h3><p>Ukuran &amp; material non-standar.</p><div class="go">Kirim spesifikasi <span aria-hidden="true">→</span></div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PENAWARAN ============ -->
+<section class="sec" id="kontak">
+  <div class="wrap">
+    <div class="qbox rv">
+      <div>
+        <p class="eyebrow">Penawaran</p>
+        <h2>Minta penawaran.</h2>
+        <p class="lede" style="margin-top:16px">Isi formulir ini, atau langsung chat WhatsApp kalau butuh cepat. Belum yakin spesifikasinya? Kirim gambar kerja atau foto barang lama — tim kami bantu identifikasi.</p>
+        <div class="contacts">
+          <div class="cc">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 5.5C3 4.7 3.7 4 4.5 4h3l1.6 4-2.1 1.5a13 13 0 0 0 6.5 6.5L15 13.9l4 1.6v3c0 .8-.7 1.5-1.5 1.5A15.5 15.5 0 0 1 3 5.5z"/></svg>
+            <div><strong><a href="tel:+62216500888">+62 21 6500 888</a></strong>Kantor Jakarta</div>
+          </div>
+          <div class="cc">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="m4 6 8 6 8-6"/></svg>
+            <div><strong><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></strong>Balas 1×24 jam kerja</div>
+          </div>
+          <div class="cc">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            <div><strong>Perkantoran Mega Sunter Blok B No. 32</strong>Jl. Danau Sunter Selatan, Jakarta 14350</div>
+          </div>
+        </div>
+      </div>
+
+      <form class="form" id="qform" novalidate>
+        <div class="r2">
+          <div class="f"><label for="t1">Nama</label><input id="t1" name="nama" autocomplete="name" placeholder="Nama lengkap" required></div>
+          <div class="f"><label for="t2">Perusahaan <span class="opt">(opsional)</span></label><input id="t2" name="perusahaan" autocomplete="organization" placeholder="PT / CV"></div>
+        </div>
+        <div class="r2">
+          <div class="f"><label for="t3">Email</label><input id="t3" name="email" type="email" autocomplete="email" placeholder="nama@perusahaan.co.id" required></div>
+          <div class="f"><label for="t4">Nomor WhatsApp</label><input id="t4" name="wa" type="tel" autocomplete="tel" placeholder="08xx xxxx xxxx" required></div>
+        </div>
+        <div class="f"><label for="t5">Kategori produk</label>
+          <select id="t5" name="kategori">
+            <option>Hex Bolt</option><option>Carriage Bolt</option><option>Mur &amp; Ring</option>
+            <option>As Drat / Stud</option><option>Anchor Bolt</option><option>Snap Ring</option><option>Lainnya</option>
+          </select>
+        </div>
+        <div class="f"><label for="t6">Spesifikasi &amp; jumlah</label><textarea id="t6" name="spesifikasi" rows="3" placeholder="Hex bolt M16 × 60, grade 8.8, HDG — 500 pcs" required></textarea></div>
+        <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap">
+          <button class="btn" type="submit">Kirim Permintaan</button>
+          <p class="formnote" role="status" id="qstatus">Dibalas dalam 1×24 jam kerja.</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fg">
+      <div>
+        <a class="logo" href="index.html">
+          <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+            <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+            <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/><rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+          </svg>
+          <b>Kairos<i>Baut</i></b>
+        </a>
+        <p style="margin-top:15px; max-width:32ch">PT Kairos Multi Sejahtera — distributor baut &amp; mur untuk industri Indonesia.</p>
+        <nav aria-label="Tautan halaman" style="margin-top:16px">
+          <a href="produk.html">Indeks produk</a>
+          <a href="blog.html">Blog</a>
+          <a href="#kontak">Minta penawaran</a>
+        </nav>
+      </div>
+      <div><h4>Kantor</h4><p>Perkantoran Mega Sunter Blok B No. 32<br>Jl. Danau Sunter Selatan<br>Jakarta 14350</p><p><a href="tel:+62216500888">+62 21 6500 888</a></p></div>
+      <div><h4>Workshop</h4><p>Kawasan Industri Jababeka 1 Blok C 17 A<br>Pasirgombong, Cikarang Utara<br>Bekasi 17530</p><p><a href="tel:+622189832622">+62 21 8983 2622</a></p></div>
+      <div><h4>Jam Kerja</h4><p>Senin – Jumat 08.00 – 17.00<br>Sabtu 08.00 – 12.00</p><p><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></p></div>
+    </div>
+    <div class="fb"><span>© 2026 PT Kairos Multi Sejahtera</span><span>Mockup v5 — revisi catatan</span></div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/6287784085400" aria-label="Chat WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+  </svg>
+  <b>Chat WhatsApp</b>
+</a>
+
+<script src="kairos.js"></script>
+<script>
+  /* ---- Angka menghitung naik ---- */
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function countUp(el) {
+    const to = +el.dataset.to;
+    const plus = el.querySelector('em') ? '<em>+</em>' : '';
+    if (reduceMotion) { el.innerHTML = to.toLocaleString('id-ID') + plus; return; }
+    const t0 = performance.now(), dur = 1300;
+    (function step(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      el.innerHTML = Math.round(to * (1 - Math.pow(1 - p, 3))).toLocaleString('id-ID') + plus;
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+  document.addEventListener('kairos:reveal', e => {
+    e.detail.querySelectorAll('[data-to]').forEach(countUp);
+  });
+
+  /* ---- Panel industri: hover di desktop, tap/klik di layar sentuh ---- */
+  document.querySelectorAll('.panel').forEach(p => {
+    p.addEventListener('click', () => {
+      const open = p.getAttribute('aria-expanded') === 'true';
+      p.closest('.panels').querySelectorAll('.panel').forEach(o => o.setAttribute('aria-expanded', 'false'));
+      p.setAttribute('aria-expanded', String(!open));
+    });
+  });
+
+  /* ---- Datang dari halaman produk? Isi dulu kategorinya ---- */
+  (function prefill() {
+    const id = new URLSearchParams(location.search).get('produk');
+    if (!id) return;
+    const map = {
+      'hex-bolt': 'Hex Bolt', 'carriage-bolt': 'Carriage Bolt', 'socket-cap': 'Lainnya',
+      'hex-nut': 'Mur & Ring', 'ring-washer': 'Mur & Ring', 'snap-ring': 'Snap Ring',
+      'as-drat': 'As Drat / Stud', 'anchor-bolt': 'Anchor Bolt', 'baut-struktur': 'Lainnya'
+    };
+    const sel = document.getElementById('t5');
+    const want = map[id];
+    if (!want) return;
+    [...sel.options].forEach(o => { if (o.text === want) sel.value = o.value || o.text; });
+  })();
+
+  /* ---- Formulir penawaran (mockup: tidak mengirim ke mana pun) ---- */
+  const qform = document.getElementById('qform');
+  qform.addEventListener('submit', e => {
+    e.preventDefault();
+    const status = document.getElementById('qstatus');
+    if (!qform.checkValidity()) {
+      status.textContent = 'Lengkapi dulu kolom yang wajib diisi.';
+      status.style.color = '#B4342A';
+      qform.querySelector(':invalid')?.focus();
+      return;
+    }
+    qform.querySelector('button[type=submit]').textContent = 'Terkirim ✓';
+    status.textContent = 'Permintaan diterima. Tim kami membalas dalam 1×24 jam kerja.';
+    status.style.color = 'var(--green-ink)';
+  });
+</script>
 </body>
 </html>

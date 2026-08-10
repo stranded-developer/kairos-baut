@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indeks Produk — Kairos Baut</title>
+<meta name="description" content="Indeks lengkap baut, mur, ring, as drat, dan angkur Kairos Baut — standar, ukuran, grade, material, dan status stok.">
+<link rel="stylesheet" href="kairos.css">
+<style>
+  /* ---------- Kepala halaman ---------- */
+  .phead { background: var(--off); border-bottom: 1px solid var(--line); padding-block: clamp(36px, 5vw, 66px) clamp(30px, 4vw, 46px); }
+  .phead .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
+  .crumbs { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; }
+  .crumbs a { text-decoration: none; }
+  .crumbs a:hover { color: var(--green-ink); }
+  .phead h1 { font-size: clamp(32px, 4.4vw, 56px); }
+  .phead .lede { margin-top: 16px; margin-bottom: 0; }
+  .pactions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar { position: sticky; top: 68px; z-index: 60; background: rgba(255,255,255,.94); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .toolbar-in { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-block: 14px; }
+  .tsearch {
+    display: flex; align-items: center; gap: 10px; flex: 1 1 300px; min-width: 0;
+    background: var(--white); border: 1px solid var(--line); border-radius: 999px; padding: 0 16px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .tsearch:focus-within { border-color: var(--green-btn); box-shadow: 0 0 0 4px var(--wash); }
+  .tsearch svg { flex: none; color: var(--muted); }
+  .tsearch input { flex: 1; min-width: 0; border: 0; background: none; font-family: inherit; font-size: 15px; color: var(--ink); padding: 12px 0; }
+  .tsearch input:focus { outline: none; }
+  .tsearch button { border: 0; background: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 4px; }
+  .tsearch button:hover { color: var(--ink); }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--body);
+    background: var(--white); border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 16px; cursor: pointer; transition: all .2s;
+  }
+  .chip:hover { border-color: var(--green); color: var(--green-ink); }
+  .chip[aria-pressed="true"] { background: var(--green-btn); border-color: var(--green-btn); color: #fff; }
+  .count { font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-left: auto; white-space: nowrap; }
+  @media (max-width: 700px) { .count { margin-left: 0; } .toolbar { position: static; } }
+
+  /* ---------- Tabel indeks ---------- */
+  .idxwrap { overflow-x: auto; }
+  table.idx { width: 100%; border-collapse: collapse; min-width: 880px; }
+  table.idx th {
+    text-align: left; font-family: var(--mono); font-weight: 400;
+    font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
+    padding: 0 16px 14px; border-bottom: 1px solid var(--line);
+  }
+  table.idx td { padding: 16px 14px; border-bottom: 1px solid var(--line-2); vertical-align: middle; font-size: 14.5px; color: var(--body); }
+  table.idx th:first-child, table.idx td:first-child { padding-left: 0; }
+  table.idx th:last-child, table.idx td:last-child { padding-right: 0; text-align: right; }
+  table.idx tbody tr { cursor: pointer; transition: background .18s; }
+  table.idx tbody tr:hover { background: var(--off); }
+  table.idx tbody tr:focus-within { background: var(--off); }
+  table.idx th:first-child, table.idx td:first-child { width: 24%; min-width: 236px; }
+  .pcell { display: flex; align-items: center; gap: 14px; }
+  .mini { flex: none; width: 54px; height: 38px; border-radius: 8px; background: var(--off); border: 1px solid var(--line-2); display: grid; place-items: center; }
+  .mini svg { width: 76%; height: auto; }
+  .pname { display: block; font-weight: 700; font-size: 15.5px; color: var(--ink); letter-spacing: -0.015em; }
+  .pdesc { display: block; font-size: 13px; color: var(--muted); }
+  td.m { font-family: var(--mono); font-size: 12.5px; letter-spacing: .04em; color: var(--body); white-space: nowrap; }
+  .stock { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .stock i { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: none; }
+  .stock.low i { background: #E0A008; }
+  .stock.ind i { background: #8B99A5; }
+  .rowlink { font-weight: 700; font-size: 13.5px; color: var(--green-ink); text-decoration: none; white-space: nowrap; }
+  .rowlink:hover { text-decoration: underline; }
+  .empty { padding: 60px 0; text-align: center; color: var(--muted); }
+  .empty b { display: block; color: var(--ink); font-size: 19px; margin-bottom: 8px; }
+
+  /* Baris jadi kartu di layar kecil */
+  @media (max-width: 720px) {
+    .idxwrap { overflow-x: visible; }
+    table.idx { min-width: 0; }
+    table.idx thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    table.idx tr { display: block; border: 1px solid var(--line); border-radius: var(--r); padding: 14px; margin-bottom: 12px; }
+    table.idx td { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border: 0; text-align: right; }
+    table.idx td::before { content: attr(data-l); font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); text-align: left; }
+    table.idx td:first-child { padding-top: 0; }
+    table.idx td:first-child::before { display: none; }
+    table.idx td:first-child .pcell { text-align: left; }
+    table.idx td:last-child { border-top: 1px solid var(--line-2); padding-top: 12px; margin-top: 6px; }
+  }
+
+  /* ---------- Dialog detail produk ---------- */
+  dialog.detail {
+    width: min(1060px, calc(100vw - 32px)); max-width: none; max-height: min(88vh, 900px);
+    padding: 0; border: 0; border-radius: clamp(14px, 2vw, 22px);
+    box-shadow: 0 30px 90px rgba(10,30,18,.3); color: var(--ink); overflow: hidden;
+  }
+  dialog.detail::backdrop { background: rgba(10,26,16,.58); }
+  .dwrap { display: grid; grid-template-columns: .95fr 1.05fr; max-height: min(88vh, 900px); }
+  @media (max-width: 880px) {
+    .dwrap { grid-template-columns: 1fr; overflow-y: auto; }
+    .dbody { overflow-y: visible; }
+    .dmedia { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+
+  .dmedia { background: var(--off); border-right: 1px solid var(--line); padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+  .dshot {
+    background: var(--white); border: 1px solid var(--line); border-radius: var(--r);
+    aspect-ratio: 4 / 3; display: grid; place-items: center; overflow: hidden;
+  }
+  .dshot svg { width: 82%; height: auto; }
+  .dthumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .dthumb {
+    background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sm);
+    aspect-ratio: 4 / 3; display: grid; place-items: center; cursor: pointer; padding: 6px;
+    transition: border-color .2s, transform .2s;
+  }
+  .dthumb svg { width: 84%; height: auto; }
+  .dthumb[aria-pressed="true"] { border-color: var(--green-btn); box-shadow: 0 0 0 3px var(--wash); }
+  .dcaption { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0; }
+
+  .dbody { padding: clamp(22px, 3vw, 34px); overflow-y: auto; }
+  .dtop { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+  .dclose {
+    flex: none; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--white); cursor: pointer; font-size: 18px; line-height: 1; color: var(--body);
+    transition: background .2s, color .2s, border-color .2s;
+  }
+  .dclose:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .dbody h2 { font-size: clamp(26px, 3vw, 36px); margin-top: 4px; }
+  .dstd { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--green-ink); }
+  .dbody > p { color: var(--body); font-size: 15.5px; margin-top: 14px; }
+
+  .dspec { display: grid; grid-template-columns: max-content 1fr; gap: 0 24px; margin: 22px 0 0; border-top: 1px solid var(--line); }
+  .dspec dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding: 13px 0 13px; border-bottom: 1px solid var(--line-2); }
+  .dspec dd { margin: 0; padding: 13px 0; font-size: 14.5px; color: var(--ink); border-bottom: 1px solid var(--line-2); }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+  .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--green-ink); background: var(--wash); border-radius: 999px; padding: 6px 12px; }
+  .dapps { margin: 20px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .dapps li { position: relative; padding-left: 22px; font-size: 14.5px; color: var(--body); }
+  .dapps li::before { content: ""; position: absolute; left: 0; top: 9px; width: 9px; height: 2px; background: var(--green); }
+  .dcta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+
+  /* ---------- Banner bantuan ---------- */
+  .helpbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 22px; flex-wrap: wrap;
+    background: var(--wash); border: 1px solid #CFE6D7; border-radius: var(--r);
+    padding: 24px 28px; margin-top: 34px;
+  }
+  .helpbar p { margin: 0; color: var(--body); font-size: 15px; }
+  .helpbar strong { display: block; color: var(--ink); font-size: 18px; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke konten</a>
+
+<header id="hdr">
+  <div class="bar">
+    <a class="logo" href="index.html" aria-label="Kairos Baut — beranda">
+      <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+        <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+        <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/>
+        <rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+      </svg>
+      <b>Kairos<i>Baut</i></b>
+    </a>
+    <nav class="main">
+      <a href="produk.html" aria-current="page">Produk</a>
+      <a href="index.html#industri">Industri</a>
+      <a href="blog.html">Blog</a>
+      <a href="index.html#tentang">Tentang Kami</a>
+      <a class="btn btn--sm" href="index.html#kontak">Minta Penawaran</a>
+    </nav>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mobnav">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+  <nav class="mobnav" id="mobnav" aria-label="Menu utama">
+    <a href="produk.html" aria-current="page">Produk</a>
+    <a href="index.html#industri">Industri</a>
+    <a href="blog.html">Blog</a>
+    <a href="index.html#tentang">Tentang Kami</a>
+    <a class="btn" href="index.html#kontak">Minta Penawaran</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="phead">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html">Beranda</a> / Katalog</p>
+    <div class="row">
+      <div>
+        <h1>Indeks produk.</h1>
+        <p class="lede">Sembilan lini produk, semuanya stok gudang sendiri. Klik satu baris untuk melihat rincian standar, material, finishing, dan penggunaannya.</p>
+      </div>
+      <div class="pactions">
+        <a class="btn btn--ghost" href="#" onclick="return false">Unduh katalog (PDF)</a>
+        <a class="btn" href="index.html#kontak">Minta Penawaran</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="toolbar">
+  <div class="wrap toolbar-in">
+    <div class="tsearch">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="q" aria-label="Cari di indeks produk" placeholder="Cari nama, standar, ukuran, atau material…">
+      <button type="button" id="qclear" aria-label="Bersihkan pencarian" hidden>×</button>
+    </div>
+    <div class="chips" role="group" aria-label="Filter kategori">
+      <button class="chip" data-f="all" aria-pressed="true">Semua</button>
+      <button class="chip" data-f="baut" aria-pressed="false">Baut</button>
+      <button class="chip" data-f="mur" aria-pressed="false">Mur &amp; Ring</button>
+      <button class="chip" data-f="batang" aria-pressed="false">Batang Ulir</button>
+      <button class="chip" data-f="angkur" aria-pressed="false">Angkur</button>
+    </div>
+    <p class="count" id="count" role="status">9 produk</p>
+  </div>
+</div>
+
+<section class="sec" style="padding-top:clamp(28px,3.5vw,44px)">
+  <div class="wrap">
+    <div class="idxwrap">
+      <table class="idx">
+        <thead>
+          <tr>
+            <th scope="col">Produk</th>
+            <th scope="col">Standar</th>
+            <th scope="col">Ukuran</th>
+            <th scope="col">Grade</th>
+            <th scope="col">Material</th>
+            <th scope="col">Stok</th>
+            <th scope="col"><span class="sr">Aksi</span></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty" hidden>
+      <b>Tidak ada yang cocok.</b>
+      <p>Coba kata kunci lain, atau kirim spesifikasinya — kami sering punya barang yang belum masuk daftar.</p>
+      <a class="btn" href="index.html#kontak" style="margin-top:10px">Kirim Spesifikasi</a>
+    </div>
+
+    <div class="helpbar">
+      <p><strong>Tidak menemukan ukurannya?</strong>Kirim gambar kerja atau foto barang lama — tim kami bantu identifikasi standar dan grade-nya.</p>
+      <a class="btn" href="index.html#kontak">Minta Penawaran</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<dialog class="detail" id="detail" aria-labelledby="dtitle">
+  <div class="dwrap">
+    <div class="dmedia">
+      <div class="dshot" id="dshot"></div>
+      <div class="dthumbs" id="dthumbs"></div>
+      <p class="dcaption" id="dcaption">Ilustrasi — foto produk menyusul</p>
+    </div>
+    <div class="dbody">
+      <div class="dtop">
+        <div>
+          <div class="dstd" id="dstd"></div>
+          <h2 id="dtitle"></h2>
+        </div>
+        <button class="dclose" id="dclose" type="button" aria-label="Tutup">×</button>
+      </div>
+      <p id="ddesc"></p>
+      <dl class="dspec" id="dspec"></dl>
+      <div class="tags" id="dtags"></div>
+      <h3 style="margin-top:26px">Dipakai untuk</h3>
+      <ul class="dapps" id="dapps"></ul>
+      <div class="dcta">
+        <a class="btn" id="dquote" href="index.html#kontak">Minta Penawaran</a>
+        <a class="btn btn--ghost" id="dwa" href="https://wa.me/6287784085400">Tanya via WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<footer>
+  <div class="wrap">
+    <div class="fg">
+      <div>
+        <a class="logo" href="index.html">
+          <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+            <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+            <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/><rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+          </svg>
+          <b>Kairos<i>Baut</i></b>
+        </a>
+        <p style="margin-top:15px; max-width:32ch">PT Kairos Multi Sejahtera — distributor baut &amp; mur untuk industri Indonesia.</p>
+        <nav aria-label="Tautan halaman" style="margin-top:16px">
+          <a href="index.html">Beranda</a>
+          <a href="blog.html">Blog</a>
+          <a href="index.html#kontak">Minta penawaran</a>
+        </nav>
+      </div>
+      <div><h4>Kantor</h4><p>Perkantoran Mega Sunter Blok B No. 32<br>Jl. Danau Sunter Selatan<br>Jakarta 14350</p><p><a href="tel:+62216500888">+62 21 6500 888</a></p></div>
+      <div><h4>Workshop</h4><p>Kawasan Industri Jababeka 1 Blok C 17 A<br>Pasirgombong, Cikarang Utara<br>Bekasi 17530</p><p><a href="tel:+622189832622">+62 21 8983 2622</a></p></div>
+      <div><h4>Jam Kerja</h4><p>Senin – Jumat 08.00 – 17.00<br>Sabtu 08.00 – 12.00</p><p><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></p></div>
+    </div>
+    <div class="fb"><span>© 2026 PT Kairos Multi Sejahtera</span><span>Mockup v5 — revisi catatan</span></div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/6287784085400" aria-label="Chat WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+  </svg>
+  <b>Chat WhatsApp</b>
+</a>
+
+<script src="kairos.js"></script>
+<script>
+/* ==========================================================================
+   Data produk — satu sumber untuk tabel dan panel detail.
+   ========================================================================== */
+const ART = {
+  hex:      '<path d="M18 26 L30 20 L42 26 L42 54 L30 60 L18 54 Z" fill="#9BA8A0"/><path d="M18 26 L30 32 L42 26 L30 20 Z" fill="#C6D0C9"/><rect x="42" y="34" width="58" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="48" y="34" width="2.5" height="12"/><rect x="56" y="34" width="2.5" height="12"/><rect x="64" y="34" width="2.5" height="12"/><rect x="72" y="34" width="2.5" height="12"/><rect x="80" y="34" width="2.5" height="12"/><rect x="88" y="34" width="2.5" height="12"/></g>',
+  carriage: '<ellipse cx="34" cy="40" rx="17" ry="19" fill="#C6D0C9"/><ellipse cx="34" cy="40" rx="10" ry="11" fill="#9BA8A0"/><rect x="46" y="34" width="54" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="52" y="34" width="2.5" height="12"/><rect x="60" y="34" width="2.5" height="12"/><rect x="68" y="34" width="2.5" height="12"/><rect x="76" y="34" width="2.5" height="12"/><rect x="84" y="34" width="2.5" height="12"/></g>',
+  socket:   '<rect x="18" y="22" width="26" height="36" rx="3" fill="#C6D0C9"/><path d="M25 32 L37 32 L40 40 L37 48 L25 48 L22 40 Z" fill="#8A968F"/><rect x="44" y="34" width="56" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="50" y="34" width="2.5" height="12"/><rect x="58" y="34" width="2.5" height="12"/><rect x="66" y="34" width="2.5" height="12"/><rect x="74" y="34" width="2.5" height="12"/><rect x="82" y="34" width="2.5" height="12"/><rect x="90" y="34" width="2.5" height="12"/></g>',
+  nut:      '<path d="M60 14 L84 27 L84 53 L60 66 L36 53 L36 27 Z" fill="#C6D0C9"/><circle cx="60" cy="40" r="15" fill="#F5F8F4"/><circle cx="60" cy="40" r="15" fill="none" stroke="#8A968F" stroke-width="2"/>',
+  ring:     '<circle cx="60" cy="40" r="26" fill="#C6D0C9"/><circle cx="60" cy="40" r="11" fill="#F5F8F4"/><circle cx="60" cy="40" r="26" fill="none" stroke="#8A968F" stroke-width="2"/>',
+  snap:     '<path d="M60 16 a24 24 0 1 1 -10 45" fill="none" stroke="#9BA8A0" stroke-width="9" stroke-linecap="round"/><circle cx="61" cy="16" r="5" fill="#C6D0C9"/><circle cx="49" cy="60" r="5" fill="#C6D0C9"/>',
+  stud:     '<rect x="14" y="34" width="92" height="12" fill="#8A968F"/><g fill="#68746E"><rect x="18" y="34" width="2.5" height="12"/><rect x="26" y="34" width="2.5" height="12"/><rect x="34" y="34" width="2.5" height="12"/><rect x="42" y="34" width="2.5" height="12"/><rect x="50" y="34" width="2.5" height="12"/><rect x="58" y="34" width="2.5" height="12"/><rect x="66" y="34" width="2.5" height="12"/><rect x="74" y="34" width="2.5" height="12"/><rect x="82" y="34" width="2.5" height="12"/><rect x="90" y="34" width="2.5" height="12"/><rect x="98" y="34" width="2.5" height="12"/></g>',
+  anchor:   '<rect x="52" y="10" width="12" height="46" fill="#8A968F"/><path d="M52 56 L64 56 L70 70 L46 70 Z" fill="#C6D0C9"/><g fill="#68746E"><rect x="52" y="14" width="12" height="2.5"/><rect x="52" y="21" width="12" height="2.5"/><rect x="52" y="28" width="12" height="2.5"/><rect x="52" y="35" width="12" height="2.5"/></g>',
+  struktur: '<path d="M14 26 L26 20 L38 26 L38 54 L26 60 L14 54 Z" fill="#9BA8A0"/><path d="M14 26 L26 32 L38 26 L26 20 Z" fill="#C6D0C9"/><rect x="38" y="34" width="46" height="12" fill="#8A968F"/><path d="M84 30 L98 40 L84 50 Z" fill="#C6D0C9"/><g fill="#68746E"><rect x="44" y="34" width="2.5" height="12"/><rect x="52" y="34" width="2.5" height="12"/><rect x="60" y="34" width="2.5" height="12"/><rect x="68" y="34" width="2.5" height="12"/></g>'
+};
+
+const PRODUCTS = [
+  {
+    id: 'hex-bolt', cat: 'baut', art: 'hex',
+    name: 'Hex Bolt', sub: 'Baut kepala segi enam',
+    std: 'DIN 933 / 931', size: 'M4 – M48', grade: '4.8 · 8.8 · 10.9 · 12.9',
+    mat: 'Carbon · SS304 · SS316', stock: 'ready',
+    desc: 'Baut serbaguna paling banyak dipakai di lantai produksi. DIN 933 berulir penuh, DIN 931 berulir sebagian untuk sambungan yang menahan geser. Tersedia dalam empat kelas kekuatan dan tiga jenis material, semuanya kami stok di gudang Jakarta.',
+    spec: {
+      'Standar': 'DIN 933 (ulir penuh) · DIN 931 (ulir sebagian) · ISO 4017 / 4014',
+      'Diameter': 'M4 sampai M48',
+      'Panjang': '8 mm – 300 mm',
+      'Kelas kekuatan': '4.8 · 8.8 · 10.9 · 12.9',
+      'Material': 'Baja karbon, SS304, SS316',
+      'Kemasan': 'Karton 25 kg atau per pcs untuk ukuran besar',
+      'Lead time': 'Stok — kirim di hari yang sama'
+    },
+    finish: ['Black oxide', 'Zinc plating', 'HDG', 'Dacromet'],
+    apps: ['Perakitan rangka mesin dan konveyor', 'Sambungan flange perpipaan', 'Mounting panel dan struktur ringan']
+  },
+  {
+    id: 'carriage-bolt', cat: 'baut', art: 'carriage',
+    name: 'Carriage Bolt', sub: 'Kepala bulat, leher persegi',
+    std: 'DIN 603', size: 'M6 – M20', grade: '4.8 · 8.8',
+    mat: 'Carbon · SS304', stock: 'ready',
+    desc: 'Leher persegi di bawah kepala mengunci baut pada lubang, sehingga cukup satu kunci di sisi mur. Kepala bulat rata dipakai kalau permukaan tidak boleh menonjol atau tidak boleh melukai.',
+    spec: {
+      'Standar': 'DIN 603 · ISO 8677',
+      'Diameter': 'M6 sampai M20',
+      'Panjang': '20 mm – 200 mm',
+      'Kelas kekuatan': '4.8 · 8.8',
+      'Material': 'Baja karbon, SS304',
+      'Kemasan': 'Karton 25 kg',
+      'Lead time': 'Stok — kirim di hari yang sama'
+    },
+    finish: ['Zinc plating', 'HDG', 'Stainless'],
+    apps: ['Sambungan kayu dengan pelat baja', 'Bodi truk dan bak kendaraan', 'Pagar, guardrail, dan struktur luar ruang']
+  },
+  {
+    id: 'socket-cap', cat: 'baut', art: 'socket',
+    name: 'Socket Head Cap', sub: 'Baut L / inbus',
+    std: 'DIN 912', size: 'M3 – M24', grade: '8.8 · 12.9',
+    mat: 'Carbon · SS304', stock: 'ready',
+    desc: 'Kepala silinder dengan lubang hex, dipakai kalau ruang kunci terbatas atau kepala baut harus tenggelam di dalam counterbore. Grade 12.9 untuk beban tinggi pada jig, mold, dan mesin presisi.',
+    spec: {
+      'Standar': 'DIN 912 · ISO 4762',
+      'Diameter': 'M3 sampai M24',
+      'Panjang': '6 mm – 150 mm',
+      'Kelas kekuatan': '8.8 · 12.9',
+      'Material': 'Baja karbon alloy, SS304',
+      'Kemasan': 'Box 100 / 200 pcs',
+      'Lead time': 'Stok — kirim di hari yang sama'
+    },
+    finish: ['Black oxide', 'Zinc plating', 'Stainless'],
+    apps: ['Jig, fixture, dan mold', 'Mesin presisi dan robot', 'Sambungan yang harus rata permukaan']
+  },
+  {
+    id: 'hex-nut', cat: 'mur', art: 'nut',
+    name: 'Hex Nut & Mur', sub: 'Mur biasa, nylock, flange',
+    std: 'DIN 934 / 985', size: 'M4 – M48', grade: 'Class 6 · 8 · 10',
+    mat: 'Carbon · SS304 · SS316', stock: 'ready',
+    desc: 'Mur segi enam standar (DIN 934), mur nylock dengan cincin nilon anti-kendur (DIN 985), dan mur flange yang sekaligus berfungsi sebagai ring. Kelas mur selalu kami samakan atau naikkan terhadap grade bautnya.',
+    spec: {
+      'Standar': 'DIN 934 · DIN 985 (nylock) · DIN 6923 (flange)',
+      'Diameter': 'M4 sampai M48',
+      'Kelas': 'Class 6 · 8 · 10',
+      'Material': 'Baja karbon, SS304, SS316',
+      'Kemasan': 'Karton 25 kg',
+      'Lead time': 'Stok — kirim di hari yang sama'
+    },
+    finish: ['Zinc plating', 'HDG', 'Black', 'Stainless'],
+    apps: ['Pasangan seluruh lini baut', 'Sambungan bergetar (nylock)', 'Perakitan cepat tanpa ring (flange)']
+  },
+  {
+    id: 'ring-washer', cat: 'mur', art: 'ring',
+    name: 'Ring / Washer', sub: 'Plat, per, dan ring gigi',
+    std: 'DIN 125 / 127', size: 'M4 – M42', grade: 'SS304 · SS316 · HDG',
+    mat: 'Carbon · Stainless', stock: 'ready',
+    desc: 'Ring plat membagi beban pada permukaan lunak, ring per menahan kendur akibat getaran, ring gigi menggigit permukaan untuk sambungan yang perlu kontinuitas listrik. Ukuran mengikuti diameter baut, bukan lubangnya.',
+    spec: {
+      'Standar': 'DIN 125 (plat) · DIN 127 (per) · DIN 6798 (gigi)',
+      'Diameter': 'M4 sampai M42',
+      'Tebal': '0,8 mm – 5 mm',
+      'Material': 'Baja karbon, SS304, SS316',
+      'Kemasan': 'Karton 25 kg',
+      'Lead time': 'Stok — kirim di hari yang sama'
+    },
+    finish: ['Zinc plating', 'HDG', 'Stainless'],
+    apps: ['Distribusi beban pada pelat tipis', 'Sambungan bergetar', 'Grounding panel listrik']
+  },
+  {
+    id: 'snap-ring', cat: 'mur', art: 'snap',
+    name: 'Snap Ring', sub: 'External, internal, E-clip',
+    std: 'DIN 471 / 472', size: '3 – 120 mm', grade: 'Carbon · SS',
+    mat: 'Spring steel · SS', stock: 'low',
+    desc: 'Cincin pengunci yang menahan komponen pada poros (DIN 471) atau di dalam lubang (DIN 472). Dipasang dengan tang snap ring, tanpa ulir. Ukuran mengikuti diameter poros atau lubang, bukan diameter cincinnya.',
+    spec: {
+      'Standar': 'DIN 471 (external) · DIN 472 (internal) · DIN 6799 (E-clip)',
+      'Ukuran': '3 mm – 120 mm',
+      'Material': 'Spring steel, stainless',
+      'Kemasan': 'Box 100 pcs',
+      'Lead time': 'Sebagian ukuran indent 5 – 10 hari kerja'
+    },
+    finish: ['Phosphate', 'Zinc plating', 'Stainless'],
+    apps: ['Penahan bearing pada poros', 'Gearbox dan transmisi', 'Perawatan mesin produksi']
+  },
+  {
+    id: 'as-drat', cat: 'batang', art: 'stud',
+    name: 'As Drat / Stud', sub: 'Batang ulir 1 meter',
+    std: 'DIN 975', size: 'M6 – M36', grade: '4.8 · 8.8 · SS304',
+    mat: 'Carbon · SS304', stock: 'ready',
+    desc: 'Batang berulir penuh sepanjang 1 meter, dipotong sesuai kebutuhan di lokasi. Dipakai untuk gantungan instalasi, sambungan panjang non-standar, dan pekerjaan yang panjang bautnya baru ketahuan saat pemasangan.',
+    spec: {
+      'Standar': 'DIN 975 · DIN 976',
+      'Diameter': 'M6 sampai M36',
+      'Panjang': '1 meter per batang (3 m atas permintaan)',
+      'Kelas kekuatan': '4.8 · 8.8 · SS304',
+      'Material': 'Baja karbon, SS304',
+      'Kemasan': 'Ikat 10 batang',
+      'Lead time': 'Stok — kirim di hari yang sama'
+    },
+    finish: ['Zinc plating', 'HDG', 'Stainless'],
+    apps: ['Gantungan pipa, ducting, dan tray kabel', 'Sambungan panjang non-standar', 'Angkur pendukung sementara']
+  },
+  {
+    id: 'anchor-bolt', cat: 'angkur', art: 'anchor',
+    name: 'Anchor Bolt', sub: 'J-bolt, L-bolt, angkur kimia',
+    std: 'ASTM F1554', size: 'M12 – M42', grade: 'Gr. 36 · 55 · 105',
+    mat: 'Carbon · HDG', stock: 'ready',
+    desc: 'Angkur cor untuk base plate kolom, mesin, dan tower. Bentuk J dan L untuk pengecoran baru; angkur kimia dan mechanical anchor untuk beton yang sudah jadi. Panjang dan bengkokan bisa dibuat sesuai gambar kerja.',
+    spec: {
+      'Standar': 'ASTM F1554 · custom sesuai gambar',
+      'Diameter': 'M12 sampai M42',
+      'Panjang': '200 mm – 1.500 mm',
+      'Grade': 'Gr. 36 · Gr. 55 · Gr. 105',
+      'Material': 'Baja karbon, HDG',
+      'Kelengkapan': 'Termasuk mur dan ring pasangan',
+      'Lead time': 'Stok ukuran umum · custom 7 – 14 hari kerja'
+    },
+    finish: ['Black', 'HDG', 'Zinc plating'],
+    apps: ['Base plate kolom baja', 'Dudukan mesin dan genset', 'Tower transmisi dan tiang penerangan']
+  },
+  {
+    id: 'baut-struktur', cat: 'baut', art: 'struktur',
+    name: 'Baut Struktur', sub: 'Untuk sambungan baja berat',
+    std: 'ASTM A325 / A490', size: 'M16 – M36', grade: 'Type 1 · Type 3',
+    mat: 'Carbon · Weathering', stock: 'indent',
+    desc: 'Baut mutu tinggi untuk sambungan struktur baja yang bekerja dengan gaya jepit, bukan sekadar geser. Dikirim satu set dengan mur dan ring dari lot yang sama, disertai mill certificate — persyaratan wajib untuk proyek gedung dan jembatan.',
+    spec: {
+      'Standar': 'ASTM A325 · ASTM A490 · JIS B1186 (TC bolt)',
+      'Diameter': 'M16 sampai M36',
+      'Panjang': '40 mm – 260 mm',
+      'Tipe': 'Type 1 (carbon) · Type 3 (weathering steel)',
+      'Kelengkapan': 'Set baut + mur + 2 ring, satu lot',
+      'Sertifikat': 'Mill certificate dan hasil uji tarik per lot',
+      'Lead time': 'Indent 10 – 21 hari kerja'
+    },
+    finish: ['Black', 'HDG', 'Weathering'],
+    apps: ['Sambungan balok–kolom gedung baja', 'Jembatan dan struktur berat', 'Rangka atap bentang lebar']
+  }
+];
+
+const STOCK = {
+  ready: { cls: '', label: 'Ready' },
+  low:   { cls: 'low', label: 'Terbatas' },
+  indent:{ cls: 'ind', label: 'Indent' }
+};
+
+/* ==========================================================================
+   Tabel indeks
+   ========================================================================== */
+const rowsEl = document.getElementById('rows');
+const emptyEl = document.getElementById('empty');
+const countEl = document.getElementById('count');
+const qEl = document.getElementById('q');
+const qClear = document.getElementById('qclear');
+let filter = 'all';
+
+function svg(art) {
+  return '<svg viewBox="0 0 120 80" aria-hidden="true">' + ART[art] + '</svg>';
+}
+
+function render() {
+  const term = qEl.value.trim().toLowerCase();
+  const list = PRODUCTS.filter(p => {
+    if (filter !== 'all' && p.cat !== filter) return false;
+    if (!term) return true;
+    return [p.name, p.sub, p.std, p.size, p.grade, p.mat, p.desc].join(' ').toLowerCase().includes(term);
+  });
+
+  rowsEl.innerHTML = list.map(p => {
+    const s = STOCK[p.stock];
+    return '<tr data-id="' + p.id + '">' +
+      '<td><span class="pcell"><span class="mini">' + svg(p.art) + '</span>' +
+        '<span><span class="pname">' + p.name + '</span><span class="pdesc">' + p.sub + '</span></span></span></td>' +
+      '<td class="m" data-l="Standar">' + p.std + '</td>' +
+      '<td class="m" data-l="Ukuran">' + p.size + '</td>' +
+      '<td class="m" data-l="Grade">' + p.grade + '</td>' +
+      '<td class="m" data-l="Material">' + p.mat + '</td>' +
+      '<td data-l="Stok"><span class="stock ' + s.cls + '"><i aria-hidden="true"></i>' + s.label + '</span></td>' +
+      '<td data-l=""><a class="rowlink" href="#' + p.id + '">Detail →</a></td>' +
+    '</tr>';
+  }).join('');
+
+  emptyEl.hidden = list.length > 0;
+  countEl.textContent = list.length + ' produk' + (term || filter !== 'all' ? ' ditampilkan' : '');
+  qClear.hidden = !qEl.value;
+}
+
+qEl.addEventListener('input', render);
+qClear.addEventListener('click', () => { qEl.value = ''; render(); qEl.focus(); });
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    filter = chip.dataset.f;
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === chip)));
+    render();
+  });
+});
+
+/* Klik di mana saja pada baris membuka detail — bukan hanya tautan "Detail".
+   Keyboard tetap lewat tautan "Detail" di tiap baris (Enter memicu klik ini). */
+rowsEl.addEventListener('click', e => {
+  const tr = e.target.closest('tr');
+  if (tr) { e.preventDefault(); open(tr.dataset.id); }
+});
+
+/* ==========================================================================
+   Panel detail produk
+   ========================================================================== */
+const dlg = document.getElementById('detail');
+const dshot = document.getElementById('dshot');
+const dthumbs = document.getElementById('dthumbs');
+const dcaption = document.getElementById('dcaption');
+let lastFocus = null;
+
+/* Tiga "foto": produk, gambar teknis, dan kemasan — pengganti foto asli */
+function view(p, kind) {
+  if (kind === 'teknis') {
+    return '<svg viewBox="0 0 120 80" aria-hidden="true">' +
+      '<g opacity=".85">' + ART[p.art] + '</g>' +
+      '<g stroke="#146B33" stroke-width=".8" fill="none">' +
+      '<path d="M14 70 L106 70"/><path d="M14 66 L14 74"/><path d="M106 66 L106 74"/>' +
+      '<path d="M110 20 L110 60"/><path d="M106 20 L114 20"/><path d="M106 60 L114 60"/></g>' +
+      '<text x="60" y="78" text-anchor="middle" font-family="ui-monospace, monospace" font-size="5" fill="#146B33">' + p.size + '</text>' +
+      '<text x="112" y="16" text-anchor="middle" font-family="ui-monospace, monospace" font-size="5" fill="#146B33">' + p.std.split(' ')[0] + '</text>' +
+      '</svg>';
+  }
+  if (kind === 'kemasan') {
+    return '<svg viewBox="0 0 120 80" aria-hidden="true">' +
+      '<path d="M22 30 L60 18 L98 30 L98 64 L60 76 L22 64 Z" fill="#E2E8E1"/>' +
+      '<path d="M22 30 L60 42 L98 30" fill="none" stroke="#B8C3BC" stroke-width="1.5"/>' +
+      '<path d="M60 42 L60 76" fill="none" stroke="#B8C3BC" stroke-width="1.5"/>' +
+      '<rect x="32" y="46" width="22" height="14" rx="2" fill="#fff" stroke="#B8C3BC" stroke-width="1"/>' +
+      '<g stroke="#8A968F" stroke-width="1.4"><path d="M35 50 L51 50"/><path d="M35 54 L47 54"/></g>' +
+      '<g transform="translate(52 -6) scale(.42)" opacity=".9">' + ART[p.art] + '</g>' +
+      '</svg>';
+  }
+  return '<svg viewBox="0 0 120 80" aria-hidden="true">' + ART[p.art] + '</svg>';
+}
+
+const VIEWS = [
+  { k: 'produk',  c: 'Tampak produk' },
+  { k: 'teknis',  c: 'Gambar teknis — ukuran & standar' },
+  { k: 'kemasan', c: 'Kemasan pengiriman' }
+];
+
+function open(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('dstd').textContent = p.std + ' · ' + p.mat;
+  document.getElementById('dtitle').textContent = p.name;
+  document.getElementById('ddesc').textContent = p.desc;
+
+  document.getElementById('dspec').innerHTML = Object.entries(p.spec)
+    .map(([k, v]) => '<dt>' + k + '</dt><dd>' + v + '</dd>').join('');
+  document.getElementById('dtags').innerHTML = p.finish
+    .map(f => '<span class="tag">' + f + '</span>').join('');
+  document.getElementById('dapps').innerHTML = p.apps
+    .map(a => '<li>' + a + '</li>').join('');
+
+  document.getElementById('dquote').href = 'index.html?produk=' + p.id + '#kontak';
+  document.getElementById('dwa').href = 'https://wa.me/6287784085400?text=' +
+    encodeURIComponent('Halo Kairos Baut, saya mau tanya soal ' + p.name + ' (' + p.std + ').');
+
+  dshot.innerHTML = view(p, 'produk');
+  dcaption.textContent = VIEWS[0].c;
+  dthumbs.innerHTML = VIEWS.map((v, i) =>
+    '<button class="dthumb" type="button" data-k="' + v.k + '" aria-label="' + v.c + '" aria-pressed="' + (i === 0) + '">' + view(p, v.k) + '</button>'
+  ).join('');
+  dthumbs.querySelectorAll('.dthumb').forEach(btn => {
+    btn.addEventListener('click', () => {
+      dthumbs.querySelectorAll('.dthumb').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      dshot.innerHTML = view(p, btn.dataset.k);
+      dcaption.textContent = VIEWS.find(v => v.k === btn.dataset.k).c;
+    });
+  });
+
+  lastFocus = document.activeElement;
+  history.replaceState(null, '', '#' + p.id);
+  dlg.showModal();
+  document.getElementById('dclose').focus();
+}
+
+function close() {
+  if (dlg.open) dlg.close();
+}
+
+document.getElementById('dclose').addEventListener('click', close);
+dlg.addEventListener('close', () => {
+  history.replaceState(null, '', location.pathname + location.search);
+  if (lastFocus) lastFocus.focus();
+});
+/* Klik pada backdrop menutup panel */
+dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
+
+/* ==========================================================================
+   Keadaan awal — dari ?q= / ?f= / #id yang dikirim halaman lain
+   ========================================================================== */
+(function init() {
+  const params = new URLSearchParams(location.search);
+  const q = params.get('q');
+  const f = params.get('f');
+  if (q) qEl.value = q;
+  if (f && document.querySelector('.chip[data-f="' + f + '"]')) {
+    filter = f;
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.f === f)));
+  }
+  render();
+
+  const id = location.hash.slice(1);
+  if (id && PRODUCTS.some(p => p.id === id)) open(id);
+})();
+</script>
+</body>
+</html>

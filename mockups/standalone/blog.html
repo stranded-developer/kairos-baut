@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog — Catatan Teknis Kairos Baut</title>
+<meta name="description" content="Catatan teknis Kairos Baut: standar, material, finishing, dan cara memilih fastener yang tepat.">
+<link rel="stylesheet" href="kairos.css">
+<style>
+  .phead { background: var(--off); border-bottom: 1px solid var(--line); padding-block: clamp(36px, 5vw, 66px) clamp(30px, 4vw, 46px); }
+  .crumbs { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; }
+  .crumbs a { text-decoration: none; }
+  .crumbs a:hover { color: var(--green-ink); }
+  .phead h1 { font-size: clamp(32px, 4.4vw, 56px); }
+  .phead .lede { margin-top: 16px; margin-bottom: 0; }
+
+  /* Artikel utama */
+  .feature {
+    display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(24px, 4vw, 52px); align-items: center;
+    background: var(--white); border: 1px solid var(--line); border-radius: var(--r);
+    overflow: hidden; text-decoration: none; color: inherit;
+    transition: box-shadow .3s, transform .3s var(--ease);
+  }
+  .feature:hover { box-shadow: var(--shadow-lift); transform: translateY(-4px); }
+  .feature .art { background: linear-gradient(160deg, var(--wash), var(--off)); aspect-ratio: 16/10; display: grid; place-items: center; }
+  .feature .art svg { width: 44%; color: var(--green-ink); }
+  .feature .txt { padding: clamp(22px, 3vw, 40px) clamp(22px, 3vw, 44px) clamp(22px, 3vw, 40px) 0; }
+  @media (max-width: 860px) { .feature { grid-template-columns: 1fr; } .feature .txt { padding: 24px; } }
+  .meta { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; gap: 14px; }
+  .meta s { text-decoration: none; color: var(--green-ink); }
+  .feature h2 { font-size: clamp(24px, 2.6vw, 34px); margin: 14px 0 12px; }
+  .feature p { color: var(--body); font-size: 15.5px; margin: 0; }
+
+  /* Daftar artikel */
+  .posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 22px; }
+  @media (max-width: 980px) { .posts { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px) { .posts { grid-template-columns: 1fr; } }
+  .post {
+    display: flex; flex-direction: column; background: var(--white);
+    border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+    text-decoration: none; color: inherit; transition: box-shadow .3s, transform .3s var(--ease);
+  }
+  .post:hover { box-shadow: var(--shadow-lift); transform: translateY(-4px); }
+  .post .art { background: linear-gradient(160deg, var(--wash), var(--off)); aspect-ratio: 16/9; display: grid; place-items: center; border-bottom: 1px solid var(--line-2); }
+  .post .art svg { width: 34%; color: var(--green-ink); }
+  .post .txt { padding: 20px 20px 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .post h3 { font-size: 17.5px; line-height: 1.3; }
+  .post p { font-size: 14px; color: var(--muted); margin: 0; }
+  .post .go { margin-top: auto; padding-top: 12px; font-size: 13.5px; font-weight: 700; color: var(--green-ink); }
+
+  .topics { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 26px; }
+  .topic { font-size: 13.5px; font-weight: 600; color: var(--body); background: var(--white); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; text-decoration: none; }
+  .topic:hover { border-color: var(--green); color: var(--green-ink); }
+  .topic[aria-current="true"] { background: var(--green-btn); border-color: var(--green-btn); color: #fff; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Lompat ke konten</a>
+
+<header id="hdr">
+  <div class="bar">
+    <a class="logo" href="index.html" aria-label="Kairos Baut — beranda">
+      <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+        <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+        <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/>
+        <rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+      </svg>
+      <b>Kairos<i>Baut</i></b>
+    </a>
+    <nav class="main">
+      <a href="produk.html">Produk</a>
+      <a href="index.html#industri">Industri</a>
+      <a href="blog.html" aria-current="page">Blog</a>
+      <a href="index.html#tentang">Tentang Kami</a>
+      <a class="btn btn--sm" href="index.html#kontak">Minta Penawaran</a>
+    </nav>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mobnav">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+  <nav class="mobnav" id="mobnav" aria-label="Menu utama">
+    <a href="produk.html">Produk</a>
+    <a href="index.html#industri">Industri</a>
+    <a href="blog.html" aria-current="page">Blog</a>
+    <a href="index.html#tentang">Tentang Kami</a>
+    <a class="btn" href="index.html#kontak">Minta Penawaran</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="phead">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html">Beranda</a> / Blog</p>
+    <h1>Catatan teknis.</h1>
+    <p class="lede">Standar, material, dan finishing — ditulis oleh tim yang tiap hari menjawab pertanyaan yang sama di telepon. Dipindahkan ke halaman ini supaya beranda tetap fokus pada produk.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="topics">
+      <a class="topic" href="#" aria-current="true">Semua</a>
+      <a class="topic" href="#">Standar</a>
+      <a class="topic" href="#">Material</a>
+      <a class="topic" href="#">Komponen</a>
+      <a class="topic" href="#">Pemasangan</a>
+    </div>
+
+    <a class="feature rv" href="#">
+      <div class="art">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><path d="M12 8v7"/><path d="M9.5 10.5 12 8l2.5 2.5"/></svg>
+      </div>
+      <div class="txt">
+        <div class="meta"><span>02 Agu 2023</span><s>Standar</s><span>6 menit baca</span></div>
+        <h2>Membaca grade baut 8.8, 10.9, dan 12.9</h2>
+        <p>Angka di kepala baut bukan nomor seri. Yang pertama menunjukkan kuat tarik, yang kedua rasio kuat luluhnya — dan salah membacanya adalah cara paling umum sebuah sambungan gagal sebelum waktunya.</p>
+        <div class="go" style="margin-top:16px"><span class="textlink">Baca selengkapnya <span aria-hidden="true">→</span></span></div>
+      </div>
+    </a>
+
+    <div class="posts rv">
+      <a class="post" href="#">
+        <div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M12 3a9 9 0 1 1-4 17" stroke-linecap="round"/><circle cx="12" cy="3" r="1.6" fill="currentColor" stroke="none"/><circle cx="8" cy="20" r="1.6" fill="currentColor" stroke="none"/></svg></div>
+        <div class="txt">
+          <div class="meta"><span>22 Sep 2022</span><s>Komponen</s></div>
+          <h3>Apa itu snap ring? Ini beberapa jenisnya</h3>
+          <p>External, internal, dan E-clip — beda tempat pasang, beda cara ukur.</p>
+          <div class="go">Baca →</div>
+        </div>
+      </a>
+      <a class="post" href="#">
+        <div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M3 10h18v4H3z"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4"/></svg></div>
+        <div class="txt">
+          <div class="meta"><span>08 Mar 2023</span><s>Material</s></div>
+          <h3>As drat stainless steel: keunggulan dan kekurangan</h3>
+          <p>Tahan korosi, tapi kuat tariknya di bawah baja karbon grade 8.8.</p>
+          <div class="go">Baca →</div>
+        </div>
+      </a>
+      <a class="post" href="#">
+        <div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M4 18V8l8-4 8 4v10"/><path d="M4 18h16"/><path d="M9 18v-5h6v5"/></svg></div>
+        <div class="txt">
+          <div class="meta"><span>17 Nov 2023</span><s>Material</s></div>
+          <h3>Hot-dip galvanized atau zinc plating?</h3>
+          <p>Ketebalan lapisan berbeda sepuluh kali lipat — begitu juga umurnya.</p>
+          <div class="go">Baca →</div>
+        </div>
+      </a>
+      <a class="post" href="#">
+        <div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="txt">
+          <div class="meta"><span>04 Feb 2024</span><s>Pemasangan</s></div>
+          <h3>Torsi pengencangan: tabel cepat untuk M8 – M24</h3>
+          <p>Angka pegangan untuk baut kering, berpelumas, dan galvanis.</p>
+          <div class="go">Baca →</div>
+        </div>
+      </a>
+      <a class="post" href="#">
+        <div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M5 6h14v12H5z"/><path d="M8 10h8M8 14h5"/></svg></div>
+        <div class="txt">
+          <div class="meta"><span>19 Jun 2024</span><s>Standar</s></div>
+          <h3>Isi mill certificate dan cara membacanya</h3>
+          <p>Komposisi kimia, hasil uji tarik, nomor heat — apa artinya bagi QC.</p>
+          <div class="go">Baca →</div>
+        </div>
+      </a>
+      <a class="post" href="#">
+        <div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M12 4v16"/><path d="M7 9h10"/><path d="M9 20h6"/></svg></div>
+        <div class="txt">
+          <div class="meta"><span>28 Jan 2025</span><s>Komponen</s></div>
+          <h3>Angkur J-bolt, L-bolt, dan angkur kimia</h3>
+          <p>Mana yang dipakai untuk beton baru, mana untuk beton lama.</p>
+          <div class="go">Baca →</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fg">
+      <div>
+        <a class="logo" href="index.html">
+          <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+            <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+            <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/><rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+          </svg>
+          <b>Kairos<i>Baut</i></b>
+        </a>
+        <p style="margin-top:15px; max-width:32ch">PT Kairos Multi Sejahtera — distributor baut &amp; mur untuk industri Indonesia.</p>
+        <nav aria-label="Tautan halaman" style="margin-top:16px">
+          <a href="index.html">Beranda</a>
+          <a href="produk.html">Indeks produk</a>
+          <a href="index.html#kontak">Minta penawaran</a>
+        </nav>
+      </div>
+      <div><h4>Kantor</h4><p>Perkantoran Mega Sunter Blok B No. 32<br>Jl. Danau Sunter Selatan<br>Jakarta 14350</p><p><a href="tel:+62216500888">+62 21 6500 888</a></p></div>
+      <div><h4>Workshop</h4><p>Kawasan Industri Jababeka 1 Blok C 17 A<br>Pasirgombong, Cikarang Utara<br>Bekasi 17530</p><p><a href="tel:+622189832622">+62 21 8983 2622</a></p></div>
+      <div><h4>Jam Kerja</h4><p>Senin – Jumat 08.00 – 17.00<br>Sabtu 08.00 – 12.00</p><p><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></p></div>
+    </div>
+    <div class="fb"><span>© 2026 PT Kairos Multi Sejahtera</span><span>Mockup v5 — revisi catatan</span></div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/6287784085400" aria-label="Chat WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+  </svg>
+  <b>Chat WhatsApp</b>
+</a>
+
+<script src="kairos.js"></script>
+</body>
+</html>
