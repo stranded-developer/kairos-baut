@@ -351,3 +351,146 @@ footer nav { display: grid; gap: 9px; font-size: 14px; }
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
   .rv { opacity: 1; transform: none; }
 }
+
+/* ============================================================================
+   v5.1 — revisi catatan kedua (notes2.pdf)
+
+   1. Widget "stok gudang" di hero dihapus (redundan dengan katalog di bawah).
+   2. Kontras & kedalaman: garis pemisah, gradasi halus, bayangan lebih tegas.
+   3. Hijau tua / hitam ditambah di beberapa titik — form penawaran jadi gelap,
+      pita Industri diperkuat — tapi alur halaman tetap terang.
+   4. Slot foto. Semua berdegradasi rapi: tanpa berkas gambar, halaman tetap
+      utuh dan memakai grafik vektor seperti sebelumnya. Lihat img/README.md.
+   ========================================================================= */
+
+/* ---------- Slot foto ----------
+   Pola: <figure class="ph" data-ph><img onload/onerror …><div class="ph-alt">…</div></figure>
+   Gambar disembunyikan sampai benar-benar termuat, jadi tidak pernah ada
+   ikon "gambar rusak" yang berkedip saat berkas belum diletakkan. */
+.ph { position: relative; overflow: hidden; background: var(--off); }
+.ph img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity .6s var(--ease);
+}
+.ph.ok img { opacity: 1; }
+.ph .ph-alt {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  transition: opacity .4s var(--ease);
+}
+.ph.ok .ph-alt { opacity: 0; pointer-events: none; }
+
+/* ---------- Hero: foto menggantikan panel stok ---------- */
+.hshot {
+  position: relative; margin: 0; border-radius: clamp(14px, 1.6vw, 20px);
+  border: 1px solid var(--line); box-shadow: var(--shadow-lift);
+  /* 3/2 menyesuaikan hero.jpeg yang lanskap (754×407). Bingkai yang lebih
+     tegak akan memotong sisi kiri-kanan foto terlalu banyak. */
+  aspect-ratio: 3 / 2;
+  background: linear-gradient(158deg, #1B7A3E 0%, #0B3A1D 62%, #072A15 100%);
+}
+.hshot .ph-alt { background: repeating-linear-gradient(112deg, rgba(255,255,255,.05) 0 2px, transparent 2px 15px); }
+.hshot .ph-alt svg { width: 62%; max-width: 320px; opacity: .9; }
+.hshot figcaption {
+  position: absolute; inset: auto 0 0 0; z-index: 2;
+  padding: 46px 20px 17px; line-height: 1.55;
+  background: linear-gradient(to top, rgba(5,26,13,.86), rgba(5,26,13,.34) 55%, transparent);
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .15em;
+  text-transform: uppercase; color: rgba(255,255,255,.9);
+}
+/* width:100% wajib — margin-inline:auto membuat item grid menyusut ke lebar
+   isinya, dan seluruh isi .hshot diposisikan absolut, jadi tanpa ini
+   bingkainya runtuh jadi 2px di layar kecil. */
+@media (max-width: 1000px) { .hshot { width: 100%; max-width: 560px; margin-inline: auto; } }
+
+/* Garis penutup hero — memberi batas yang jelas, bukan putih mengambang */
+.hero { border-bottom: 1px solid var(--line); }
+
+/* ---------- Kedalaman: garis & gradasi antar bagian ---------- */
+.sec--off {
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--off) 22%, var(--off) 78%, #FFFFFF 100%);
+  border-block: 1px solid var(--line);
+}
+.trust { box-shadow: var(--shadow); }
+.cat { box-shadow: 0 1px 2px rgba(14,40,22,.04); }
+.cat .pic { background: linear-gradient(165deg, var(--wash) 0%, #FFFFFF 78%); }
+
+/* ---------- Tentang: foto gudang selebar kolom ---------- */
+.aboutshot {
+  margin: clamp(34px, 4vw, 56px) 0 0; border-radius: clamp(14px, 1.6vw, 20px);
+  /* 2/1 menyesuaikan gudang.jpg (740×404). Rasio yang lebih panjang akan
+     memotong rak atas dan lantai — justru bagian yang mau ditunjukkan. */
+  border: 1px solid var(--line); aspect-ratio: 2 / 1;
+  background: linear-gradient(158deg, #E9F4EC, #F5F8F4 70%);
+  box-shadow: var(--shadow);
+}
+.aboutshot .ph-alt svg { width: min(58%, 460px); opacity: .5; }
+.aboutshot figcaption {
+  position: absolute; inset: auto 0 0 0; z-index: 2; padding: 40px 22px 16px;
+  background: linear-gradient(to top, rgba(5,26,13,.8), transparent);
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .15em;
+  text-transform: uppercase; color: rgba(255,255,255,.92); opacity: 0;
+  transition: opacity .4s var(--ease);
+}
+.aboutshot.ok figcaption { opacity: 1; }
+@media (max-width: 700px) { .aboutshot { aspect-ratio: 16 / 10; } }
+
+/* ---------- Logo klien ---------- */
+.marquee .lg { display: inline-flex; align-items: center; }
+.marquee .lg img { display: none; height: clamp(26px, 3vw, 38px); width: auto; object-fit: contain; filter: grayscale(1); opacity: .55; transition: opacity .3s, filter .3s; }
+.marquee .lg.ok img { display: block; }
+.marquee .lg.ok:hover img { filter: none; opacity: 1; }
+.marquee .lg.ok b { display: none; }
+
+/* ---------- Industri: foto latar + foto per panel ---------- */
+.sec--dark { position: relative; isolation: isolate; }
+.sec--dark::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(180deg, rgba(7,38,19,.955), rgba(7,38,19,.99)),
+    var(--sec-photo, none);
+  background-size: cover; background-position: center;
+}
+.panel .shot { position: absolute; inset: 0; z-index: 0; background: none; }
+.panel .shot img { opacity: 0; filter: grayscale(.45) contrast(1.05); transition: opacity .6s var(--ease), transform .7s var(--ease); }
+.panel .shot.ok img { opacity: .38; }
+.panel:hover .shot.ok img, .panel[aria-expanded="true"] .shot.ok img { opacity: .54; transform: scale(1.05); }
+.panel .shot .ph-alt { display: none; }
+/* Foto sektor yang dipakai sekarang terang-terang (pabrik, langit biru), jadi
+   tirai gelapnya harus lebih tegas daripada versi tanpa foto — kalau tidak,
+   "01 — Machinery" dan judulnya hilang tertelan latar. */
+.panel:has(.shot.ok)::after { height: 74%; background: linear-gradient(to top, rgba(4,20,10,.92), rgba(4,20,10,.55) 42%, transparent); }
+
+/* ---------- Form penawaran: hijau tua ---------- */
+.qbox--dark {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(31,158,74,.22), transparent 60%),
+    var(--green-deep);
+  border-color: transparent; color: rgba(255,255,255,.74);
+  box-shadow: 0 30px 70px rgba(8,42,21,.28);
+}
+.qbox--dark h2 { color: #fff; }
+.qbox--dark .eyebrow { background: rgba(255,255,255,.10); color: #9FE9B9; }
+.qbox--dark .lede { color: rgba(255,255,255,.72); }
+.qbox--dark .cc { color: rgba(255,255,255,.6); }
+.qbox--dark .cc svg { color: #6FDD97; }
+.qbox--dark .cc strong { color: #fff; }
+.qbox--dark .cc a:hover { color: #9FE9B9; }
+.qbox--dark .f label { color: rgba(255,255,255,.82); }
+.qbox--dark .f label .opt { color: rgba(255,255,255,.5); }
+.qbox--dark .f input,
+.qbox--dark .f textarea,
+.qbox--dark .f select {
+  background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.18); color: #fff;
+}
+.qbox--dark .f input::placeholder,
+.qbox--dark .f textarea::placeholder { color: rgba(255,255,255,.42); }
+.qbox--dark .f select option { color: var(--ink); }
+.qbox--dark .f input:focus,
+.qbox--dark .f textarea:focus,
+.qbox--dark .f select:focus {
+  border-color: #6FDD97; box-shadow: 0 0 0 4px rgba(111,221,151,.16); background: rgba(255,255,255,.1);
+}
+.qbox--dark .btn { background: #fff; border-color: #fff; color: var(--green-deep); }
+.qbox--dark .btn:hover { background: #DFF3E6; border-color: #DFF3E6; box-shadow: 0 12px 26px rgba(0,0,0,.3); }
+.qbox--dark .formnote { color: rgba(255,255,255,.55); }
+.qbox--dark :focus-visible { outline-color: #9FE9B9; }
