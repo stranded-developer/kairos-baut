@@ -1,0 +1,266 @@
+/* ============================================================================
+   KAIROS BAUT — opsi tampilan kepala halaman (navbar ↔ beranda).
+
+   Catatan klien: "tambah kedalaman/kontras antara navbar dan beranda —
+   warna lain, gradasi, atau foto stok besar sebagai latar beranda."
+   Kelimanya dibuat sekaligus supaya bisa ditunjukkan berdampingan.
+
+     A · Sekarang        — navbar putih, beranda putih (pembanding)
+     B · Pita hijau tua  — navbar hijau tua pekat, beranda tetap terang
+     C · Gradasi terang  — navbar putih bergaris hijau, hero bergradasi hijau
+     D · Foto latar      — hero jadi foto besar, navbar putih dibiarkan apa adanya
+     E · Foto + navbar transparan — navbar melayang di atas foto, memadat saat scroll
+
+   Dipilih lewat batang di paling atas (kairos-variants.js), lewat
+   ?nav=a..e di URL, atau langsung dengan menyetel data-nav pada <html>.
+
+   INI ALAT REVIEW. Setelah satu opsi dipilih: hapus <link> dan <script>
+   kairos-variants.* dari tiap halaman, pindahkan blok opsi yang menang ke
+   kairos.css (tanpa prefiks [data-nav]), lalu hapus kedua berkas ini.
+   ========================================================================= */
+
+:root { --vbar-h: 0px; }
+
+/* Header di kairos.css memakai top:0. Selama batang review masih ada,
+   header harus turun setinggi batang itu, dan jangkar #id ikut bergeser. */
+header { top: var(--vbar-h); }
+html { scroll-padding-top: calc(88px + var(--vbar-h)); }
+
+/* ===========================================================================
+   B · PITA HIJAU TUA
+   Kontras paling tegas dan paling murah: satu pita gelap, halaman di
+   bawahnya tidak berubah sama sekali.
+   ======================================================================== */
+[data-nav="b"] header,
+[data-nav="e"] body:not([data-hero]) header {
+  background: linear-gradient(180deg, #10502B 0%, #0B3A1D 100%);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 10px 30px rgba(11,58,29,.14);
+}
+[data-nav="b"] header.stuck,
+[data-nav="e"] body:not([data-hero]) header.stuck {
+  border-bottom-color: rgba(255,255,255,.14);
+  box-shadow: 0 10px 34px rgba(8,42,21,.30);
+}
+
+/* Tinta terang untuk semua varian navbar gelap (B, E, dan E di halaman
+   tanpa hero). Satu blok, supaya tidak ada aturan yang lupa diperbarui. */
+[data-nav="b"] .logo,
+[data-nav="e"] body[data-hero] .logo,
+[data-nav="e"] body:not([data-hero]) .logo { color: #fff; }
+[data-nav="b"] .logo b i,
+[data-nav="e"] .logo b i { color: #6FDD97; }
+
+[data-nav="b"] nav.main a,
+[data-nav="e"] nav.main a { color: rgba(255,255,255,.76); }
+[data-nav="b"] nav.main a:hover,
+[data-nav="e"] nav.main a:hover { color: #fff; }
+[data-nav="b"] nav.main a[aria-current="page"],
+[data-nav="e"] nav.main a[aria-current="page"] { color: #fff; }
+[data-nav="b"] nav.main a[aria-current="page"]:not(.btn),
+[data-nav="e"] nav.main a[aria-current="page"]:not(.btn) { box-shadow: inset 0 -2px 0 #6FDD97; }
+
+[data-nav="b"] nav.main .btn,
+[data-nav="e"] nav.main .btn,
+[data-nav="b"] .mobnav .btn,
+[data-nav="e"] .mobnav .btn {
+  background: #fff; border-color: #fff; color: var(--green-deep);
+}
+[data-nav="b"] nav.main .btn:hover,
+[data-nav="e"] nav.main .btn:hover {
+  background: #DFF3E6; border-color: #DFF3E6; box-shadow: 0 12px 26px rgba(0,0,0,.28);
+}
+
+[data-nav="b"] .burger,
+[data-nav="e"] .burger { color: #fff; border-color: rgba(255,255,255,.26); }
+[data-nav="b"] .burger i::before, [data-nav="b"] .burger i::after,
+[data-nav="e"] .burger i::before, [data-nav="e"] .burger i::after { background: #fff; }
+
+[data-nav="b"] .mobnav,
+[data-nav="e"] .mobnav {
+  background: var(--green-deep); border-top-color: rgba(255,255,255,.12);
+}
+[data-nav="b"] .mobnav a,
+[data-nav="e"] .mobnav a { color: #fff; border-bottom-color: rgba(255,255,255,.10); }
+
+[data-nav="b"] :focus-visible,
+[data-nav="e"] header :focus-visible { outline-color: #9FE9B9; }
+
+/* Sedikit bayangan jatuh di puncak hero — pita gelapnya jadi terasa
+   "di atas" halaman, bukan sekadar ditempel. */
+[data-nav="b"] .hero {
+  background: linear-gradient(180deg, #F2F7F2 0%, #FFFFFF 180px);
+}
+
+/* ===========================================================================
+   C · GRADASI TERANG
+   Tetap putih — kontras datang dari garis aksen hijau, bayangan tetap,
+   dan hero yang bergradasi turun ke putih.
+   ======================================================================== */
+[data-nav="c"] header {
+  background: linear-gradient(180deg, rgba(255,255,255,.97) 0%, rgba(243,248,243,.94) 100%);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 10px 28px rgba(14,40,22,.07);
+}
+[data-nav="c"] header::before {
+  content: ""; display: block; height: 3px;
+  background: linear-gradient(90deg, var(--green-deep) 0%, var(--green) 46%, #6FDD97 100%);
+}
+[data-nav="c"] header.stuck { box-shadow: 0 12px 32px rgba(14,40,22,.11); }
+
+[data-nav="c"] .hero {
+  background:
+    linear-gradient(170deg, #E4F2E9 0%, #F2F8F3 40%, #FFFFFF 76%);
+}
+/* Lingkaran hijau bawaan hero jadi mubazir di atas gradasi ini. */
+[data-nav="c"] .hero::before { opacity: .35; }
+[data-nav="c"] .hero { border-bottom-color: #D8E5D9; }
+/* Latar chip eyebrow (--wash) hampir sewarna puncak gradasi — tanpa ini
+   chipnya hilang. Dibalik jadi putih supaya justru menonjol. */
+[data-nav="c"] .hero .eyebrow {
+  background: #FFFFFF; border: 1px solid #CFE3D6;
+  box-shadow: 0 1px 2px rgba(14,40,22,.05);
+}
+
+/* ===========================================================================
+   D & E · FOTO LATAR
+   Hero berubah jadi foto stok selebar layar dengan tirai hijau tua.
+   D membiarkan navbar putih apa adanya (kontras putih di atas foto gelap);
+   E membuat navbar transparan supaya fotonya utuh dari tepi atas.
+   ======================================================================== */
+[data-nav="d"] body[data-hero] .hero,
+[data-nav="e"] body[data-hero] .hero {
+  background-color: #0A2C16;
+  background-image:
+    linear-gradient(100deg, rgba(5,24,12,.94) 0%, rgba(5,24,12,.80) 44%, rgba(5,24,12,.42) 100%),
+    url("img/hero.jpeg");
+  background-size: cover;
+  background-position: center;
+  border-bottom: 0;
+  padding-block: clamp(56px, 7vw, 104px) clamp(52px, 6.5vw, 92px);
+}
+/* Foto hero yang ada sekarang 754 px — cukup untuk mockup, agak lembut di
+   layar besar. Ganti berkasnya (≥2000 px) dan baris di atas tidak berubah. */
+
+[data-nav="d"] body[data-hero] .hero::before,
+[data-nav="e"] body[data-hero] .hero::before { display: none; }
+
+/* Satu kolom: bingkai foto di kanan jadi mubazir kalau fotonya sudah
+   jadi latar. */
+[data-nav="d"] body[data-hero] .hero-in,
+[data-nav="e"] body[data-hero] .hero-in { grid-template-columns: 1fr; }
+[data-nav="d"] body[data-hero] .hshot,
+[data-nav="e"] body[data-hero] .hshot { display: none; }
+[data-nav="d"] body[data-hero] .hero-in > div:first-child,
+[data-nav="e"] body[data-hero] .hero-in > div:first-child { max-width: 46rem; }
+
+/* Tinta hero di atas foto */
+[data-nav="d"] body[data-hero] .hero h1,
+[data-nav="e"] body[data-hero] .hero h1 { color: #fff; }
+[data-nav="d"] body[data-hero] .hero h1 mark,
+[data-nav="e"] body[data-hero] .hero h1 mark { color: #7FE5A6; }
+[data-nav="d"] body[data-hero] .hero .lede,
+[data-nav="e"] body[data-hero] .hero .lede { color: rgba(255,255,255,.80); }
+[data-nav="d"] body[data-hero] .hero .eyebrow,
+[data-nav="e"] body[data-hero] .hero .eyebrow {
+  background: rgba(255,255,255,.12); color: #9FE9B9;
+  border: 1px solid rgba(255,255,255,.14);
+}
+[data-nav="d"] body[data-hero] .hero .search,
+[data-nav="e"] body[data-hero] .hero .search {
+  border-color: transparent; box-shadow: 0 18px 46px rgba(3,18,9,.42);
+}
+[data-nav="d"] body[data-hero] .hero .pill,
+[data-nav="e"] body[data-hero] .hero .pill {
+  background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.22); color: rgba(255,255,255,.86);
+}
+[data-nav="d"] body[data-hero] .hero .pill:hover,
+[data-nav="e"] body[data-hero] .hero .pill:hover {
+  background: rgba(255,255,255,.20); border-color: rgba(255,255,255,.42); color: #fff;
+}
+[data-nav="d"] body[data-hero] .hero :focus-visible,
+[data-nav="e"] body[data-hero] .hero :focus-visible { outline-color: #9FE9B9; }
+
+/* Strip kepercayaan ditarik naik supaya menumpang di tepi foto —
+   sambungan foto → halaman terang jadi disengaja, bukan mendadak. */
+[data-nav="d"] body[data-hero] .hero + section,
+[data-nav="e"] body[data-hero] .hero + section {
+  margin-top: clamp(-56px, -5vw, -34px); position: relative; z-index: 2;
+}
+[data-nav="d"] body[data-hero] .hero + section .trust,
+[data-nav="e"] body[data-hero] .hero + section .trust {
+  box-shadow: var(--shadow-lift);
+}
+
+/* D — navbar putih dibiarkan apa adanya, hanya batas bawahnya dipertegas
+   supaya tidak "menempel" ke foto. */
+[data-nav="d"] header {
+  background: rgba(255,255,255,.94);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 6px 22px rgba(8,32,17,.10);
+}
+
+/* E — navbar melayang di atas foto, memadat begitu halaman digulir. */
+[data-nav="e"] body[data-hero] header {
+  position: fixed; left: 0; right: 0; top: var(--vbar-h); z-index: 90;
+  background: linear-gradient(180deg, rgba(4,20,10,.58) 0%, rgba(4,20,10,0) 100%);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 1px solid transparent; box-shadow: none;
+}
+[data-nav="e"] body[data-hero] header.stuck {
+  background: rgba(9,45,23,.90);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom-color: rgba(255,255,255,.12);
+  box-shadow: 0 10px 34px rgba(8,42,21,.32);
+}
+/* Header melayang tidak lagi memakan tinggi — hero yang menggantikannya. */
+[data-nav="e"] body[data-hero] .hero { padding-top: calc(72px + clamp(52px, 6.5vw, 104px)); }
+@media (max-width: 1000px) {
+  [data-nav="e"] body[data-hero] .hero { padding-top: calc(66px + clamp(44px, 6vw, 80px)); }
+}
+
+/* ===========================================================================
+   Batang pemilih (dihapus bersama berkas ini)
+   ======================================================================== */
+#vbar {
+  position: fixed; inset: 0 0 auto 0; z-index: 300; height: var(--vbar-h);
+  display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  background: #0B3A1D; color: #fff;
+  font: 500 12px/1 "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  overflow-x: auto; scrollbar-width: none;
+}
+#vbar::-webkit-scrollbar { display: none; }
+#vbar[hidden] { display: none; }
+#vbar .cap {
+  flex: none; font-family: "Roboto Mono", ui-monospace, Menlo, monospace;
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.55);
+}
+#vbar button {
+  flex: none; font: inherit; cursor: pointer; white-space: nowrap; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.22); background: transparent; color: rgba(255,255,255,.84);
+  padding: 6px 13px; transition: background .18s, border-color .18s, color .18s;
+}
+#vbar button:hover { background: rgba(255,255,255,.13); color: #fff; }
+#vbar button:focus-visible { outline: 2px solid #9FE9B9; outline-offset: 2px; }
+#vbar button[aria-pressed="true"] {
+  background: #1E9E4A; border-color: #1E9E4A; color: #fff; font-weight: 700;
+}
+#vbar button[aria-pressed="true"]:hover { background: #23B255; }
+#vbar .sp { flex: 1 1 auto; min-width: 8px; }
+#vbar .ghost { border-color: transparent; color: rgba(255,255,255,.62); }
+#vbtn {
+  position: fixed; top: 10px; right: 12px; z-index: 300; width: 38px; height: 38px;
+  border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,.2);
+  background: #0B3A1D; color: #fff;
+  font: 700 13px/1 "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  box-shadow: 0 6px 20px rgba(11,58,29,.35);
+}
+#vbtn[hidden] { display: none; }
+
+@media (max-width: 760px) {
+  #vbar { gap: 7px; font-size: 11.5px; }
+  #vbar .cap { display: none; }
+  #vbar button { padding: 6px 11px; }
+}
+@media print { #vbar, #vbtn { display: none !important; } }

@@ -29,8 +29,12 @@
   --green-ink:  #146B33;   /* green text on white at 6.6:1 */
   --green-deep: #0B3A1D;   /* dark band */
 
-  --sans: "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
-  --mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  /* Huruf — dikunci setelah sesi review. Archivo untuk judul dan isi,
+     Roboto Mono untuk label kecil / spesifikasi. Dimuat lewat <link>
+     Google Fonts di <head> tiap halaman. */
+  --sans:    "Archivo", "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
+  --display: var(--sans);
+  --mono:    "Roboto Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --r:    14px;
   --r-sm: 10px;
@@ -64,7 +68,7 @@ img, svg { max-width: 100%; }
 .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
 
 /* ---------- Type ---------- */
-h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -0.032em; line-height: 1.04; text-wrap: balance; }
+h1, h2, h3, h4 { margin: 0; font-family: var(--display); font-weight: 800; letter-spacing: -0.032em; line-height: 1.04; text-wrap: balance; }
 h1 { font-size: clamp(36px, 5.2vw, 66px); }
 h2 { font-size: clamp(28px, 3.4vw, 46px); }
 h3 { font-size: 19px; letter-spacing: -0.02em; line-height: 1.25; }
