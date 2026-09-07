@@ -598,3 +598,34 @@ Pemeriksaan cepat sebelum commit:
 grep -nE 'sb_secret_[A-Za-z0-9_-]{20,}|sbp_[a-f0-9]{40}|sb_publishable_[A-Za-z0-9_-]{20,}' -r . \
   --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.next
 ```
+
+
+---
+
+## Deploy — 2026-09-07
+
+**Berhasil live di Vercel.**
+
+Dua ganjalan saat deploy pertama, keduanya di setelan proyek, bukan di kode:
+
+1. **Root Directory masih `mockups/standalone`** — peninggalan zaman situs
+   statis. Vercel menjalankan `npm install` di folder tanpa `package.json`
+   ("up to date in 434ms"), lalu gagal dengan "No Next.js version detected".
+   Diperbaiki dengan mengosongkan Root Directory ke akar repo.
+2. **Tiga variabel env sudah ada sebelumnya** (`SUPABASE_SECRET_KEY`,
+   `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`) — Vercel menolak menimpa, jadi
+   harus lewat Edit, bukan Add.
+
+### Catatan git
+- Koneksi ke GitHub **kadang putus**: timeout 443 tepat ~75 detik, berulang,
+  lalu pulih sendiri. Bukan masalah repo — DNS, ping, port 443, dan
+  `info/refs` semuanya sehat di antara kejadian. Kalau makin sering,
+  pertimbangkan SSH daripada HTTPS.
+- **Kata sandi admin sempat ikut ter-commit** di berkas log ini dan
+  ketahuan sebelum push berhasil; commit diperbaiki (`0aeedcc` → `1ebf4aa`).
+  Lihat aturan "JANGAN tulis nilai rahasia di log ini" di atas.
+
+### Yang MASIH perlu dicoba manual di browser
+Deploy berhasil ≠ setiap tombol sudah dicoba. Daftar 9 langkah di bagian
+Bagian 7 masih berlaku — terutama menyimpan produk, mengunggah foto, dan
+menandai tulisan unggulan, karena Server Action tidak bisa diuji lewat curl.
