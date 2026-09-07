@@ -39,3 +39,10 @@ pnpm-debug.log*
 .vscode/
 .idea/
 *.swp
+
+# Next.js
+/.next/
+/next-env.d.ts
+
+# TypeScript incremental build info
+tsconfig.tsbuildinfo

@@ -1,0 +1,616 @@
+/* ============================================================================
+   KAIROS BAUT — v5 "Terang Pro"
+   Shared design system for index.html (beranda), produk.html, blog.html.
+
+   Direction, per review notes:
+   · White ground — clean and professional, not "techy". One deliberate dark
+     band (Industri) is kept as a structural accent, nothing more.
+   · Menu, buttons and typography follow Draft 4.
+   · Locked to light. No prefers-color-scheme flip, so the page a client opens
+     is the page that was signed off.
+   ========================================================================= */
+
+:root {
+  /* ground */
+  --white:   #FFFFFF;
+  --off:     #F5F8F4;   /* alternating section */
+  --wash:    #E9F4EC;   /* green tint — chips, icon plates */
+  --line:    #E1E8DF;
+  --line-2:  #EDF2EC;
+
+  /* ink — all text tokens clear AA on white */
+  --ink:     #0E1A12;   /* 17.2:1 */
+  --body:    #46534B;   /*  8.0:1 */
+  --muted:   #64726A;   /*  5.0:1 */
+
+  /* green — three jobs, three values */
+  --green:      #1E9E4A;   /* fills, icons, graphics (3.5:1 — UI, never text) */
+  --green-btn:  #15773A;   /* button ground, white text at 5.6:1 */
+  --green-ink:  #146B33;   /* green text on white at 6.6:1 */
+  --green-deep: #0B3A1D;   /* dark band */
+
+  /* Huruf — dikunci setelah sesi review. Archivo untuk judul dan isi,
+     Roboto Mono untuk label kecil / spesifikasi. Dimuat lewat <link>
+     Google Fonts di <head> tiap halaman. */
+  --sans:    "Archivo", "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
+  --display: var(--sans);
+  --mono:    "Roboto Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --r:    14px;
+  --r-sm: 10px;
+  --gut:  clamp(20px, 4vw, 56px);
+  --maxw: 1280px;
+
+  --shadow:      0 1px 2px rgba(14,40,22,.05), 0 10px 30px rgba(14,40,22,.07);
+  --shadow-lift: 0 2px 6px rgba(14,40,22,.07), 0 22px 48px rgba(14,40,22,.13);
+
+  --ease: cubic-bezier(.2,.7,.3,1);
+
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img, svg { max-width: 100%; }
+
+.wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
+
+/* ---------- Type ---------- */
+h1, h2, h3, h4 { margin: 0; font-family: var(--display); font-weight: 800; letter-spacing: -0.032em; line-height: 1.04; text-wrap: balance; }
+h1 { font-size: clamp(36px, 5.2vw, 66px); }
+h2 { font-size: clamp(28px, 3.4vw, 46px); }
+h3 { font-size: 19px; letter-spacing: -0.02em; line-height: 1.25; }
+p  { margin: 0 0 1em; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--green-ink);
+  background: var(--wash); padding: 7px 13px; border-radius: 999px;
+  margin: 0 0 20px;
+}
+.lede { font-size: clamp(16px, 1.2vw, 19px); color: var(--body); max-width: 62ch; }
+.mono { font-family: var(--mono); }
+
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--green-btn); outline-offset: 3px; border-radius: 4px; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 200;
+  background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 0 0 10px 0;
+  font-weight: 700; text-decoration: none;
+}
+.skip:focus { left: 0; }
+
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 15px 26px; border-radius: 999px;
+  border: 1px solid var(--green-btn); background: var(--green-btn); color: #fff;
+  font-family: inherit; font-weight: 700; font-size: 15px; letter-spacing: -0.01em;
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: background .22s, border-color .22s, transform .22s, box-shadow .22s;
+}
+.btn:hover { background: #10602E; border-color: #10602E; transform: translateY(-2px); box-shadow: 0 12px 26px rgba(16,96,46,.26); }
+.btn:active { transform: translateY(0); }
+.btn--ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn--ghost:hover { background: var(--off); color: var(--ink); border-color: var(--muted); box-shadow: none; }
+.btn--sm { padding: 11px 20px; font-size: 14px; }
+
+.textlink {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 700; font-size: 15px; color: var(--green-ink); text-decoration: none;
+}
+.textlink span { transition: transform .25s var(--ease); }
+.textlink:hover { color: #0F5527; }
+.textlink:hover span { transform: translateX(4px); }
+
+/* ---------- Header ---------- */
+header {
+  position: sticky; top: 0; z-index: 80;
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid transparent; transition: border-color .3s, box-shadow .3s;
+}
+header.stuck { border-bottom-color: var(--line); box-shadow: 0 1px 20px rgba(14,40,22,.05); }
+.bar { max-width: var(--maxw); margin-inline: auto; padding: 14px var(--gut); display: flex; align-items: center; gap: 30px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.logo b { font-size: 16px; font-weight: 800; letter-spacing: -0.025em; }
+.logo b i { font-style: normal; color: var(--green); }
+
+nav.main { margin-left: auto; display: flex; gap: 28px; align-items: center; }
+nav.main a { font-size: 15px; font-weight: 600; color: var(--body); text-decoration: none; transition: color .2s; }
+nav.main a:hover { color: var(--green-ink); }
+nav.main a[aria-current="page"] { color: var(--ink); }
+nav.main a[aria-current="page"]:not(.btn) { box-shadow: inset 0 -2px 0 var(--green); }
+nav.main .btn { color: #fff; }
+
+.burger {
+  margin-left: auto; display: none; align-items: center; gap: 9px;
+  background: none; border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 14px; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 700; color: var(--ink);
+}
+.burger i { display: block; width: 18px; height: 10px; position: relative; }
+.burger i::before, .burger i::after {
+  content: ""; position: absolute; left: 0; width: 18px; height: 2px; background: var(--ink); border-radius: 2px;
+  transition: transform .3s var(--ease), top .3s var(--ease);
+}
+.burger i::before { top: 0; }
+.burger i::after  { top: 8px; }
+.burger[aria-expanded="true"] i::before { top: 4px; transform: rotate(45deg); }
+.burger[aria-expanded="true"] i::after  { top: 4px; transform: rotate(-45deg); }
+
+.mobnav {
+  display: none; border-top: 1px solid var(--line); background: var(--white);
+  padding: 10px var(--gut) 22px;
+}
+.mobnav.open { display: block; }
+.mobnav a {
+  display: block; padding: 15px 0; font-size: 17px; font-weight: 700;
+  text-decoration: none; color: var(--ink); border-bottom: 1px solid var(--line-2);
+}
+.mobnav .btn { display: flex; margin-top: 18px; border-bottom: 0; color: #fff; }
+
+@media (max-width: 1000px) {
+  nav.main { display: none; }
+  .burger { display: inline-flex; }
+}
+
+/* ---------- Sections ---------- */
+.sec { padding-block: clamp(60px, 7.5vw, 108px); }
+.sec--off { background: var(--off); }
+.sec--tight { padding-block: clamp(44px, 5vw, 66px); }
+.sechead { max-width: 64ch; margin-bottom: clamp(32px, 4vw, 52px); }
+.sechead.row { max-width: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 26px; flex-wrap: wrap; }
+.sechead .lede { margin-top: 18px; margin-bottom: 0; }
+
+/* ---------- Trust strip ---------- */
+.trust {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--white);
+}
+.trust > div { display: flex; gap: 13px; align-items: flex-start; padding: 22px 24px; font-size: 14px; color: var(--muted); border-left: 1px solid var(--line); }
+.trust > div:first-child { border-left: 0; }
+.trust svg { flex: none; color: var(--green); margin-top: 2px; }
+.trust strong { display: block; color: var(--ink); font-size: 15px; letter-spacing: -0.01em; }
+@media (max-width: 900px) {
+  .trust { grid-template-columns: 1fr 1fr; }
+  .trust > div:nth-child(odd) { border-left: 0; }
+  .trust > div:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+@media (max-width: 540px) {
+  .trust { grid-template-columns: 1fr; }
+  .trust > div { border-left: 0; }
+  .trust > div + div { border-top: 1px solid var(--line); }
+}
+
+/* ---------- Stats ---------- */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); margin-top: clamp(42px, 5vw, 72px); }
+.stat { padding: 34px 30px 6px 0; border-left: 1px solid var(--line); }
+.stat:first-child { border-left: 0; }
+.stat:not(:first-child) { padding-left: 30px; }
+.stat .n {
+  font-size: clamp(46px, 6.4vw, 96px); font-weight: 800; letter-spacing: -0.05em;
+  line-height: .9; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.stat .n em { font-style: normal; color: var(--green); }
+.stat .c { font-family: var(--mono); font-size: 11px; letter-spacing: .17em; text-transform: uppercase; color: var(--muted); margin-top: 16px; }
+@media (max-width: 760px) {
+  .stats { grid-template-columns: 1fr; }
+  .stat { border-left: 0; padding: 26px 0 6px !important; border-top: 1px solid var(--line); }
+  .stat:first-child { border-top: 0; }
+}
+
+/* ---------- Clients marquee ---------- */
+.marquee { overflow: hidden; border-block: 1px solid var(--line); padding-block: 26px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee-track { display: flex; gap: 64px; width: max-content; animation: slide 42s linear infinite; }
+.marquee:hover .marquee-track, .marquee:focus-within .marquee-track { animation-play-state: paused; }
+@keyframes slide { to { transform: translateX(-50%); } }
+.marquee b { font-size: clamp(19px, 2.1vw, 29px); font-weight: 800; letter-spacing: -0.03em; color: #9AA69E; white-space: nowrap; transition: color .3s; }
+.marquee b:hover { color: var(--ink); }
+
+/* ---------- Category tiles ---------- */
+.cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+@media (max-width: 1040px) { .cats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px)  { .cats { grid-template-columns: 1fr; } }
+.cat {
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 0 0 22px; text-decoration: none; color: inherit; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: transform .3s var(--ease), box-shadow .3s, border-color .3s;
+}
+.cat:hover { transform: translateY(-5px); box-shadow: var(--shadow-lift); border-color: var(--line-2); }
+.cat .pic {
+  aspect-ratio: 16 / 11; display: grid; place-items: center;
+  background: linear-gradient(165deg, var(--wash), transparent 72%), var(--off);
+  border-bottom: 1px solid var(--line-2);
+}
+.cat .pic svg { width: 58%; height: auto; transition: transform .45s var(--ease); }
+.cat:hover .pic svg { transform: scale(1.07) rotate(-3deg); }
+.cat .txt { padding: 20px 20px 0; }
+.cat .std { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: var(--green-ink); }
+.cat h3 { margin: 9px 0 7px; }
+.cat p { font-size: 14px; color: var(--muted); margin: 0; }
+.cat .go { margin-top: 14px; font-size: 13.5px; font-weight: 700; color: var(--green-ink); display: inline-flex; gap: 7px; }
+.cat .go span { transition: transform .25s var(--ease); }
+.cat:hover .go span { transform: translateX(4px); }
+
+/* ---------- Industry panels (dark band) ---------- */
+.sec--dark { background: var(--green-deep); color: rgba(255,255,255,.78); }
+.sec--dark h2, .sec--dark h3 { color: #fff; }
+.sec--dark .eyebrow { background: rgba(255,255,255,.10); color: #9FE9B9; }
+.sec--dark .lede { color: rgba(255,255,255,.72); }
+
+.panels { display: flex; gap: 2px; height: clamp(340px, 46vh, 460px); }
+.panel {
+  position: relative; flex: 1 1 0; min-width: 0; overflow: hidden; cursor: pointer;
+  border: 0; padding: 0; text-align: left; color: #fff; font-family: inherit;
+  display: flex; align-items: flex-end; border-radius: 4px;
+  transition: flex-grow .55s var(--ease);
+}
+.panel:nth-child(1) { background: linear-gradient(180deg, #1C5E33, #0A3319); }
+.panel:nth-child(2) { background: linear-gradient(180deg, #23713D, #0A3319); }
+.panel:nth-child(3) { background: linear-gradient(180deg, #17512B, #0A3319); }
+.panel:nth-child(4) { background: linear-gradient(180deg, #2A8047, #0A3319); }
+.panel::before {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(110deg, rgba(255,255,255,.05) 0 2px, transparent 2px 14px);
+}
+.panel::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 60%;
+  background: linear-gradient(to top, rgba(6,28,14,.72), transparent);
+}
+.panel-in { position: relative; z-index: 2; padding: 26px; width: 100%; }
+.panel .idx { font-family: var(--mono); font-size: 10.5px; letter-spacing: .2em; color: #9FE9B9; display: block; margin-bottom: 12px; }
+.panel h3::after { content: ""; display: block; width: 26px; height: 3px; background: #6FDD97; margin-top: 12px; }
+.panel .body {
+  max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height .5s var(--ease), opacity .35s ease, margin-top .5s var(--ease);
+  font-size: 14.5px; color: rgba(255,255,255,.82); max-width: 36ch;
+}
+.panels:hover .panel { flex-grow: .74; }
+.panel:hover, .panel:focus-visible, .panel[aria-expanded="true"] { flex-grow: 2.6 !important; }
+.panel:hover .body, .panel:focus-visible .body, .panel[aria-expanded="true"] .body { max-height: 220px; opacity: 1; margin-top: 14px; }
+@media (max-width: 860px) {
+  .panels { flex-direction: column; height: auto; }
+  .panel { flex: none; min-height: 118px; }
+  .panel .body { max-height: 220px; opacity: 1; margin-top: 14px; }
+}
+
+/* ---------- Quote block ---------- */
+.qbox {
+  background: var(--white); border: 1px solid var(--line); border-radius: clamp(16px, 2.4vw, 26px);
+  padding: clamp(26px, 4vw, 52px); box-shadow: var(--shadow);
+  display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(28px, 4vw, 58px);
+}
+@media (max-width: 900px) { .qbox { grid-template-columns: 1fr; } }
+.form { display: grid; gap: 16px; }
+.r2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 560px) { .r2 { grid-template-columns: 1fr; } }
+.f label { display: block; font-size: 13px; font-weight: 700; color: var(--body); margin-bottom: 7px; }
+.f label .opt { font-weight: 500; color: var(--muted); }
+.f input, .f textarea, .f select {
+  width: 100%; padding: 13px 15px; border-radius: 11px;
+  border: 1px solid var(--line); background: var(--white);
+  font-family: inherit; font-size: 15px; color: var(--ink);
+  transition: border-color .2s, box-shadow .2s;
+}
+.f input::placeholder, .f textarea::placeholder { color: #93A099; }
+.f input:focus, .f textarea:focus, .f select:focus { outline: none; border-color: var(--green-btn); box-shadow: 0 0 0 4px var(--wash); }
+.f textarea { resize: vertical; }
+.formnote { font-size: 13px; color: var(--muted); margin: 0; }
+.contacts { display: grid; gap: 14px; margin-top: 26px; }
+.cc { display: flex; gap: 13px; align-items: flex-start; font-size: 14.5px; color: var(--muted); }
+.cc svg { flex: none; color: var(--green); margin-top: 3px; }
+.cc strong { display: block; color: var(--ink); font-weight: 700; }
+.cc a { text-decoration: none; }
+.cc a:hover { color: var(--green-ink); }
+
+/* ---------- Footer ---------- */
+footer { background: var(--off); border-top: 1px solid var(--line); padding-block: 56px 26px; }
+.fg { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 34px; }
+@media (max-width: 880px) { .fg { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .fg { grid-template-columns: 1fr; } }
+footer h4 { font-size: 13px; letter-spacing: -0.01em; color: var(--ink); margin: 0 0 13px; }
+footer p { font-size: 14px; color: var(--body); line-height: 1.7; margin: 0 0 .6em; }
+footer a { color: var(--body); text-decoration: none; }
+footer a:hover { color: var(--green-ink); }
+footer nav { display: grid; gap: 9px; font-size: 14px; }
+.fb { margin-top: 42px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; font-size: 13px; color: var(--muted); }
+
+/* ---------- Floating WhatsApp ---------- */
+.wa {
+  position: fixed; right: 20px; bottom: 20px; z-index: 95;
+  display: inline-flex; align-items: center; gap: 11px;
+  background: #1FA855; color: #fff; text-decoration: none;
+  padding: 13px 20px 13px 15px; border-radius: 999px;
+  font-weight: 800; font-size: 15px; letter-spacing: -0.01em;
+  box-shadow: 0 10px 34px rgba(10,60,30,.28);
+  transition: transform .25s var(--ease), box-shadow .25s;
+}
+.wa:hover { transform: translateY(-3px); box-shadow: 0 16px 42px rgba(10,60,30,.38); }
+.wa svg { flex: none; }
+@media (max-width: 560px) { .wa b { display: none; } .wa { padding: 15px; right: 16px; bottom: 16px; } }
+
+/* ---------- Reveal on scroll ---------- */
+.rv { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.rv.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+  .rv { opacity: 1; transform: none; }
+}
+
+/* ============================================================================
+   v5.1 — revisi catatan kedua (notes2.pdf)
+
+   1. Widget "stok gudang" di hero dihapus (redundan dengan katalog di bawah).
+   2. Kontras & kedalaman: garis pemisah, gradasi halus, bayangan lebih tegas.
+   3. Hijau tua / hitam ditambah di beberapa titik — form penawaran jadi gelap,
+      pita Industri diperkuat — tapi alur halaman tetap terang.
+   4. Slot foto. Semua berdegradasi rapi: tanpa berkas gambar, halaman tetap
+      utuh dan memakai grafik vektor seperti sebelumnya. Lihat img/README.md.
+   ========================================================================= */
+
+/* ---------- Slot foto ----------
+   Pola: <figure class="ph" data-ph><img onload/onerror …><div class="ph-alt">…</div></figure>
+   Gambar disembunyikan sampai benar-benar termuat, jadi tidak pernah ada
+   ikon "gambar rusak" yang berkedip saat berkas belum diletakkan. */
+.ph { position: relative; overflow: hidden; background: var(--off); }
+.ph img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity .6s var(--ease);
+}
+.ph.ok img { opacity: 1; }
+.ph .ph-alt {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  transition: opacity .4s var(--ease);
+}
+.ph.ok .ph-alt { opacity: 0; pointer-events: none; }
+
+/* ---------- Hero: foto menggantikan panel stok ---------- */
+.hshot {
+  position: relative; margin: 0; border-radius: clamp(14px, 1.6vw, 20px);
+  border: 1px solid var(--line); box-shadow: var(--shadow-lift);
+  /* 3/2 menyesuaikan hero.jpeg yang lanskap (754×407). Bingkai yang lebih
+     tegak akan memotong sisi kiri-kanan foto terlalu banyak. */
+  aspect-ratio: 3 / 2;
+  background: linear-gradient(158deg, #1B7A3E 0%, #0B3A1D 62%, #072A15 100%);
+}
+.hshot .ph-alt { background: repeating-linear-gradient(112deg, rgba(255,255,255,.05) 0 2px, transparent 2px 15px); }
+.hshot .ph-alt svg { width: 62%; max-width: 320px; opacity: .9; }
+.hshot figcaption {
+  position: absolute; inset: auto 0 0 0; z-index: 2;
+  padding: 46px 20px 17px; line-height: 1.55;
+  background: linear-gradient(to top, rgba(5,26,13,.86), rgba(5,26,13,.34) 55%, transparent);
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .15em;
+  text-transform: uppercase; color: rgba(255,255,255,.9);
+}
+/* width:100% wajib — margin-inline:auto membuat item grid menyusut ke lebar
+   isinya, dan seluruh isi .hshot diposisikan absolut, jadi tanpa ini
+   bingkainya runtuh jadi 2px di layar kecil. */
+@media (max-width: 1000px) { .hshot { width: 100%; max-width: 560px; margin-inline: auto; } }
+
+/* Garis penutup hero — memberi batas yang jelas, bukan putih mengambang */
+.hero { border-bottom: 1px solid var(--line); }
+
+/* ---------- Kedalaman: garis & gradasi antar bagian ---------- */
+.sec--off {
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--off) 22%, var(--off) 78%, #FFFFFF 100%);
+  border-block: 1px solid var(--line);
+}
+.trust { box-shadow: var(--shadow); }
+.cat { box-shadow: 0 1px 2px rgba(14,40,22,.04); }
+.cat .pic { background: linear-gradient(165deg, var(--wash) 0%, #FFFFFF 78%); }
+
+/* ---------- Tentang: foto gudang selebar kolom ---------- */
+.aboutshot {
+  margin: clamp(34px, 4vw, 56px) 0 0; border-radius: clamp(14px, 1.6vw, 20px);
+  /* 2/1 menyesuaikan gudang.jpg (740×404). Rasio yang lebih panjang akan
+     memotong rak atas dan lantai — justru bagian yang mau ditunjukkan. */
+  border: 1px solid var(--line); aspect-ratio: 2 / 1;
+  background: linear-gradient(158deg, #E9F4EC, #F5F8F4 70%);
+  box-shadow: var(--shadow);
+}
+.aboutshot .ph-alt svg { width: min(58%, 460px); opacity: .5; }
+.aboutshot figcaption {
+  position: absolute; inset: auto 0 0 0; z-index: 2; padding: 40px 22px 16px;
+  background: linear-gradient(to top, rgba(5,26,13,.8), transparent);
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .15em;
+  text-transform: uppercase; color: rgba(255,255,255,.92); opacity: 0;
+  transition: opacity .4s var(--ease);
+}
+.aboutshot.ok figcaption { opacity: 1; }
+@media (max-width: 700px) { .aboutshot { aspect-ratio: 16 / 10; } }
+
+/* ---------- Logo klien ---------- */
+.marquee .lg { display: inline-flex; align-items: center; }
+.marquee .lg img { display: none; height: clamp(26px, 3vw, 38px); width: auto; object-fit: contain; filter: grayscale(1); opacity: .55; transition: opacity .3s, filter .3s; }
+.marquee .lg.ok img { display: block; }
+.marquee .lg.ok:hover img { filter: none; opacity: 1; }
+.marquee .lg.ok b { display: none; }
+
+/* ---------- Industri: foto latar + foto per panel ---------- */
+.sec--dark { position: relative; isolation: isolate; }
+.sec--dark::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(180deg, rgba(7,38,19,.955), rgba(7,38,19,.99)),
+    var(--sec-photo, none);
+  background-size: cover; background-position: center;
+}
+.panel .shot { position: absolute; inset: 0; z-index: 0; background: none; }
+.panel .shot img { opacity: 0; filter: grayscale(.45) contrast(1.05); transition: opacity .6s var(--ease), transform .7s var(--ease); }
+.panel .shot.ok img { opacity: .38; }
+.panel:hover .shot.ok img, .panel[aria-expanded="true"] .shot.ok img { opacity: .54; transform: scale(1.05); }
+.panel .shot .ph-alt { display: none; }
+/* Foto sektor yang dipakai sekarang terang-terang (pabrik, langit biru), jadi
+   tirai gelapnya harus lebih tegas daripada versi tanpa foto — kalau tidak,
+   "01 — Machinery" dan judulnya hilang tertelan latar. */
+.panel:has(.shot.ok)::after { height: 74%; background: linear-gradient(to top, rgba(4,20,10,.92), rgba(4,20,10,.55) 42%, transparent); }
+
+/* ---------- Form penawaran: hijau tua ---------- */
+.qbox--dark {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(31,158,74,.22), transparent 60%),
+    var(--green-deep);
+  border-color: transparent; color: rgba(255,255,255,.74);
+  box-shadow: 0 30px 70px rgba(8,42,21,.28);
+}
+.qbox--dark h2 { color: #fff; }
+.qbox--dark .eyebrow { background: rgba(255,255,255,.10); color: #9FE9B9; }
+.qbox--dark .lede { color: rgba(255,255,255,.72); }
+.qbox--dark .cc { color: rgba(255,255,255,.6); }
+.qbox--dark .cc svg { color: #6FDD97; }
+.qbox--dark .cc strong { color: #fff; }
+.qbox--dark .cc a:hover { color: #9FE9B9; }
+.qbox--dark .f label { color: rgba(255,255,255,.82); }
+.qbox--dark .f label .opt { color: rgba(255,255,255,.5); }
+.qbox--dark .f input,
+.qbox--dark .f textarea,
+.qbox--dark .f select {
+  background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.18); color: #fff;
+}
+.qbox--dark .f input::placeholder,
+.qbox--dark .f textarea::placeholder { color: rgba(255,255,255,.42); }
+.qbox--dark .f select option { color: var(--ink); }
+.qbox--dark .f input:focus,
+.qbox--dark .f textarea:focus,
+.qbox--dark .f select:focus {
+  border-color: #6FDD97; box-shadow: 0 0 0 4px rgba(111,221,151,.16); background: rgba(255,255,255,.1);
+}
+.qbox--dark .btn { background: #fff; border-color: #fff; color: var(--green-deep); }
+.qbox--dark .btn:hover { background: #DFF3E6; border-color: #DFF3E6; box-shadow: 0 12px 26px rgba(0,0,0,.3); }
+.qbox--dark .formnote { color: rgba(255,255,255,.55); }
+.qbox--dark :focus-visible { outline-color: #9FE9B9; }
+
+/* ============================================================================
+   TAMPILAN E — "Foto penuh"
+   Dipilih dari lima opsi review (A–E) pada 2026-09-07. Aturan di bawah ini
+   dipindahkan dari kairos-variants.css dengan prefiks [data-nav="e"] dibuang,
+   persis seperti catatan penghapusan di berkas itu. Batang pemilih A–E dan
+   kedua berkas kairos-variants.* sudah tidak dipakai lagi.
+
+   Ringkasnya:
+     - Beranda (.shell[data-hero]) — hero jadi foto stok selebar layar dengan
+       tirai hijau tua; navbar melayang transparan di atasnya, memadat saat
+       digulir.
+     - Halaman lain (produk, blog) — navbar pita hijau tua pekat.
+   Catatan teknis: pada mockup statis penanda ini ada di <body data-hero>.
+   Di App Router <body> hanya boleh dirender root layout, jadi penandanya
+   pindah ke pembungkus <div class="shell" data-hero> di dalam <body>.
+   ========================================================================= */
+
+/* ---------- Navbar gelap pada halaman tanpa hero ---------- */
+.shell:not([data-hero]) header {
+  background: linear-gradient(180deg, #10502B 0%, #0B3A1D 100%);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 10px 30px rgba(11,58,29,.14);
+}
+.shell:not([data-hero]) header.stuck {
+  border-bottom-color: rgba(255,255,255,.14);
+  box-shadow: 0 10px 34px rgba(8,42,21,.30);
+}
+
+/* ---------- Tinta terang untuk navbar gelap (kedua keadaan) ---------- */
+.logo { color: #fff; }
+.logo b i { color: #6FDD97; }
+
+nav.main a { color: rgba(255,255,255,.76); }
+nav.main a:hover { color: #fff; }
+nav.main a[aria-current="page"] { color: #fff; }
+nav.main a[aria-current="page"]:not(.btn) { box-shadow: inset 0 -2px 0 #6FDD97; }
+
+nav.main .btn,
+.mobnav .btn { background: #fff; border-color: #fff; color: var(--green-deep); }
+nav.main .btn:hover {
+  background: #DFF3E6; border-color: #DFF3E6; box-shadow: 0 12px 26px rgba(0,0,0,.28);
+}
+
+.burger { color: #fff; border-color: rgba(255,255,255,.26); }
+.burger i::before, .burger i::after { background: #fff; }
+
+.mobnav { background: var(--green-deep); border-top-color: rgba(255,255,255,.12); }
+.mobnav a { color: #fff; border-bottom-color: rgba(255,255,255,.10); }
+
+header :focus-visible { outline-color: #9FE9B9; }
+
+/* ---------- Hero beranda: foto selebar layar ----------
+   --hero-photo dibiarkan sebagai variabel supaya fotonya bisa diganti dari
+   backoffice nanti tanpa menyentuh berkas ini. Tanpa nilai, kembali ke
+   /img/hero.jpeg. */
+.shell[data-hero] .hero {
+  background-color: #0A2C16;
+  background-image:
+    linear-gradient(100deg, rgba(5,24,12,.94) 0%, rgba(5,24,12,.80) 44%, rgba(5,24,12,.42) 100%),
+    var(--hero-photo, url("/img/hero.jpeg"));
+  background-size: cover;
+  background-position: center;
+  border-bottom: 0;
+  padding-block: clamp(56px, 7vw, 104px) clamp(52px, 6.5vw, 92px);
+}
+.shell[data-hero] .hero::before { display: none; }
+
+/* Satu kolom — bingkai foto di kanan mubazir kalau fotonya sudah jadi latar. */
+.shell[data-hero] .hero-in { grid-template-columns: 1fr; }
+.shell[data-hero] .hshot { display: none; }
+.shell[data-hero] .hero-in > div:first-child { max-width: 46rem; }
+
+.shell[data-hero] .hero h1 { color: #fff; }
+.shell[data-hero] .hero h1 mark { color: #7FE5A6; }
+.shell[data-hero] .hero .lede { color: rgba(255,255,255,.80); }
+.shell[data-hero] .hero .eyebrow {
+  background: rgba(255,255,255,.12); color: #9FE9B9;
+  border: 1px solid rgba(255,255,255,.14);
+}
+.shell[data-hero] .hero .search {
+  border-color: transparent; box-shadow: 0 18px 46px rgba(3,18,9,.42);
+}
+.shell[data-hero] .hero .pill {
+  background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.22); color: rgba(255,255,255,.86);
+}
+.shell[data-hero] .hero .pill:hover {
+  background: rgba(255,255,255,.20); border-color: rgba(255,255,255,.42); color: #fff;
+}
+.shell[data-hero] .hero :focus-visible { outline-color: #9FE9B9; }
+
+/* Strip kepercayaan ditarik naik supaya menumpang di tepi foto. */
+.shell[data-hero] .hero + section {
+  margin-top: clamp(-56px, -5vw, -34px); position: relative; z-index: 2;
+}
+.shell[data-hero] .hero + section .trust { box-shadow: var(--shadow-lift); }
+
+/* ---------- Navbar melayang di atas foto ---------- */
+.shell[data-hero] header {
+  position: fixed; left: 0; right: 0; top: 0; z-index: 90;
+  background: linear-gradient(180deg, rgba(4,20,10,.58) 0%, rgba(4,20,10,0) 100%);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 1px solid transparent; box-shadow: none;
+}
+.shell[data-hero] header.stuck {
+  background: rgba(9,45,23,.90);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom-color: rgba(255,255,255,.12);
+  box-shadow: 0 10px 34px rgba(8,42,21,.32);
+}
+/* Header melayang tidak lagi memakan tinggi — hero yang menggantikannya. */
+.shell[data-hero] .hero { padding-top: calc(72px + clamp(52px, 6.5vw, 104px)); }
+@media (max-width: 1000px) {
+  .shell[data-hero] .hero { padding-top: calc(66px + clamp(44px, 6vw, 80px)); }
+}
