@@ -887,3 +887,58 @@ marquee. Menguncinya merusak barisan.
   menggigit: `@supabase/supabase-js` gagal di Node 20 ("native WebSocket not
   found"), uji ujung-ke-ujung baru jalan setelah `nvm use 22`. Sebaiknya
   `nvm use` dibiasakan sebelum kerja di repo ini.
+
+
+---
+
+## Berita masuk ke situs — sebagai PEMILIH, bukan halaman jadi (2026-09-08)
+
+User minta ketiga rancangan bisa dilihat di server utama supaya gampang
+dipilih: *"just add a news in navbar and when clicked shows 3 different news
+mockup"* dan *"no need hard building just to show later we pick one"*.
+
+Jadi **sengaja dibuat seringan mungkin**: tanpa tabel Supabase, tanpa halaman
+detail, tanpa saring yang benar-benar bekerja. Semua tautan masih `href="#"`,
+sama seperti mockup.
+
+### Route baru
+| Route | Isi |
+|---|---|
+| `/berita` | Halaman pemilih — tiga kartu rancangan |
+| `/berita/ruang` | Rancangan 1 · Ruang Berita |
+| `/berita/kronik` | Rancangan 2 · Kronik |
+| `/berita/papan` | Rancangan 3 · Papan Berita |
+
+- `lib/data/news.ts` — isi contoh (9 berita, 4 kategori, kontak media).
+  **Semua teksnya karangan.**
+- `app/berita/Switch.tsx` — batang pembanding di atas tiap rancangan.
+- "Berita" ditambahkan ke navbar (`components/Header.tsx`, `NavKey` dapat
+  nilai `'berita'`) dan ke kaki halaman.
+
+### Satu jebakan yang perlu diingat: CSS Next itu global
+Rancangan "Papan Berita" memakai nama kelas **`.post`, `.art`, `.meta`** —
+persis nama yang dipakai `blog.css` dengan aturan berbeda. `.phead` dan
+`.crumbs` juga sudah ada di `blog.css` dan `produk.css`.
+
+CSS di App Router tidak ter-scope per route; kalau pengunjung berpindah dari
+/blog ke /berita tanpa muat ulang, kedua stylesheet bisa hidup bersamaan dan
+halaman Blog rusak diam-diam.
+
+**Karena itu seluruh isi `app/berita/berita.css` dibungkus kelas induk**
+(`.brt`, `.brt-ruang`, `.brt-kronik`, `.brt-papan`) — satu-satunya perubahan
+dari mockup. Diperiksa: tidak ada satu pun aturan di berkas itu yang tidak
+diawali `.brt`.
+
+### Sudah diuji ✅
+- `npx next build` sukses; keempat route berstatus **statis**.
+- Ketujuh route menjawab 200 (`/`, `/produk`, `/blog`, `/berita` + 3 rancangan).
+- Ketiga rancangan dirender di browser dan dilihat — tampil sesuai mockup,
+  batang pembanding bekerja, "Berita" bergaris hijau di navbar.
+- **`/blog` diperiksa ulang setelah perubahan — utuh**, gambar vektor dan
+  kartunya tidak terpengaruh. Ini yang paling dikhawatirkan.
+
+### Kalau satu rancangan sudah dipilih
+1. Pindahkan isi rancangan yang menang ke `app/berita/page.tsx`.
+2. Hapus dua folder rancangan yang kalah + `Switch.tsx` + blok `.brt-switch`.
+3. Baru putuskan soal Supabase: tabel `news` sendiri, atau kolom `kind` di
+   `posts` (lihat pertanyaan terbuka di Bagian 8).

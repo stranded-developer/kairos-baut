@@ -1,0 +1,277 @@
+/* ============================================================================
+   Berita — gaya untuk KETIGA rancangan yang sedang dinilai.
+
+   Dipindahkan dari blok <style> pada mockups/standalone/news-*.html.
+
+   SATU PERUBAHAN PENTING DARI MOCKUP: semuanya dibungkus kelas induk
+   (`.brt`, `.brt-ruang`, `.brt-kronik`, `.brt-papan`).
+
+   Alasannya wajib, bukan selera. CSS di Next App Router itu global; kalau
+   pengunjung berpindah dari /blog ke /berita tanpa muat ulang, kedua
+   stylesheet bisa hidup bersamaan. Rancangan "Papan Berita" memakai nama
+   kelas `.post`, `.art`, dan `.meta` — persis nama yang dipakai blog.css
+   dengan aturan berbeda. Tanpa pembungkus, halaman Blog akan rusak diam-diam.
+   `.phead` dan `.crumbs` juga sudah ada di blog.css dan produk.css.
+
+   Kelas milik kairos.css (.wrap, .sec, .sec--dark, .btn, .eyebrow, .sechead)
+   sengaja TIDAK diutak-atik — dipakai apa adanya.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- bersama */
+.brt .phead {
+  background: var(--off); border-bottom: 1px solid var(--line);
+  padding-block: clamp(38px, 5.4vw, 70px) clamp(30px, 4vw, 48px);
+}
+.brt .crumbs {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 18px;
+}
+.brt .crumbs a { text-decoration: none; }
+.brt .crumbs a:hover { color: var(--green-ink); }
+.brt .phead .lede { margin-top: 16px; margin-bottom: 0; }
+
+/* Batang pemilih rancangan. ALAT REVIEW — hapus begitu satu rancangan
+   dipilih, bersama dua halaman yang tidak terpakai. */
+.brt-switch { background: var(--ink); color: #fff; }
+.brt-switch .wrap {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding-block: 11px;
+}
+.brt-switch b {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em;
+  text-transform: uppercase; color: rgba(255,255,255,.55); margin-right: 4px;
+}
+.brt-switch a {
+  font-size: 13px; font-weight: 600; text-decoration: none;
+  color: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px; padding: 6px 14px; transition: border-color .2s, color .2s, background .2s;
+}
+.brt-switch a:hover { color: #fff; border-color: rgba(255,255,255,.5); }
+.brt-switch a[aria-current="true"] { background: #fff; border-color: #fff; color: var(--ink); }
+.brt-switch .sisa { margin-left: auto; font-size: 12.5px; color: rgba(255,255,255,.5); }
+@media (max-width: 700px) { .brt-switch .sisa { display: none; } }
+
+/* ------------------------------------------------- pemilih rancangan (/berita) */
+.brt-pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 900px) { .brt-pick { grid-template-columns: 1fr; } }
+.brt-card {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 26px 24px 24px; text-decoration: none; color: inherit;
+  transition: box-shadow .3s, transform .3s var(--ease), border-color .2s;
+}
+.brt-card:hover { box-shadow: var(--shadow-lift); transform: translateY(-4px); border-color: var(--green); }
+.brt-card .no {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--green-ink);
+}
+.brt-card h2 { font-size: 22px; }
+.brt-card .ring { font-size: 15px; color: var(--ink); font-weight: 600; margin: 0; }
+.brt-card p { font-size: 14px; color: var(--muted); margin: 0; }
+.brt-card .go { margin-top: auto; padding-top: 14px; font-weight: 700; font-size: 14px; color: var(--green-ink); }
+
+/* ======================================================= 1 · RUANG BERITA */
+/* Garis kolom vertikal — ciri paling khas rujukan ASML. */
+.brt-ruang .rules { position: relative; }
+.brt-ruang .rules > .wrap { position: relative; z-index: 1; }
+.brt-ruang .rules::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut);
+  background: repeating-linear-gradient(to right, var(--line-2) 0 1px, transparent 1px calc(100% / 4));
+  background-clip: content-box; -webkit-background-clip: content-box;
+  opacity: .9;
+}
+@media (max-width: 860px) { .brt-ruang .rules::before { display: none; } }
+
+.brt-ruang .phead { padding-block: clamp(40px, 6vw, 80px) clamp(34px, 5vw, 58px); }
+.brt-ruang .phead h1 { font-size: clamp(44px, 7vw, 92px); letter-spacing: -0.04em; }
+.brt-ruang .phead .lede { margin-top: 18px; max-width: 44ch; }
+
+.brt-ruang .hub { display: grid; grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 860px) { .brt-ruang .hub { grid-template-columns: repeat(2, 1fr); gap: 34px 24px; } }
+@media (max-width: 520px) { .brt-ruang .hub { grid-template-columns: 1fr; } }
+.brt-ruang .hub a { display: block; text-decoration: none; color: inherit; padding: 4px clamp(16px, 2.4vw, 30px) 4px 0; }
+.brt-ruang .hub h3 { font-size: 17px; margin-bottom: 10px; }
+.brt-ruang .hub p { font-size: 14px; color: var(--muted); line-height: 1.6; margin: 0 0 16px; }
+.brt-ruang .hub i { display: block; width: 30px; height: 3px; background: var(--green); transition: width .3s var(--ease); }
+.brt-ruang .hub a:hover h3 { color: var(--green-ink); }
+.brt-ruang .hub a:hover i { width: 60px; }
+
+.brt-ruang .band {
+  background: linear-gradient(90deg, var(--green-deep) 0%, var(--green-btn) 55%, var(--green) 100%);
+  padding-block: clamp(30px, 4vw, 46px); text-align: center;
+}
+.brt-ruang .band p {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .16em;
+  text-transform: uppercase; color: rgba(255,255,255,.72); margin: 0 0 16px;
+}
+.brt-ruang .band .btn { background: #fff; border-color: #fff; color: var(--green-deep); }
+.brt-ruang .band .btn:hover { background: var(--off); border-color: var(--off); box-shadow: 0 12px 26px rgba(11,58,29,.3); }
+
+.brt-ruang .latest { display: grid; grid-template-columns: minmax(200px, 1fr) 3fr; gap: clamp(24px, 4vw, 56px); align-items: start; }
+@media (max-width: 900px) { .brt-ruang .latest { grid-template-columns: 1fr; } }
+.brt-ruang .latest > h2 { font-size: clamp(30px, 3.6vw, 46px); font-weight: 500; letter-spacing: -0.03em; }
+.brt-ruang .prs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 900px) { .brt-ruang .prs { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .brt-ruang .prs { grid-template-columns: 1fr; } }
+.brt-ruang .pr {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--white); color: var(--ink);
+  border-radius: var(--r-sm); padding: 20px 20px 22px;
+  text-decoration: none; min-height: 200px;
+  transition: transform .3s var(--ease), box-shadow .3s;
+}
+.brt-ruang .pr:hover { transform: translateY(-5px); box-shadow: 0 20px 44px rgba(0,0,0,.28); }
+.brt-ruang .pr time { font-family: var(--mono); font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+/* kairos.css punya `.sec--dark h3 { color:#fff }`; kartu ini putih dan berada
+   DI DALAM .sec--dark, jadi warnanya harus dikembalikan — tanpa baris ini
+   judulnya putih di atas putih alias hilang. */
+.brt-ruang .pr h3 { font-size: 16.5px; line-height: 1.28; color: var(--ink); }
+.brt-ruang .pr i { display: block; width: 26px; height: 3px; background: var(--green); margin-top: auto; }
+
+.brt-ruang .years { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(30px, 4vw, 44px); }
+.brt-ruang .year {
+  font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em;
+  color: rgba(255,255,255,.72); text-decoration: none;
+  border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: 8px 16px;
+  transition: border-color .2s, color .2s;
+}
+.brt-ruang .year:hover { border-color: #6FDD97; color: #fff; }
+
+/* ============================================================ 2 · KRONIK */
+.brt-kronik .phead { padding-block: clamp(40px, 6vw, 78px) clamp(32px, 4.4vw, 52px); }
+.brt-kronik .phead h1 { font-size: clamp(40px, 6vw, 78px); }
+.brt-kronik .phead .lede { margin-top: 18px; max-width: 46ch; }
+
+.brt-kronik .bar-filter {
+  position: sticky; top: 72px; z-index: 40;
+  background: rgba(255,255,255,.92);
+  -webkit-backdrop-filter: saturate(140%) blur(10px); backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brt-kronik .bar-filter .wrap { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-block: 14px; }
+.brt-kronik .chip {
+  font-size: 13.5px; font-weight: 600; color: var(--body);
+  background: var(--white); border: 1px solid var(--line); border-radius: 999px;
+  padding: 9px 16px; text-decoration: none; white-space: nowrap;
+}
+.brt-kronik .chip:hover { border-color: var(--green); color: var(--green-ink); }
+.brt-kronik .chip[aria-current="true"] { background: var(--green-btn); border-color: var(--green-btn); color: #fff; }
+.brt-kronik .count { margin-left: auto; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 620px) { .brt-kronik .count { display: none; } }
+
+.brt-kronik .lead { border-bottom: 1px solid var(--line); padding-bottom: clamp(34px, 4.4vw, 54px); }
+.brt-kronik .dateline { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--green-ink); margin: 0 0 20px; }
+.brt-kronik .dateline b { font-weight: 600; color: var(--ink); }
+.brt-kronik .lead h2 { font-size: clamp(30px, 4.6vw, 60px); max-width: 20ch; }
+.brt-kronik .lead ul { margin: clamp(22px, 3vw, 32px) 0 26px; padding: 0; list-style: none; display: grid; gap: 12px; max-width: 68ch; }
+.brt-kronik .lead li { position: relative; padding-left: 26px; font-size: 16px; color: var(--body); line-height: 1.6; }
+.brt-kronik .lead li::before { content: ""; position: absolute; left: 0; top: .62em; width: 12px; height: 2px; background: var(--green); }
+
+.brt-kronik .yr { display: flex; align-items: baseline; gap: 16px; margin: clamp(38px, 5vw, 62px) 0 4px; }
+.brt-kronik .yr h3 { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: .22em; color: var(--muted); }
+.brt-kronik .yr span { flex: 1; height: 1px; background: var(--line); }
+
+.brt-kronik .row {
+  display: grid; grid-template-columns: 132px 1fr auto; gap: clamp(18px, 3vw, 40px);
+  align-items: baseline; padding: clamp(22px, 2.6vw, 30px) 0;
+  border-bottom: 1px solid var(--line-2);
+  text-decoration: none; color: inherit; position: relative;
+}
+.brt-kronik .row::before {
+  content: ""; position: absolute; left: calc(var(--gut) * -0.5); top: 0; bottom: 0;
+  width: 3px; background: var(--green); transform: scaleY(0); transform-origin: top;
+  transition: transform .3s var(--ease);
+}
+.brt-kronik .row:hover::before { transform: scaleY(1); }
+.brt-kronik .row:hover h4 { color: var(--green-ink); }
+.brt-kronik .row:hover .go { transform: translateX(4px); opacity: 1; }
+.brt-kronik .row time { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.brt-kronik .row h4 { font-family: var(--display); font-weight: 800; font-size: clamp(17px, 1.7vw, 22px); letter-spacing: -0.022em; line-height: 1.24; margin: 0 0 8px; transition: color .2s; }
+.brt-kronik .row p { font-size: 14.5px; color: var(--muted); margin: 0; max-width: 62ch; }
+.brt-kronik .row .tag {
+  display: inline-block; margin-top: 12px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--green-ink); background: var(--wash); border-radius: 999px; padding: 5px 11px;
+}
+.brt-kronik .row .go { color: var(--green-ink); font-weight: 700; opacity: .35; transition: transform .3s var(--ease), opacity .25s; }
+@media (max-width: 760px) {
+  .brt-kronik .row { grid-template-columns: 1fr; gap: 10px; }
+  .brt-kronik .row .go { display: none; }
+}
+.brt-kronik .more { margin-top: clamp(30px, 4vw, 44px); text-align: center; }
+.brt-kronik .alert-in { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.brt-kronik .alert-in h2 { font-size: clamp(24px, 2.8vw, 36px); max-width: 18ch; }
+.brt-kronik .alert-in p { margin: 12px 0 0; max-width: 44ch; }
+
+/* ====================================================== 3 · PAPAN BERITA */
+.brt-papan .phead h1 { font-size: clamp(38px, 5.4vw, 68px); }
+.brt-papan .phead .lede { max-width: 48ch; }
+.brt-papan .meta { font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.brt-papan .meta s { text-decoration: none; color: var(--green-ink); }
+
+.brt-papan .board { display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; }
+@media (max-width: 900px) { .brt-papan .board { grid-template-columns: 1fr; } }
+
+.brt-papan .hero-news {
+  position: relative; display: flex; align-items: flex-end;
+  min-height: clamp(340px, 42vw, 520px);
+  border-radius: var(--r); overflow: hidden;
+  text-decoration: none; color: #fff;
+  background: var(--green-deep) center/cover no-repeat;
+  transition: transform .35s var(--ease), box-shadow .35s;
+}
+/* Tirai empat henti: dengan .45 di tengah, baris tanggal di atas foto gudang
+   yang terang jadi sulit dibaca. */
+.brt-papan .hero-news::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(11,58,29,.04) 0%, rgba(11,58,29,.34) 34%, rgba(11,58,29,.72) 62%, rgba(11,58,29,.95) 100%);
+}
+.brt-papan .hero-news:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+/* Bayangan tipis: di layar sempit blok teks jadi tinggi sehingga baris
+   tanggal naik ke bagian foto yang terang. Bekerja apa pun fotonya. */
+.brt-papan .hero-news .txt { position: relative; z-index: 1; padding: clamp(22px, 3vw, 40px); text-shadow: 0 1px 12px rgba(4,20,10,.55); }
+.brt-papan .hero-news .meta { color: rgba(255,255,255,.78); margin-bottom: 14px; }
+.brt-papan .hero-news .meta s { color: #9FE9B9; }
+.brt-papan .hero-news h2 { color: #fff; font-size: clamp(24px, 2.9vw, 40px); max-width: 18ch; }
+.brt-papan .hero-news p { color: rgba(255,255,255,.80); font-size: 15px; margin: 12px 0 0; max-width: 46ch; }
+
+.brt-papan .side { display: grid; gap: 18px; grid-auto-rows: 1fr; }
+.brt-papan .post {
+  display: flex; flex-direction: column; background: var(--white);
+  border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+  text-decoration: none; color: inherit; transition: box-shadow .3s, transform .3s var(--ease);
+}
+.brt-papan .post:hover { box-shadow: var(--shadow-lift); transform: translateY(-4px); }
+.brt-papan .post .art {
+  background: linear-gradient(160deg, var(--wash), var(--off)) center/cover no-repeat;
+  aspect-ratio: 16/9; border-bottom: 1px solid var(--line-2);
+}
+.brt-papan .post .txt { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.brt-papan .post h3 { font-size: 17px; line-height: 1.3; }
+.brt-papan .post p { font-size: 14px; color: var(--muted); margin: 0; }
+.brt-papan .post .go { margin-top: auto; padding-top: 12px; font-size: 13.5px; font-weight: 700; color: var(--green-ink); }
+.brt-papan .side .post { flex-direction: row; }
+.brt-papan .side .post .art { aspect-ratio: auto; width: 38%; flex: none; border-bottom: 0; border-right: 1px solid var(--line-2); }
+@media (max-width: 900px) {
+  .brt-papan .side .post { flex-direction: column; }
+  .brt-papan .side .post .art { width: auto; aspect-ratio: 16/9; border-right: 0; border-bottom: 1px solid var(--line-2); }
+}
+
+.brt-papan .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+.brt-papan .tab { font-size: 13.5px; font-weight: 600; color: var(--body); background: var(--white); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; text-decoration: none; }
+.brt-papan .tab:hover { border-color: var(--green); color: var(--green-ink); }
+.brt-papan .tab[aria-current="true"] { background: var(--green-btn); border-color: var(--green-btn); color: #fff; }
+
+.brt-papan .mosaic { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 980px) { .brt-papan .mosaic { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .brt-papan .mosaic { grid-template-columns: 1fr; } }
+
+.brt-papan .press { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(20px, 3vw, 36px); }
+@media (max-width: 900px) { .brt-papan .press { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .brt-papan .press { grid-template-columns: 1fr; } }
+.brt-papan .press h3 { color: #fff; font-size: 16px; margin-bottom: 10px; }
+.brt-papan .press p { font-size: 14px; color: rgba(255,255,255,.72); line-height: 1.7; margin: 0 0 14px; }
+.brt-papan .press i { display: block; width: 28px; height: 3px; background: #6FDD97; }
+.brt-papan .press a { text-decoration: none; color: inherit; display: block; }
+.brt-papan .press a:hover h3 { color: #9FE9B9; }

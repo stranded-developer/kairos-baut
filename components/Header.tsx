@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Logo from './Logo';
 
-export type NavKey = 'produk' | 'blog' | null;
+export type NavKey = 'produk' | 'berita' | 'blog' | null;
 
 /* `home` menentukan ke mana jangkar #industri / #tentang menunjuk: di beranda
    cukup hash, di halaman lain harus lewat "/" dulu.
@@ -19,6 +19,9 @@ export default function Header({ home = false, current = null }: { home?: boolea
         Produk
       </Link>
       <a href={industri}>Industri</a>
+      <Link href="/berita" {...mark('berita')}>
+        Berita
+      </Link>
       <Link href="/blog" {...mark('blog')}>
         Blog
       </Link>
