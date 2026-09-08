@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Berita — Kairos Baut (Mockup 2 · Kronik)</title>
+<meta name="description" content="Catatan bertanggal: siaran pers, kegiatan, dan kabar PT Kairos Multi Sejahtera.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..800&family=Roboto+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="../../app/kairos.css">
+<style>
+  /* =========================================================================
+     MOCKUP 2 — "KRONIK"
+     Tafsir paling ketat dari rujukan: berita sebagai daftar bertanggal,
+     tanpa satu pun gambar. Tanggal jadi elemen desain, bukan keterangan
+     kecil di pojok.
+
+     Diambil dari img/news.mov:
+       · tipografi yang memimpin, ruang kosong lebar, hampir tanpa foto
+       · tanggal huruf kapital berjarak lebar (mono)
+       · baris pembuka gaya "SIARAN PERS — JAKARTA, 28 AGUSTUS 2026"
+       · ringkasan berbentuk butir sebelum isi
+       · garis-garis tipis sebagai pembagi
+
+     Cocok kalau berita Kairos lebih sering berupa pengumuman pendek
+     daripada cerita berfoto.
+     ====================================================================== */
+
+  .phead { background: var(--off); border-bottom: 1px solid var(--line); padding-block: clamp(40px, 6vw, 78px) clamp(32px, 4.4vw, 52px); }
+  .crumbs { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 20px; }
+  .crumbs a { text-decoration: none; }
+  .crumbs a:hover { color: var(--green-ink); }
+  .phead h1 { font-size: clamp(40px, 6vw, 78px); }
+  .phead .lede { margin-top: 18px; margin-bottom: 0; max-width: 46ch; }
+
+  /* ---------- Baris saring ---------- */
+  .bar-filter {
+    position: sticky; top: 72px; z-index: 40;
+    background: rgba(255,255,255,.92);
+    -webkit-backdrop-filter: saturate(140%) blur(10px); backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar-filter .wrap { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-block: 14px; }
+  .chip {
+    font-size: 13.5px; font-weight: 600; color: var(--body);
+    background: var(--white); border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 16px; text-decoration: none; white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--green); color: var(--green-ink); }
+  .chip[aria-current="true"] { background: var(--green-btn); border-color: var(--green-btn); color: #fff; }
+  .bar-filter .count { margin-left: auto; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  @media (max-width: 620px) { .bar-filter .count { display: none; } }
+
+  /* ---------- Berita utama ---------- */
+  .lead { border-bottom: 1px solid var(--line); padding-bottom: clamp(34px, 4.4vw, 54px); }
+  .dateline {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--green-ink); margin: 0 0 20px;
+  }
+  .dateline b { font-weight: 600; color: var(--ink); }
+  .lead h2 { font-size: clamp(30px, 4.6vw, 60px); max-width: 20ch; }
+  .lead ul {
+    margin: clamp(22px, 3vw, 32px) 0 26px; padding: 0; list-style: none;
+    display: grid; gap: 12px; max-width: 68ch;
+  }
+  .lead li {
+    position: relative; padding-left: 26px;
+    font-size: 16px; color: var(--body); line-height: 1.6;
+  }
+  .lead li::before {
+    content: ""; position: absolute; left: 0; top: .62em;
+    width: 12px; height: 2px; background: var(--green);
+  }
+
+  /* ---------- Kronik: kolom tanggal + isi ---------- */
+  .yr {
+    display: flex; align-items: baseline; gap: 16px;
+    margin: clamp(38px, 5vw, 62px) 0 4px;
+  }
+  .yr h3 { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: .22em; color: var(--muted); }
+  .yr span { flex: 1; height: 1px; background: var(--line); }
+
+  .row {
+    display: grid; grid-template-columns: 132px 1fr auto; gap: clamp(18px, 3vw, 40px);
+    align-items: baseline;
+    padding: clamp(22px, 2.6vw, 30px) 0;
+    border-bottom: 1px solid var(--line-2);
+    text-decoration: none; color: inherit;
+    position: relative;
+    transition: background .25s;
+  }
+  .row::before {
+    content: ""; position: absolute; left: calc(var(--gut) * -0.5); top: 0; bottom: 0;
+    width: 3px; background: var(--green); transform: scaleY(0); transform-origin: top;
+    transition: transform .3s var(--ease);
+  }
+  .row:hover::before { transform: scaleY(1); }
+  .row:hover h4 { color: var(--green-ink); }
+  .row:hover .go { transform: translateX(4px); opacity: 1; }
+
+  .row time {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--muted); white-space: nowrap;
+  }
+  .row h4 { font-family: var(--display); font-weight: 800; font-size: clamp(17px, 1.7vw, 22px); letter-spacing: -0.022em; line-height: 1.24; margin: 0 0 8px; transition: color .2s; }
+  .row p { font-size: 14.5px; color: var(--muted); margin: 0; max-width: 62ch; }
+  .row .tag {
+    display: inline-block; margin-top: 12px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--green-ink); background: var(--wash); border-radius: 999px; padding: 5px 11px;
+  }
+  .row .go { color: var(--green-ink); font-weight: 700; opacity: .35; transition: transform .3s var(--ease), opacity .25s; }
+  @media (max-width: 760px) {
+    .row { grid-template-columns: 1fr; gap: 10px; }
+    .row .go { display: none; }
+  }
+
+  .more { margin-top: clamp(30px, 4vw, 44px); text-align: center; }
+
+  /* ---------- Ajakan berlangganan ---------- */
+  .alert-in { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .alert-in h2 { font-size: clamp(24px, 2.8vw, 36px); max-width: 18ch; }
+  .alert-in p { margin: 12px 0 0; max-width: 44ch; }
+</style>
+</head>
+<body>
+<div class="shell">
+<a class="skip" href="#main">Lompat ke konten</a>
+
+<header id="hdr">
+  <div class="bar">
+    <a class="logo" href="index.html" aria-label="Kairos Baut — beranda">
+      <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+        <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+        <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/>
+        <rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+      </svg>
+      <b>Kairos<i>Baut</i></b>
+    </a>
+    <nav class="main">
+      <a href="produk.html">Produk</a>
+      <a href="index.html#industri">Industri</a>
+      <a href="news-2-kronik.html" aria-current="page">Berita</a>
+      <a href="blog.html">Blog</a>
+      <a href="index.html#tentang">Tentang Kami</a>
+      <a class="btn btn--sm" href="index.html#kontak">Minta Penawaran</a>
+    </nav>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mobnav">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+  <nav class="mobnav" id="mobnav" aria-label="Menu utama">
+    <a href="produk.html">Produk</a>
+    <a href="index.html#industri">Industri</a>
+    <a href="news-2-kronik.html" aria-current="page">Berita</a>
+    <a href="blog.html">Blog</a>
+    <a href="index.html#tentang">Tentang Kami</a>
+    <a class="btn" href="index.html#kontak">Minta Penawaran</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="phead">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html">Beranda</a> / Berita</p>
+    <h1>Kronik.</h1>
+    <p class="lede">Semua pengumuman resmi Kairos Baut, berurutan dari yang terbaru. Tanpa foto, tanpa basa-basi — tanggal, judul, dan intinya.</p>
+  </div>
+</section>
+
+<div class="bar-filter">
+  <div class="wrap">
+    <a class="chip" href="#" aria-current="true">Semua</a>
+    <a class="chip" href="#">Siaran pers</a>
+    <a class="chip" href="#">Kegiatan</a>
+    <a class="chip" href="#">Produk baru</a>
+    <a class="chip" href="#">Sertifikasi</a>
+    <span class="count">24 catatan · 2023 – 2026</span>
+  </div>
+</div>
+
+<section class="sec sec--tight">
+  <div class="wrap">
+
+    <!-- Berita utama. Baris pembukanya meniru "PRESS RELEASE — VELDHOVEN,
+         THE NETHERLANDS, JULY 15, 2026" di halaman detail rujukan, lalu
+         ringkasan berbentuk butir sebelum isi. -->
+    <article class="lead">
+      <p class="dateline">Siaran pers — <b>Cikarang, 28 Agustus 2026</b></p>
+      <h2>Gudang kedua di Cikarang beroperasi, kapasitas simpan naik 60%</h2>
+      <ul>
+        <li>Gudang seluas 2.100 m² di Jababeka 1 mulai menerima barang sejak 25 Agustus.</li>
+        <li>Kapasitas simpan gabungan naik dari 1.500 menjadi 2.400 item siap kirim.</li>
+        <li>Pengiriman ke Jawa Barat dan Banten dipangkas rata-rata satu hari kerja.</li>
+      </ul>
+      <a class="textlink" href="#">Baca siaran pers lengkap <span aria-hidden="true">→</span></a>
+    </article>
+
+    <!-- Kronik -->
+    <div class="yr"><h3>2026</h3><span aria-hidden="true"></span></div>
+
+    <a class="row" href="#">
+      <time datetime="2026-07-15">15 Juli 2026</time>
+      <div>
+        <h4>Mill certificate per batch untuk seluruh lini mutu 8.8 dan 10.9</h4>
+        <p>Setiap pengiriman baut mutu tinggi kini disertai sertifikat pabrik yang bisa ditelusuri sampai nomor leburan.</p>
+        <span class="tag">Sertifikasi</span>
+      </div>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+
+    <a class="row" href="#">
+      <time datetime="2026-05-16">16 Mei 2026</time>
+      <div>
+        <h4>Kairos ditunjuk jadi distributor resmi fastener tahan karat A2 dan A4</h4>
+        <p>Mencakup wilayah Jawa dan Sumatera, dengan stok penyangga yang disimpan di gudang Sunter.</p>
+        <span class="tag">Siaran pers</span>
+      </div>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+
+    <a class="row" href="#">
+      <time datetime="2026-03-04">4 Maret 2026</time>
+      <div>
+        <h4>Kairos Baut di Manufacturing Indonesia 2026, Hall B stan 214</h4>
+        <p>Tiga hari demonstrasi pengukuran torsi dan konsultasi pemilihan grade bersama tim teknis.</p>
+        <span class="tag">Kegiatan</span>
+      </div>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+
+    <a class="row" href="#">
+      <time datetime="2026-01-22">22 Januari 2026</time>
+      <div>
+        <h4>Baut hex flange DIN 6921 masuk katalog, 42 ukuran sekaligus</h4>
+        <p>Permintaan dari lini perakitan otomotif menjadi alasan utama penambahan lini ini.</p>
+        <span class="tag">Produk baru</span>
+      </div>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+
+    <div class="yr"><h3>2025</h3><span aria-hidden="true"></span></div>
+
+    <a class="row" href="#">
+      <time datetime="2025-11-08">8 November 2025</time>
+      <div>
+        <h4>Sistem penelusuran batch mulai dipakai di seluruh gudang</h4>
+        <p>Setiap rak diberi kode; asal barang dan tanggal masuk bisa dicari dalam hitungan detik.</p>
+        <span class="tag">Siaran pers</span>
+      </div>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+
+    <a class="row" href="#">
+      <time datetime="2025-09-30">30 September 2025</time>
+      <div>
+        <h4>Pelatihan pemilihan fastener untuk 40 teknisi mitra konstruksi</h4>
+        <p>Materi disusun dari pertanyaan yang paling sering masuk ke tim penjualan sepanjang tahun.</p>
+        <span class="tag">Kegiatan</span>
+      </div>
+      <span class="go" aria-hidden="true">→</span>
+    </a>
+
+    <div class="more"><a class="btn btn--ghost" href="#">Muat 18 catatan lainnya</a></div>
+  </div>
+</section>
+
+<section class="sec sec--tight sec--off">
+  <div class="wrap">
+    <div class="alert-in">
+      <div>
+        <p class="eyebrow">Kabar Kairos</p>
+        <h2>Dapat kabarnya lebih dulu.</h2>
+        <p class="lede">Satu surel tiap ada pengumuman resmi. Tidak ada penawaran, tidak ada promosi.</p>
+      </div>
+      <a class="btn" href="#">Berlangganan <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="fg">
+      <div>
+        <a class="logo" href="index.html">
+          <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+            <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+            <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/><rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+          </svg>
+          <b>Kairos<i>Baut</i></b>
+        </a>
+        <p style="margin-top:15px; max-width:32ch">PT Kairos Multi Sejahtera — distributor baut &amp; mur untuk industri Indonesia.</p>
+        <nav aria-label="Tautan halaman" style="margin-top:16px">
+          <a href="index.html">Beranda</a>
+          <a href="produk.html">Indeks produk</a>
+          <a href="index.html#kontak">Minta penawaran</a>
+        </nav>
+      </div>
+      <div><h4>Kantor</h4><p>Perkantoran Mega Sunter Blok B No. 32<br>Jl. Danau Sunter Selatan<br>Jakarta 14350</p><p><a href="tel:+62216500888">+62 21 6500 888</a></p></div>
+      <div><h4>Workshop</h4><p>Kawasan Industri Jababeka 1 Blok C 17 A<br>Pasirgombong, Cikarang Utara<br>Bekasi 17530</p><p><a href="tel:+622189832622">+62 21 8983 2622</a></p></div>
+      <div><h4>Jam Kerja</h4><p>Senin – Jumat 08.00 – 17.00<br>Sabtu 08.00 – 12.00</p><p><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></p></div>
+    </div>
+    <div class="fb"><span>© 2026 PT Kairos Multi Sejahtera</span><span>Mockup Berita 2 — Kronik</span></div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/6287784085400" aria-label="Chat WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+  </svg>
+  <b>Chat WhatsApp</b>
+</a>
+
+<script src="kairos.js"></script>
+</body>
+</html>

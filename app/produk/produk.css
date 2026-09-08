@@ -149,6 +149,20 @@
 /* ---------- Foto produk asli ----------
    Dipakai hanya kalau admin sudah mengunggah. Kalau belum, yang tampil tetap
    <svg> gambar vektor dan aturan di bawah ini tidak berlaku sama sekali. */
-.mini .pshot { width: 100%; height: 100%; object-fit: contain; display: block; }
-.dshot .pshot { width: 100%; height: 100%; object-fit: contain; display: block; }
-.dthumb .pshot { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* `cover`, bukan `contain` (diubah 2026-09-08).
+
+   `contain` memuat seluruh foto lalu menyisakan pinggiran kosong kalau rasio
+   foto dan kotaknya tidak sama persis — itulah sebabnya katalog terlihat
+   berantakan. Dua hal membuat pinggiran itu pasti muncul:
+
+     · .mini berukuran 54×38 px (≈1,42), sedangkan foto produk 4:3 (1,333).
+       Bahkan foto yang rasionya sudah benar tetap bergaris kosong di sini.
+     · .dthumb punya padding 6 px, jadi kotak isinya bukan 4:3 lagi.
+
+   Sejak lib/image-rules.ts menolak rasio yang salah, `cover` tidak lagi
+   berisiko memotong banyak — selisihnya paling besar beberapa persen. Untuk
+   foto lama yang terlanjur diunggah sebelum aturan ini ada, `cover` juga
+   yang membuatnya tetap rapi (terpotong sedikit, bukan mengambang). */
+.mini .pshot { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dshot .pshot { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dthumb .pshot { width: 100%; height: 100%; object-fit: cover; display: block; }

@@ -252,7 +252,10 @@
   position: relative; aspect-ratio: 16 / 9; background: var(--off);
   border-bottom: 1px solid var(--line);
 }
-.adm-media-pic img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* `cover` supaya pratinjau memperlihatkan potongan yang sebenarnya akan
+   tersimpan (2026-09-08). Slot logo tidak dipotong, jadi tetap `contain`. */
+.adm-media-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.adm-media-pic--logo img { object-fit: contain; }
 .adm-tag {
   position: absolute; left: 10px; top: 10px;
   font-family: var(--mono); font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase;
@@ -296,7 +299,7 @@
   border: 1px solid var(--line-2); border-radius: var(--r-sm);
   display: grid; place-items: center; overflow: hidden;
 }
-.adm-photo-pic img { width: 100%; height: 100%; object-fit: contain; }
+.adm-photo-pic img { width: 100%; height: 100%; object-fit: cover; }
 .adm-photo-empty { font-size: 11.5px; color: var(--muted); }
 .adm-photo b { font-size: 13.5px; }
 .adm-photo small { font-size: 11.5px; color: var(--muted); line-height: 1.45; }
@@ -314,3 +317,19 @@
 
 .adm-pill--star { background: #FFF4D6; color: #8A6206; }
 .adm-item-art svg { width: 62%; height: auto; color: var(--green-ink); }
+
+/* Baris syarat rasio di formulir unggah (2026-09-08). Dibedakan dari
+   keterangan biasa supaya angka yang wajib dipatuhi tidak tenggelam. */
+.adm-hint--rule {
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.6;
+  color: var(--green-ink); background: var(--wash);
+  border-radius: var(--r-sm); padding: 9px 12px; margin-top: 8px;
+}
+
+/* Keterangan pemotongan di formulir unggah — nada netral, bukan galat. */
+.adm-crop {
+  font-family: var(--mono); font-size: 11px; line-height: 1.6;
+  color: var(--body); background: var(--off);
+  border-left: 3px solid var(--green); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: 8px 11px; margin: 8px 0 0;
+}

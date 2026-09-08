@@ -528,9 +528,13 @@ footer nav { display: grid; gap: 9px; font-size: 14px; }
   box-shadow: 0 10px 34px rgba(8,42,21,.30);
 }
 
-/* ---------- Tinta terang untuk navbar gelap (kedua keadaan) ---------- */
-.logo { color: #fff; }
-.logo b i { color: #6FDD97; }
+/* ---------- Tinta terang untuk navbar gelap (kedua keadaan) ----------
+   DIBATASI KE DALAM `header`. Sebelumnya ditulis `.logo { color:#fff }`
+   tanpa pembatas, sehingga ikut memutihkan logo di KAKI HALAMAN yang
+   latarnya terang — kata "Kairos" jadi nyaris tak terlihat di semua
+   halaman. `.mobnav` ada di dalam <header>, jadi tetap ikut terkena. */
+header .logo { color: #fff; }
+header .logo b i { color: #6FDD97; }
 
 nav.main a { color: rgba(255,255,255,.76); }
 nav.main a:hover { color: #fff; }

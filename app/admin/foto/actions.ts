@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAdmin } from '@/lib/admin-guard';
 import { periksaBerkas, buatPath, unggah, hapusBerkas } from '@/lib/storage';
+import { siapkanGambar, aturanSlot } from '@/lib/image-rules';
 
 const BUCKET = 'site-photos';
 
@@ -25,13 +26,19 @@ export async function unggahFoto(_prev: FotoState, fd: FormData): Promise<FotoSt
   const salah = periksaBerkas(file);
   if (salah) return { error: salah };
 
+  /* Tiap slot punya rasionya sendiri (lihat lib/image-rules.ts) — hero 3:2,
+     gudang 2:1, panel industri 4:3, logo klien bebas. Diperiksa sebelum
+     apa pun ditulis. */
+  const gambar = await siapkanGambar(file, aturanSlot(key));
+  if ('error' in gambar) return { error: gambar.error };
+
   const db = createAdminClient();
   const { data: baris } = await db
     .from('site_media').select('storage_path').eq('key', key).maybeSingle();
   if (!baris) return { error: `Slot "${key}" tidak ada.` };
 
-  const path = buatPath(key, file);
-  const gagal = await unggah(BUCKET, path, file);
+  const path = buatPath(key, gambar.ext);
+  const gagal = await unggah(BUCKET, path, gambar.buffer, gambar.contentType);
   if (gagal) return { error: `Gagal mengunggah: ${gagal}` };
 
   const { error } = await db.from('site_media').update({ storage_path: path }).eq('key', key);
@@ -47,7 +54,7 @@ export async function unggahFoto(_prev: FotoState, fd: FormData): Promise<FotoSt
   await hapusBerkas(BUCKET, baris.storage_path);
 
   segarkan();
-  return { ok: 'Foto diperbarui.' };
+  return { ok: `Foto diperbarui — disimpan ${gambar.lebar}\u00d7${gambar.tinggi} px.` };
 }
 
 export async function simpanAlt(_prev: FotoState, fd: FormData): Promise<FotoState> {

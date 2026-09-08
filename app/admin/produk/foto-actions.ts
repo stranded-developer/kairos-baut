@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAdmin } from '@/lib/admin-guard';
 import { periksaBerkas, buatPath, unggah, hapusBerkas } from '@/lib/storage';
+import { siapkanGambar, ATURAN_PRODUK } from '@/lib/image-rules';
 
 const BUCKET = 'product-photos';
 const JENIS = ['produk', 'teknis', 'kemasan'] as const;
@@ -33,6 +34,11 @@ export async function unggahFotoProduk(
   const salah = periksaBerkas(file);
   if (salah) return { error: salah };
 
+  /* Rasio diperiksa DI SINI, sebelum apa pun ditulis. Kalau rasionya salah
+     tidak ada berkas yang naik dan tidak ada baris basis data yang berubah. */
+  const gambar = await siapkanGambar(file, ATURAN_PRODUK);
+  if ('error' in gambar) return { error: gambar.error };
+
   const db = createAdminClient();
 
   /* Satu foto per jenis per produk — unggahan baru menggantikan yang lama.
@@ -44,8 +50,8 @@ export async function unggahFotoProduk(
     .eq('kind', kind)
     .maybeSingle();
 
-  const path = buatPath(`${productId}-${kind}`, file);
-  const gagal = await unggah(BUCKET, path, file);
+  const path = buatPath(`${productId}-${kind}`, gambar.ext);
+  const gagal = await unggah(BUCKET, path, gambar.buffer, gambar.contentType);
   if (gagal) return { error: `Gagal mengunggah: ${gagal}` };
 
   const alt = String(fd.get('alt') ?? '').trim();
@@ -65,7 +71,7 @@ export async function unggahFotoProduk(
   }
 
   segarkan(productId);
-  return { ok: 'Foto diunggah.' };
+  return { ok: `Foto diunggah — disimpan ${gambar.lebar}\u00d7${gambar.tinggi} px.` };
 }
 
 export async function hapusFotoProduk(

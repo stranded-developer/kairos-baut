@@ -629,3 +629,261 @@ Dua ganjalan saat deploy pertama, keduanya di setelan proyek, bukan di kode:
 Deploy berhasil ≠ setiap tombol sudah dicoba. Daftar 9 langkah di bagian
 Bagian 7 masih berlaku — terutama menyimpan produk, mengunggah foto, dan
 menandai tulisan unggulan, karena Server Action tidak bisa diuji lewat curl.
+
+---
+
+## BAGIAN 8 — Bagian Berita (diminta 2026-09-07, **belum dikerjakan**)
+
+Fitur baru yang diminta user setelah situs live. **Statusnya masih tahap
+desain** — tiga mockup dibuat dulu untuk dipilih, belum ada kode Next.js,
+belum ada tabel Supabase.
+
+### Yang diminta
+Sebuah **bagian Berita** (terpisah dari `/blog` yang sudah ada), dengan tiga
+alternatif desain yang mengikuti tema yang sekarang.
+
+**Rujukan desain:** [`mockups/standalone/img/news.mov`](../mockups/standalone/img/news.mov)
+— rekaman layar 17 detik (832×336) berisi bagian berita **situs ASML**.
+Video sudah dibaca: dipotong jadi 18 bingkai lewat `ffmpeg -vf fps=1`, lalu
+tiap bingkai dilihat satu per satu. Yang terlihat di rekaman itu:
+
+1. Kepala halaman: remah-remah jejak → judul raksasa **"News"** → satu
+   paragraf penjelas. Tidak ada gambar sama sekali.
+2. Baris **empat kolom** berisi sub-bagian (*Press releases & announcements,
+   Stories, Media library, Media contacts*) — tiap kolom: judul tebal,
+   deskripsi pendek, dan **garis aksen pendek** di bawahnya.
+3. **Pita warna selebar layar** berisi satu tombol tunggal
+   *"Sign up for news alerts"*.
+4. **"Latest press releases"** — label besar di kiri, kartu-kartu putih di
+   kanan di atas latar gelap. Tiap kartu: tanggal huruf kapital berjarak
+   lebar (mono), judul tebal, garis aksen kecil di bawah.
+5. **Garis kolom vertikal** tipis membelah seluruh halaman — ini ciri paling
+   khas tata letak ASML.
+6. Halaman detail: remah jejak → judul raksasa → baris pembuka
+   *"PRESS RELEASE — VELDHOVEN, THE NETHERLANDS, JULY 15, 2026"* → ringkasan
+   berbentuk butir → isi → blok *"About ASML"* yang bisa dibuka (tombol +) →
+   blok **kontak media** berisi nama-nama orang.
+
+Inti gayanya: **digerakkan tipografi, hampir tanpa foto, kaya ruang kosong,
+tanggal sebagai elemen desain.**
+
+### Tiga mockup yang dibuat
+
+| Berkas | Nama | Ide |
+|---|---|---|
+| [`mockups/standalone/news-1-ruang.html`](../mockups/standalone/news-1-ruang.html) | **Ruang Berita** | Paling dekat ke ASML: hub 4 kolom + garis kolom vertikal + pita CTA + kartu putih di atas pita hijau tua |
+| [`mockups/standalone/news-2-kronik.html`](../mockups/standalone/news-2-kronik.html) | **Kronik** | Daftar bertanggal seperti rilis kawat. Kolom tanggal mono di kiri, judul + ringkasan di kanan, dipisah garis rambut. Tanpa gambar |
+| [`mockups/standalone/news-3-papan.html`](../mockups/standalone/news-3-papan.html) | **Papan Berita** | Paling ramah foto: satu berita utama besar + mosaik kartu, memakai kembali kosakata `.post` dari `/blog`, ditutup blok "Untuk media" |
+
+Ketiganya memakai `app/kairos.css` **apa adanya** (tema produksi, sudah
+termasuk blok Tampilan E), dibungkus `<div class="shell">` tanpa `data-hero`
+supaya navbar-nya jadi pita hijau tua — sama seperti `/produk` dan `/blog`.
+Gaya khusus halaman ada di blok `<style>` masing-masing berkas, persis pola
+`blog.html`. **Tidak ada token, warna, atau huruf baru yang ditambahkan.**
+
+### Keputusan yang masih perlu diambil user
+- [ ] **Pilih satu dari tiga** (atau gabungan).
+- [ ] **Berita vs Blog — apa bedanya?** Sekarang `/blog` sudah berisi tulisan
+      teknis. Berita perlu tabel sendiri, atau cukup jadi kategori di dalam
+      tabel `posts` yang ada? Ini menentukan besar pekerjaan Supabase-nya.
+- [ ] **Halaman detail.** Di rekaman ASML, tiap berita punya halaman sendiri.
+      Padahal `/blog` sampai sekarang **belum punya halaman detail** — kartunya
+      masih `href="#"` (lihat sisa pekerjaan Bagian 7). Kalau Berita butuh
+      halaman detail, `/blog/[slug]` sebaiknya dikerjakan sekalian.
+- [ ] **"Berlangganan kabar"** — di mockup tombolnya belum mengarah ke mana
+      pun. Perlu email/newsletter sungguhan, atau cukup diarahkan ke WhatsApp?
+- [ ] **Menu utama jadi 5 item** (Produk · Industri · Berita · Blog · Tentang
+      Kami) + tombol Minta Penawaran. Sempat dikhawatirkan sesak, tapi **sudah
+      diperiksa dan ternyata muat** — lihat bagian Sudah diuji. Yang tersisa
+      cuma keputusan urutannya: sekarang Berita ditaruh sebelum Blog.
+
+### Perkiraan pekerjaan setelah desain dipilih
+1. Tabel `news` (atau kolom `kind` di `posts`) + seed.
+2. Route publik `/berita` yang dirender di server.
+3. Halaman detail `/berita/[slug]` — dan kemungkinan `/blog/[slug]` sekalian.
+4. Editor berita di `/admin`, mengikuti pola editor blog Bagian 7.
+5. Tambah "Berita" ke navbar dan footer.
+
+### Sudah diuji ✅
+- **Sarang tag HTML** ketiga berkas: tidak ada tag menggantung atau salah tutup.
+- **Semua kelas CSS** yang dipakai punya aturan (30 / 33 / 37 kelas), dan tidak
+  ada aturan lokal yang tidak terpakai.
+- Semua rujukan berkas (gambar, `kairos.css`, `kairos.js`) resolve.
+- **Ketiganya dirender di Chrome headless** (1440 px) dan gambarnya diperiksa.
+
+Dua cacat ketahuan dari render itu dan **sudah diperbaiki**:
+
+1. **Mockup 1 — judul siaran pers putih di atas kartu putih.** `kairos.css`
+   punya aturan `.sec--dark h3 { color: #fff }`. Kartu `.pr` berlatar putih
+   tapi berada di dalam `.sec--dark`, jadi judulnya hilang sama sekali —
+   kartunya cuma menampilkan tanggal. Ditambahi `color: var(--ink)`.
+2. **Mockup 3 — baris tanggal di atas foto tidak terbaca.** Tirai gelapnya
+   terlalu tipis di tengah (`.45`) sementara foto gudang di baliknya terang.
+   Gradasinya dibuat empat henti dan digelapkan.
+
+### Temuan sampingan: cacat di situs yang sudah live ⚠️
+Saat merender mockup ini ketahuan bahwa
+[`app/kairos.css:532`](../app/kairos.css#L532) menulis `.logo { color: #fff; }`
+**tanpa pembatas apa pun**. Maksudnya untuk logo di navbar hijau tua, tapi
+karena tidak dibatasi, aturan ini **ikut memutihkan logo di kaki halaman** yang
+latarnya terang — kata "Kairos" jadi nyaris tidak terlihat, hanya "Baut" yang
+kebaca karena warnanya disetel terpisah.
+
+Ini **bukan** akibat mockup berita; berlaku juga di `/`, `/produk`, dan `/blog`
+yang sudah live sekarang.
+
+> **SUDAH DIPERBAIKI 2026-09-08** atas persetujuan user — lihat Bagian 9.
+
+### Lebar layar — sudah diperiksa ✅
+Dirender pada 500 / 768 / 1024 / 1060 / 1100 / 1280 / 1440 px.
+
+- **Tidak ada luberan mendatar di lebar mana pun** — lebar konten selalu persis
+  sama dengan lebar viewport di ketiga berkas.
+- **Kekhawatiran menu 5 item tidak terbukti.** `nav.main` baru muncul di atas
+  1000 px (`kairos.css` baris 168). Diperiksa pada 1001 px — titik paling
+  sesak yang mungkin — keenam butir masih muat lega. Di bawahnya sudah jadi
+  menu burger.
+
+Catatan alat: Chrome headless di macOS **memaksa lebar jendela minimum 500 px**.
+Permintaan 390 px atau 430 px tetap dirender 500 px lalu dipotong, jadi
+tangkapan layarnya tampak terpotong padahal halamannya baik-baik saja.
+Lebar di bawah 500 px belum benar-benar teruji.
+
+### Belum diuji ⚠️
+- **Interaksinya**: menu burger, hover kartu, navbar memadat saat digulir.
+- Isi beritanya **karangan** untuk keperluan tata letak. Judul, tanggal, dan
+  nama kontak media harus diganti data sungguhan sebelum dipakai.
+
+> Catatan 2026-09-08: lebar 390 px akhirnya **sudah teruji**. Batas jendela
+> 500 px pada Chrome headless diakali dengan memuat halamannya di dalam
+> `<iframe>` selebar 390 px — bingkai punya viewport sendiri, jadi media query
+> di dalamnya benar-benar dinilai pada 390 px. Hasil: tidak ada luberan
+> mendatar, ketiga mockup rapi. Satu penyesuaian: baris tanggal di atas foto
+> pada mockup 3 diberi `text-shadow` karena di layar sempit blok teksnya
+> meninggi sampai ke bagian foto yang terang.
+
+
+---
+
+## BAGIAN 9 — Gambar unggahan: potong otomatis + perbaikan logo (2026-09-08)
+
+### Masalah yang dilaporkan user
+> "uploading images in admin does not fix the size so when displayed its bad
+> in the catalog"
+
+Ditelusuri: **bukan** soal rasio kotaknya. Kotak tampilan sudah 4:3 sejak awal
+(`app/produk/produk.css` baris 105 & 111). Dua hal lain biang keroknya:
+
+1. **`object-fit: contain`** pada `.mini`, `.dshot`, `.dthumb`. `contain`
+   memuat seluruh foto lalu menyisakan pinggiran kosong begitu rasio foto ≠
+   rasio kotak. Foto potret tampil sebagai jalur sempit di tengah.
+   Diperparah: **`.mini` berukuran 54×38 px (≈1,42), bukan 4:3** — foto yang
+   rasionya sudah benar pun tetap bergaris kosong di baris katalog.
+2. **Tidak ada pemrosesan apa pun saat unggah.** `lib/storage.ts` cuma
+   memeriksa MIME dan batas 10 MB. Foto ponsel 4000×3000 belasan MB dikirim
+   apa adanya ke setiap pengunjung.
+
+### Keputusan — sempat berubah, ini yang final
+Mula-mula user memilih **menolak** foto berasio salah. Sudah diterapkan penuh
+lalu **dibatalkan pada hari yang sama** setelah user bertanya balik "whats the
+fix then?" dan meminta dikerjakan sesuai rekomendasi.
+
+Alasan pembatalannya penting dan jangan diulang: **menolak tidak memperbaiki
+apa pun.** Begitu tampilannya `object-fit: cover`, foto berasio apa pun
+sebenarnya sudah tampil rapi — kotaknya terisi penuh, tidak ada pinggiran
+kosong. Jadi penolakan hanya menghalangi pekerjaan tanpa membuat hasilnya
+lebih baik, padahal foto pemasok datang dalam segala rasio.
+
+**Yang berlaku sekarang:** rasio apa pun diterima, dipotong otomatis dari
+tengah ke rasio slot. Satu rasio per slot, **tidak ada slot 1:1** — rasio
+khusus per kategori akan membuat grid katalog tinggi-rendah dan justru
+mengembalikan masalah pinggiran kosong yang sedang diperbaiki.
+
+Yang **masih** ditolak cuma dua, keduanya tidak bisa diperbaiki dengan
+memotong:
+- berkas yang tidak terbaca sebagai gambar;
+- foto yang **setelah dipotong** lebarnya di bawah `minLebar` — hasilnya pasti
+  pecah. Perhatikan: yang dinilai lebar SETELAH potong, bukan lebar mentah.
+  Panorama 4000×800 ditolak karena hanya menyisakan 1066 px.
+
+### Yang dikerjakan
+
+| Berkas | Isi |
+|---|---|
+| `lib/image-specs.ts` **(baru)** | Tabel aturan, `periksaUkuran()`, `ukuranHasil()`, `akanDipotong()`. Tanpa sharp/`server-only`, jadi **boleh diimpor komponen klien** |
+| `lib/image-rules.ts` **(baru)** | `siapkanGambar()` — luruskan EXIF, potong tengah, susutkan, ubah ke WebP |
+| `components/useGambarTerpilih.ts` **(baru)** | Kail bersama kedua formulir: pratinjau + hitung ukuran akhir |
+| `lib/storage.ts` | `unggah()` menerima `Buffer` + `contentType`; `buatPath()` menerima ekstensi |
+| `app/admin/*/actions.ts` | Panggil `siapkanGambar` sebelum apa pun ditulis |
+| `ProductPhotos.tsx`, `MediaCard.tsx` | Syarat ditulis di muka; kotak pratinjau pakai rasio slot + `cover`; keterangan pemotongan |
+| `app/produk/produk.css` | `object-fit: contain` → **`cover`** |
+| `app/kairos.css` | `.logo { color:#fff }` → **`header .logo`** (cacat Bagian 8) |
+| `package.json` | **sharp jadi dependensi langsung** (tadinya cuma opsional bawaan Next — bisa terpangkas saat deploy) |
+
+### Rasio per slot
+Angkanya mengikuti kotak yang sudah ada di CSS — bukan angka baru.
+
+| Slot | Dipotong ke | Lebar min | Maks |
+|---|---|---|---|
+| Foto produk (produk/teknis/kemasan) | **4:3** | 1200 | 1600 |
+| `hero` | 3:2 | 2000 | 2400 |
+| `gudang` | 2:1 | 2000 | 2400 |
+| `industri-bg` | 16:9 | 2000 | 2400 |
+| `industri-*` (4 panel) | 4:3 | 1200 | 1600 |
+| `logo-*` | **tidak dipotong** | 120 | 900 |
+
+Logo dibebaskan: wordmark lebarnya berbeda-beda dan tampil `contain` di
+marquee. Menguncinya merusak barisan.
+
+### Tiga keputusan teknis yang perlu diingat
+1. **Potong dari TENGAH, bukan `attention`/`entropy` milik sharp.** Strategi
+   pintar itu hasilnya tidak bisa ditebak, sehingga kotak pratinjau jadi
+   bohong. Tengah bisa ditebak, jadi pratinjau = hasil. Ini diuji.
+2. **Orientasi EXIF — nyaris jadi bug.** Foto potret dari ponsel sering
+   *disimpan* mendatar (4032×3024) disertai penanda "putar 90°". Kalau yang
+   dinilai angka mentahnya, foto potret dianggap sudah 4:3, lalu `.rotate()`
+   memutarnya jadi 3:4 di penyimpanan. `siapkanGambar` menukar lebar/tinggi
+   dulu kalau `orientation >= 5`.
+3. **Toleransi 1%** supaya 1601×1200 tidak dianggap "perlu dipotong".
+
+### Sudah diuji ✅
+- **22/22 uji** pada gambar yang dibuat sungguhan: 4:3, potret 3:4, 16:9,
+  panorama 4:1, keempat slot situs, logo, EXIF, berkas sampah, terlalu kecil.
+- **Pratinjau = hasil**: `ukuranHasil()` dibandingkan dengan keluaran sharp
+  yang sebenarnya pada 4 kasus — sama persis, sampai pikselnya.
+- **Uji ujung-ke-ujung ke Supabase sungguhan** (Node 22): foto potret
+  3024×4032 → diproses 1600×1200 WebP → diunggah → diambil kembali lewat URL
+  publik → terverifikasi 4:3, bait identik → berkas uji dihapus lagi.
+  Ini sekaligus membuktikan `unggah()` bekerja dengan `Buffer` (dulu `File`).
+- Berat: **13,9 MB → 804 KB**.
+- `npx tsc --noEmit` bersih; `npx next build` sukses.
+- **sharp tidak ikut ke bundle browser**; `image-specs.ts` memang ikut.
+- Halaman admin dirender sungguhan (sesi dibuat sendiri lewat HMAC):
+  `/admin/foto` menampilkan syarat yang benar per slot, **7 kotak pratinjau
+  ber-`aspect-ratio`** + **4 slot logo** ber-`contain`; `/admin/produk/hex-bolt`
+  menampilkan syarat 4:3 dan 3 tombol unggah mati sebelum berkas dipilih.
+- **Logo kaki halaman diperiksa di aplikasi yang berjalan** — terbaca
+  "KairosBaut" bertinta gelap, logo navbar tetap putih.
+- Tidak ada regresi halaman publik: `git diff` menunjukkan **tidak satu pun**
+  berkas TSX/kueri halaman publik berubah — hanya dua deklarasi CSS.
+
+### BELUM diuji ⚠️
+- **Belum ada foto yang diunggah lewat browser sungguhan.** Server Action tidak
+  bisa dipicu dengan curl (butuh muatan RSC), jadi yang teruji adalah seluruh
+  jalur pemrosesan + penyimpanan, **bukan klik tombolnya**. Yang perlu dicoba:
+  1. Pilih foto potret dari ponsel → pratinjau harus langsung memperlihatkan
+     potongan 4:3, dan muncul keterangan "akan dipotong … tersimpan 1600×1200".
+  2. Unggah → cek `/produk`: baris katalog dan ketiga thumbnail di dialog.
+  3. Coba foto kecil (mis. 800 px) → harus ditolak dengan pesan yang jelas.
+  4. Coba logo klien → tidak boleh terpotong.
+- **Foto lama sebelum aturan ini tidak ikut diperbaiki.** Saat ini
+  `product_photos` masih kosong, jadi belum mendesak. Kalau nanti ada, harus
+  diunggah ulang — tidak ada migrasi otomatis.
+- Batas unggahan tetap **10 MB** (`periksaBerkas` + `serverActions.bodySizeLimit`).
+  Karena berkas sekarang disusutkan di server, batas ini bisa dinaikkan supaya
+  foto ponsel besar tidak ditolak sebelum sempat disusutkan.
+  **Belum dilakukan — menunggu keputusan user.**
+- **Node lokal 20.20.2 padahal `.nvmrc`/`engines` minta 22.** Sudah terbukti
+  menggigit: `@supabase/supabase-js` gagal di Node 20 ("native WebSocket not
+  found"), uji ujung-ke-ujung baru jalan setelah `nvm use 22`. Sebaiknya
+  `nvm use` dibiasakan sebelum kerja di repo ini.

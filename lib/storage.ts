@@ -16,11 +16,6 @@ export const MIME_DIIZINKAN = [
   'image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml',
 ];
 
-const EKSTENSI: Record<string, string> = {
-  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp',
-  'image/avif': 'avif', 'image/svg+xml': 'svg',
-};
-
 export function periksaBerkas(file: File): string | null {
   if (!file || file.size === 0) return 'Tidak ada berkas yang dipilih.';
   if (!MIME_DIIZINKAN.includes(file.type))
@@ -32,17 +27,25 @@ export function periksaBerkas(file: File): string | null {
 
 /* Nama berkas selalu baru (ada stempel waktu). Alasannya: CDN Supabase
    meng-cache berdasarkan URL, jadi menimpa nama yang sama akan tetap
-   menampilkan foto lama sampai cache-nya kedaluwarsa. */
-export function buatPath(prefix: string, file: File): string {
-  const ext = EKSTENSI[file.type] ?? 'bin';
+   menampilkan foto lama sampai cache-nya kedaluwarsa.
+
+   Ekstensi dikirim pemanggil, bukan diambil dari file.type: gambar raster
+   sudah diubah jadi WebP oleh lib/image-rules.ts sebelum sampai ke sini,
+   jadi tipe berkas aslinya tidak lagi menggambarkan isinya. */
+export function buatPath(prefix: string, ext: string): string {
   const acak = Math.random().toString(36).slice(2, 8);
   return `${prefix}-${Date.now()}-${acak}.${ext}`;
 }
 
-export async function unggah(bucket: string, path: string, file: File): Promise<string | null> {
+export async function unggah(
+  bucket: string,
+  path: string,
+  body: Buffer,
+  contentType: string
+): Promise<string | null> {
   const db = createAdminClient();
-  const { error } = await db.storage.from(bucket).upload(path, file, {
-    contentType: file.type,
+  const { error } = await db.storage.from(bucket).upload(path, body, {
+    contentType,
     cacheControl: '31536000', // nama berkas unik, jadi aman di-cache lama
     upsert: false,
   });

@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Berita — Kairos Baut (Mockup 1 · Ruang Berita)</title>
+<meta name="description" content="Siaran pers, kegiatan, dan kabar perusahaan PT Kairos Multi Sejahtera.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..800&family=Roboto+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="../../app/kairos.css">
+<style>
+  /* =========================================================================
+     MOCKUP 1 — "RUANG BERITA"
+     Paling dekat ke rekaman ASML di img/news.mov.
+
+     Yang diambil dari rujukan:
+       · garis kolom vertikal tipis yang membelah seluruh halaman
+       · baris hub 4 kolom, tiap kolom bergaris aksen pendek di bawah
+       · pita selebar layar berisi satu tombol tunggal
+       · "siaran pers terbaru": label besar di kiri, kartu putih di kanan,
+         di atas latar gelap
+       · tanggal huruf kapital berjarak lebar sebagai elemen desain
+
+     Yang TIDAK diambil: warna biru/kuning ASML. Semua warna, huruf, radius,
+     dan bayangan diambil dari token kairos.css yang sudah ada.
+     ====================================================================== */
+
+  /* ---------- Garis kolom (ciri khas rujukan) ---------- */
+  .rules { position: relative; }
+  .rules > .wrap { position: relative; z-index: 1; }
+  .rules::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    max-width: var(--maxw); margin-inline: auto;
+    padding-inline: var(--gut);
+    background:
+      repeating-linear-gradient(to right,
+        var(--line-2) 0 1px, transparent 1px calc(100% / 4));
+    background-clip: content-box;
+    -webkit-background-clip: content-box;
+    opacity: .9;
+  }
+  @media (max-width: 860px) { .rules::before { display: none; } }
+
+  /* ---------- Kepala halaman ---------- */
+  .phead { background: var(--off); border-bottom: 1px solid var(--line); padding-block: clamp(40px, 6vw, 80px) clamp(34px, 5vw, 58px); }
+  .crumbs { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 20px; }
+  .crumbs a { text-decoration: none; }
+  .crumbs a:hover { color: var(--green-ink); }
+  .phead h1 { font-size: clamp(44px, 7vw, 92px); letter-spacing: -0.04em; }
+  .phead .lede { margin-top: 18px; margin-bottom: 0; max-width: 44ch; }
+
+  /* ---------- Hub 4 kolom ---------- */
+  .hub { display: grid; grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 860px) { .hub { grid-template-columns: repeat(2, 1fr); gap: 34px 24px; } }
+  @media (max-width: 520px) { .hub { grid-template-columns: 1fr; } }
+  .hub a {
+    display: block; text-decoration: none; color: inherit;
+    padding: 4px clamp(16px, 2.4vw, 30px) 4px 0;
+  }
+  .hub h3 { font-size: 17px; margin-bottom: 10px; }
+  .hub p { font-size: 14px; color: var(--muted); line-height: 1.6; margin: 0 0 16px; }
+  .hub i {
+    display: block; width: 30px; height: 3px; background: var(--green);
+    transition: width .3s var(--ease);
+  }
+  .hub a:hover h3 { color: var(--green-ink); }
+  .hub a:hover i { width: 60px; }
+
+  /* ---------- Pita CTA selebar layar ---------- */
+  .band {
+    background: linear-gradient(90deg, var(--green-deep) 0%, var(--green-btn) 55%, var(--green) 100%);
+    padding-block: clamp(30px, 4vw, 46px);
+    text-align: center;
+  }
+  .band .btn { background: #fff; border-color: #fff; color: var(--green-deep); }
+  .band .btn:hover { background: var(--off); border-color: var(--off); box-shadow: 0 12px 26px rgba(11,58,29,.3); }
+  .band p { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.72); margin: 0 0 16px; }
+
+  /* ---------- Siaran pers terbaru (latar gelap) ---------- */
+  .latest { display: grid; grid-template-columns: minmax(200px, 1fr) 3fr; gap: clamp(24px, 4vw, 56px); align-items: start; }
+  @media (max-width: 900px) { .latest { grid-template-columns: 1fr; } }
+  .latest > h2 { font-size: clamp(30px, 3.6vw, 46px); font-weight: 500; letter-spacing: -0.03em; }
+  .prs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 900px) { .prs { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .prs { grid-template-columns: 1fr; } }
+  .pr {
+    display: flex; flex-direction: column; gap: 12px;
+    background: var(--white); color: var(--ink);
+    border-radius: var(--r-sm); padding: 20px 20px 22px;
+    text-decoration: none; min-height: 200px;
+    transition: transform .3s var(--ease), box-shadow .3s;
+  }
+  .pr:hover { transform: translateY(-5px); box-shadow: 0 20px 44px rgba(0,0,0,.28); }
+  .pr time { font-family: var(--mono); font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+  /* kairos.css punya aturan `.sec--dark h3 { color:#fff }`. Kartu ini putih
+     dan berada DI DALAM .sec--dark, jadi warnanya harus dikembalikan —
+     tanpa baris ini judulnya putih di atas putih alias hilang. */
+  .pr h3 { font-size: 16.5px; line-height: 1.28; color: var(--ink); }
+  .pr i { display: block; width: 26px; height: 3px; background: var(--green); margin-top: auto; }
+
+  /* ---------- Arsip ---------- */
+  .years { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(30px, 4vw, 44px); }
+  .year {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em;
+    color: rgba(255,255,255,.72); text-decoration: none;
+    border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: 8px 16px;
+    transition: border-color .2s, color .2s;
+  }
+  .year:hover { border-color: #6FDD97; color: #fff; }
+</style>
+</head>
+<body>
+<div class="shell">
+<a class="skip" href="#main">Lompat ke konten</a>
+
+<header id="hdr">
+  <div class="bar">
+    <a class="logo" href="index.html" aria-label="Kairos Baut — beranda">
+      <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+        <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+        <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/>
+        <rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+      </svg>
+      <b>Kairos<i>Baut</i></b>
+    </a>
+    <nav class="main">
+      <a href="produk.html">Produk</a>
+      <a href="index.html#industri">Industri</a>
+      <a href="news-1-ruang.html" aria-current="page">Berita</a>
+      <a href="blog.html">Blog</a>
+      <a href="index.html#tentang">Tentang Kami</a>
+      <a class="btn btn--sm" href="index.html#kontak">Minta Penawaran</a>
+    </nav>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mobnav">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+  <nav class="mobnav" id="mobnav" aria-label="Menu utama">
+    <a href="produk.html">Produk</a>
+    <a href="index.html#industri">Industri</a>
+    <a href="news-1-ruang.html" aria-current="page">Berita</a>
+    <a href="blog.html">Blog</a>
+    <a href="index.html#tentang">Tentang Kami</a>
+    <a class="btn" href="index.html#kontak">Minta Penawaran</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- Kepala halaman: remah jejak → judul raksasa → satu paragraf.
+     Tanpa gambar, persis seperti di rujukan. -->
+<section class="phead rules">
+  <div class="wrap">
+    <p class="crumbs"><a href="index.html">Beranda</a> / Berita</p>
+    <h1>Berita.</h1>
+    <p class="lede">Siaran pers, kabar pengiriman, dan kegiatan PT Kairos Multi Sejahtera — lengkap dengan tautan ke berkas foto dan kontak media kami.</p>
+  </div>
+</section>
+
+<!-- Hub 4 kolom. Di rujukan: Press releases · Stories · Media library ·
+     Media contacts. Diterjemahkan ke urusan yang benar-benar kami punya. -->
+<section class="sec sec--tight rules">
+  <div class="wrap">
+    <div class="hub">
+      <a href="#terbaru">
+        <h3>Siaran pers</h3>
+        <p>Pengumuman resmi perusahaan: keagenan baru, sertifikasi, dan perluasan gudang.</p>
+        <i aria-hidden="true"></i>
+      </a>
+      <a href="#terbaru">
+        <h3>Kegiatan &amp; pameran</h3>
+        <p>Jadwal pameran industri, pelatihan teknis, dan kunjungan pabrik yang kami ikuti.</p>
+        <i aria-hidden="true"></i>
+      </a>
+      <a href="#terbaru">
+        <h3>Berkas media</h3>
+        <p>Logo, foto gudang, dan foto produk resolusi tinggi — siap dipakai redaksi.</p>
+        <i aria-hidden="true"></i>
+      </a>
+      <a href="#kontak-media">
+        <h3>Kontak media</h3>
+        <p>Nama dan nomor yang bisa dihubungi wartawan, tanpa lewat sentral.</p>
+        <i aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Pita selebar layar, satu tombol saja — seperti "Sign up for news
+     alerts" di rujukan. -->
+<section class="band">
+  <div class="wrap">
+    <p>Kabar langsung ke meja Anda</p>
+    <a class="btn" href="#" >Berlangganan kabar Kairos <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<!-- Label besar di kiri, kartu putih di kanan, di atas latar hijau tua.
+     Ini tata letak yang paling menonjol di rekaman. -->
+<section class="sec sec--dark" id="terbaru">
+  <div class="wrap">
+    <div class="latest">
+      <h2>Siaran pers<br>terbaru</h2>
+      <div>
+        <div class="prs">
+          <a class="pr" href="#">
+            <time datetime="2026-08-28">28 Agustus 2026</time>
+            <h3>Kairos Baut menambah gudang kedua di Cikarang, kapasitas simpan naik 60%</h3>
+            <i aria-hidden="true"></i>
+          </a>
+          <a class="pr" href="#">
+            <time datetime="2026-07-15">15 Juli 2026</time>
+            <h3>Seluruh lini baut mutu 8.8 dan 10.9 kini disertai mill certificate per batch</h3>
+            <i aria-hidden="true"></i>
+          </a>
+          <a class="pr" href="#">
+            <time datetime="2026-05-16">16 Mei 2026</time>
+            <h3>Penunjukan sebagai distributor resmi fastener tahan karat untuk wilayah Jawa dan Sumatera</h3>
+            <i aria-hidden="true"></i>
+          </a>
+        </div>
+        <div class="years">
+          <a class="year" href="#">Semua</a>
+          <a class="year" href="#">2026</a>
+          <a class="year" href="#">2025</a>
+          <a class="year" href="#">2024</a>
+          <a class="year" href="#">2023</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Blok kontak media — di rujukan ini muncul di kaki halaman detail,
+     berisi nama-nama orang, bukan alamat umum. -->
+<section class="sec sec--off rules" id="kontak-media">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">Untuk redaksi</p>
+      <h2>Kontak media.</h2>
+      <p class="lede">Untuk permintaan wawancara, data, atau foto beresolusi tinggi — hubungi langsung, jangan lewat sentral.</p>
+    </div>
+    <div class="hub">
+      <a href="mailto:marketing@kairosbaut.com">
+        <h3>Rina Hapsari</h3>
+        <p>Komunikasi Perusahaan<br>marketing@kairosbaut.com<br>+62 21 6500 888</p>
+        <i aria-hidden="true"></i>
+      </a>
+      <a href="mailto:marketing@kairosbaut.com">
+        <h3>Bagus Prakoso</h3>
+        <p>Teknis &amp; Produk<br>marketing@kairosbaut.com<br>+62 21 8983 2622</p>
+        <i aria-hidden="true"></i>
+      </a>
+      <a href="#">
+        <h3>Berkas foto</h3>
+        <p>Logo, foto gudang, dan foto produk — satu arsip, siap unduh.</p>
+        <i aria-hidden="true"></i>
+      </a>
+      <a href="index.html#kontak">
+        <h3>Bukan wartawan?</h3>
+        <p>Untuk harga dan ketersediaan barang, lewat formulir penawaran.</p>
+        <i aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="fg">
+      <div>
+        <a class="logo" href="index.html">
+          <svg width="30" height="26" viewBox="0 0 30 26" fill="none" aria-hidden="true">
+            <path d="M2 24 L9 6 L14 16 L18 9 L28 24 Z" fill="#1E9E4A"/>
+            <path d="M13.5 1 L20 3.2 L13.5 5.4 Z" fill="currentColor"/><rect x="13" y="1" width="1.2" height="6" fill="currentColor"/>
+          </svg>
+          <b>Kairos<i>Baut</i></b>
+        </a>
+        <p style="margin-top:15px; max-width:32ch">PT Kairos Multi Sejahtera — distributor baut &amp; mur untuk industri Indonesia.</p>
+        <nav aria-label="Tautan halaman" style="margin-top:16px">
+          <a href="index.html">Beranda</a>
+          <a href="produk.html">Indeks produk</a>
+          <a href="index.html#kontak">Minta penawaran</a>
+        </nav>
+      </div>
+      <div><h4>Kantor</h4><p>Perkantoran Mega Sunter Blok B No. 32<br>Jl. Danau Sunter Selatan<br>Jakarta 14350</p><p><a href="tel:+62216500888">+62 21 6500 888</a></p></div>
+      <div><h4>Workshop</h4><p>Kawasan Industri Jababeka 1 Blok C 17 A<br>Pasirgombong, Cikarang Utara<br>Bekasi 17530</p><p><a href="tel:+622189832622">+62 21 8983 2622</a></p></div>
+      <div><h4>Jam Kerja</h4><p>Senin – Jumat 08.00 – 17.00<br>Sabtu 08.00 – 12.00</p><p><a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a></p></div>
+    </div>
+    <div class="fb"><span>© 2026 PT Kairos Multi Sejahtera</span><span>Mockup Berita 1 — Ruang Berita</span></div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/6287784085400" aria-label="Chat WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.43 12.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
+  </svg>
+  <b>Chat WhatsApp</b>
+</a>
+
+<script src="kairos.js"></script>
+</body>
+</html>

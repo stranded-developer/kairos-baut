@@ -1,8 +1,10 @@
 'use client';
 
-import { useActionState, useRef, useState } from 'react';
+import { useActionState, useRef } from 'react';
 import { unggahFoto, simpanAlt, hapusFoto, type FotoState } from './actions';
 import ConfirmSubmit from '@/components/ConfirmSubmit';
+import { useGambarTerpilih } from '@/components/useGambarTerpilih';
+import { aturanSlot, kalimatSyarat, rasioCss } from '@/lib/image-specs';
 
 export interface Slot {
   key: string;
@@ -21,16 +23,28 @@ export default function MediaCard({ slot }: { slot: Slot }) {
 
   const fileRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const [pratinjau, setPratinjau] = useState<string | null>(null);
-  const [namaBerkas, setNamaBerkas] = useState<string | null>(null);
+  /* Tiap slot punya aturannya sendiri — hero 3:2, gudang 2:1, panel industri
+     4:3, logo klien bebas. Lihat lib/image-specs.ts. */
+  const aturan = aturanSlot(slot.key);
+  const gambar = useGambarTerpilih(aturan);
+  const pratinjau = gambar.pratinjau;
 
-  const pesan = unggahState.error ?? altState.error ?? hapusState.error
+  /* Galat dari browser didahulukan: ia muncul seketika saat berkas dipilih,
+     sedangkan pesan server baru ada setelah unggahan. */
+  const pesan = gambar.galat ?? unggahState.error ?? altState.error ?? hapusState.error
     ?? unggahState.ok ?? altState.ok ?? hapusState.ok;
-  const pesanSalah = !!(unggahState.error || altState.error || hapusState.error);
+  const pesanSalah = !!(gambar.galat || unggahState.error || altState.error || hapusState.error);
 
   return (
     <div className="adm-media">
-      <div className="adm-media-pic">
+      {/* Kotak pratinjau memakai rasio slot + object-fit: cover, jadi bagian
+          foto yang terlihat di sini SAMA PERSIS dengan yang akan tersimpan.
+          Slot logo dikecualikan: logo tidak dipotong dan latarnya transparan,
+          jadi tetap object-fit: contain. */}
+      <div
+        className={`adm-media-pic${aturan.rasio ? '' : ' adm-media-pic--logo'}`}
+        style={rasioCss(aturan) ? { aspectRatio: rasioCss(aturan)! } : undefined}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={pratinjau ?? slot.src} alt="" />
         {slot.fallback && !pratinjau && <span className="adm-tag">Gambar cadangan</span>}
@@ -40,11 +54,19 @@ export default function MediaCard({ slot }: { slot: Slot }) {
       <div className="adm-media-body">
         <h3>{slot.label}</h3>
         {slot.note && <p className="adm-note-sm">{slot.note}</p>}
+        {/* Syarat rasio ditulis dari lib/image-specs.ts, bukan dari kolom
+            `note` di basis data — supaya yang tertulis di layar dan yang
+            diterapkan server tidak mungkin berbeda. */}
+        <p className="adm-note-sm adm-hint--rule">{kalimatSyarat(aturan)}</p>
 
         {pesan && (
           <p className={pesanSalah ? 'adm-error' : 'adm-ok'} role={pesanSalah ? 'alert' : 'status'}>
             {pesan}
           </p>
+        )}
+        {/* Keterangan pemotongan — pemberitahuan, bukan galat. */}
+        {!pesanSalah && gambar.catatanPotong && (
+          <p className="adm-crop">{gambar.catatanPotong}</p>
         )}
 
         <form action={unggahAction} ref={formRef}>
@@ -55,16 +77,12 @@ export default function MediaCard({ slot }: { slot: Slot }) {
             name="file"
             accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml"
             className="adm-file"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (!f) { setPratinjau(null); setNamaBerkas(null); return; }
-              setNamaBerkas(`${f.name} · ${(f.size / 1048576).toFixed(1)} MB`);
-              setPratinjau(URL.createObjectURL(f));
-            }}
+            onChange={(e) => gambar.pilih(e.target.files?.[0] ?? null)}
           />
-          {namaBerkas && <p className="adm-filename">{namaBerkas}</p>}
+          {gambar.namaBerkas && <p className="adm-filename">{gambar.namaBerkas}</p>}
           <div className="adm-media-btns">
-            <button className="btn btn--sm" type="submit" disabled={unggahPending || !pratinjau}>
+            {/* Tombol mati selama rasionya belum benar. */}
+            <button className="btn btn--sm" type="submit" disabled={unggahPending || !gambar.siap}>
               {unggahPending ? 'Mengunggah…' : 'Unggah foto'}
             </button>
             {pratinjau && (
@@ -72,7 +90,7 @@ export default function MediaCard({ slot }: { slot: Slot }) {
                 type="button"
                 className="btn btn--sm btn--ghost"
                 onClick={() => {
-                  setPratinjau(null); setNamaBerkas(null);
+                  gambar.reset();
                   if (fileRef.current) fileRef.current.value = '';
                 }}
               >
