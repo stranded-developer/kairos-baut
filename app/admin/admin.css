@@ -364,3 +364,37 @@
   font-family: var(--mono); font-size: 12.5px;
   background: rgba(0,0,0,.05); border-radius: 4px; padding: 1px 5px;
 }
+
+/* ---- Pemotong gambar (2026-09-09) ----
+   Menggantikan pratinjau pasif: admin sekarang menggeser dan memperbesar
+   sendiri, jadi tidak ada lagi potongan tengah yang menebak. */
+.pot { display: grid; gap: 10px; }
+.pot-kotak {
+  position: relative; overflow: hidden;
+  background: var(--off); border: 1px solid var(--line); border-radius: var(--r-sm);
+  cursor: grab; touch-action: none; user-select: none;
+}
+.pot-kotak:active { cursor: grabbing; }
+.pot-kotak img {
+  position: absolute; top: 0; left: 0; max-width: none; display: block;
+  transform-origin: 0 0; pointer-events: none;
+}
+.pot-petunjuk {
+  position: absolute; left: 8px; bottom: 8px; z-index: 1;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase;
+  background: rgba(14,26,18,.62); color: #fff; border-radius: 999px; padding: 4px 9px;
+  pointer-events: none;
+}
+.pot-zoom { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--body); }
+.pot-zoom span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.pot-zoom input[type="range"] { flex: 1; accent-color: var(--green-btn); }
+.pot-zoom button {
+  border: 1px solid var(--line); background: var(--white); border-radius: 999px;
+  padding: 5px 11px; font-size: 12px; cursor: pointer; color: var(--body);
+}
+.pot-zoom button:hover { border-color: var(--green); color: var(--green-ink); }
+.pot-tombol { display: flex; gap: 8px; flex-wrap: wrap; }
+/* `.adm-photo .btn { width: 100% }` (baris ~308) dibuat waktu tiap kartu cuma
+   punya satu tombol. Sekarang ada dua — Unggah dan Batal — jadi keduanya
+   menumpuk selebar kolom. Di dalam pemotong, biarkan berbagi satu baris. */
+.adm-photo .pot-tombol .btn { width: auto; flex: 1 1 auto; margin-top: 0; }

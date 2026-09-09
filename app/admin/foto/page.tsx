@@ -2,24 +2,11 @@ import AdminBar from '../AdminBar';
 import MediaCard, { type Slot } from './MediaCard';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { storageUrl } from '@/lib/supabase/public';
+/* Peta cadangan diimpor, tidak disalin — dulu ada dua salinan dan sempat
+   berbeda isinya. */
+import { CADANGAN } from '@/lib/queries';
 
 export const dynamic = 'force-dynamic';
-
-/* Cadangan di /public/img — sama persis dengan yang dipakai lib/queries.ts.
-   Selama slot belum ada unggahan, inilah yang tampil di situs. */
-const CADANGAN: Record<string, string> = {
-  'hero': '/img/hero.jpeg',
-  'gudang': '/img/gudang.jpg',
-  'industri-bg': '/img/machinery.jpg',
-  'industri-machinery': '/img/machinery.jpg',
-  'industri-automotive': '/img/automotive.jpg',
-  'industri-konstruksi': '/img/konstruski.jpeg',
-  'industri-electrical': '/img/electrical.jpeg',
-  'logo-adhi-karya': '/img/logo/adhi-karya.png',
-  'logo-karya-logam-agung': '/img/logo/karya-logam-agung.png',
-  'logo-ihi-power-electric': '/img/logo/ihi-power-electric.png',
-  'logo-wijaya-karya': '/img/logo/wijaya-karya.png',
-};
 
 export default async function AdminFoto() {
   const db = createAdminClient();

@@ -13,8 +13,16 @@
    server, jadi pemeriksaan browser murni kenyamanan dan tidak bisa ditembus
    dengan mematikan JavaScript.
 
+   PERUBAHAN 2026-09-09 (ketiga). Pemotongan tengah otomatis diganti jadi
+   **pemotong yang diatur admin** (components/PemotongGambar.tsx): geser dan
+   perbesar sendiri. Potong tengah tetap ada sebagai cadangan kalau bidangnya
+   tidak terkirim (JavaScript mati). Alasannya: potong tengah bisa ditebak,
+   tapi tetap menebak — objek yang tidak persis di tengah ikut terpotong dan
+   admin tidak punya jalan memperbaikinya selain memotong berkasnya di
+   aplikasi lain.
+
    PERUBAHAN 2026-09-08 (kedua). Semula rasio yang salah DITOLAK. Diganti jadi
-   **dipotong otomatis**, karena menolak ternyata tidak memperbaiki apa pun:
+   dipotong, karena menolak ternyata tidak memperbaiki apa pun:
    kotak tampilannya sudah `object-fit: cover`, jadi foto berasio apa pun
    sebenarnya sudah tampil rapi. Menolak hanya menghalangi pekerjaan tanpa
    membuat hasilnya lebih baik — apalagi foto pemasok datang dalam segala
@@ -93,8 +101,8 @@ export function contohUkuran(a: Aturan): string {
 export function kalimatSyarat(a: Aturan): string {
   const ukuran = `Lebar minimal ${a.minLebar} px; di atas ${a.maksLebar} px otomatis disusutkan.`;
   return a.rasio
-    ? `Rasio apa pun boleh — foto dipotong otomatis dari tengah ke ${labelRasio(a)}, ` +
-      `persis seperti pratinjau. ${ukuran}`
+    ? `Rasio apa pun boleh — setelah berkas dipilih, atur sendiri bagian yang dipakai ` +
+      `(geser & perbesar). Hasilnya selalu ${labelRasio(a)}. ${ukuran}`
     : `Rasio bebas, tidak dipotong. ${ukuran}`;
 }
 

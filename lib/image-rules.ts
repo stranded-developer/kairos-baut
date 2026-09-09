@@ -16,12 +16,13 @@ import { periksaUkuran, ukuranHasil, type Aturan } from './image-specs';
    ponsel tampil sebagai jalur sempit dengan pinggiran kosong lebar.
 
    Yang dilakukan tiap unggahan:
-     · dipotong dari TENGAH ke rasio slot — bukan ditolak. Pemotongan tengah
-       dipilih karena bisa ditebak: kotak pratinjau di /admin memakai rasio
-       yang sama dengan object-fit: cover, jadi yang dilihat admin sebelum
-       menyimpan sama persis dengan yang tersimpan. Strategi `attention` milik
-       sharp memang lebih pintar, tapi hasilnya tidak bisa ditebak sehingga
-       pratinjaunya jadi bohong.
+     · dipotong ke rasio slot — bukan ditolak. **Admin yang menentukan bagian
+       mana yang dipakai**, lewat pemotong di /admin (geser + perbesar).
+       Bidang potongnya dikirim sebagai persegi piksel pada `crop`.
+       Kalau `crop` tidak ada — JavaScript mati, atau formulir lama —
+       potongannya jatuh ke TENGAH. Tengah dipilih sebagai cadangan karena
+       bisa ditebak; strategi `attention` milik sharp lebih pintar tapi
+       hasilnya tidak bisa ditebak sehingga pratinjaunya jadi bohong.
      · penyusutan resolusi ke maksLebar. Ini yang membereskan berat berkas:
        foto ponsel 4000 px belasan MB tidak lagi dikirim apa adanya.
      · konversi ke WebP.
@@ -33,9 +34,33 @@ import { periksaUkuran, ukuranHasil, type Aturan } from './image-specs';
 
 export { ATURAN_PRODUK, aturanSlot } from './image-specs';
 
+/** Persegi potong dalam piksel SUMBER, sesudah orientasi EXIF diluruskan. */
+export type Potong = { x: number; y: number; w: number; h: number };
+
 export type HasilGambar =
   | { error: string }
   | { buffer: Buffer; contentType: string; ext: string; lebar: number; tinggi: number };
+
+/**
+ * Membaca bidang potong dari FormData. Mengembalikan null kalau tidak lengkap
+ * atau bukan angka — artinya jatuh ke potong tengah, bukan gagal.
+ */
+export function bacaPotong(fd: FormData): Potong | null {
+  const n = (k: string) => Number(fd.get(k));
+  const x = n('crop_x'), y = n('crop_y'), w = n('crop_w'), h = n('crop_h');
+  if (![x, y, w, h].every(Number.isFinite)) return null;
+  if (w < 1 || h < 1 || x < 0 || y < 0) return null;
+  return { x, y, w, h };
+}
+
+/** Menjepit bidang potong ke dalam batas gambar. */
+function jepitBidang(p: Potong, lebar: number, tinggi: number): Potong {
+  const x = Math.max(0, Math.min(Math.round(p.x), lebar - 1));
+  const y = Math.max(0, Math.min(Math.round(p.y), tinggi - 1));
+  const w = Math.max(1, Math.min(Math.round(p.w), lebar - x));
+  const h = Math.max(1, Math.min(Math.round(p.h), tinggi - y));
+  return { x, y, w, h };
+}
 
 /**
  * Memeriksa ukuran, lalu memotong ke rasio slot, menyusutkan, dan
@@ -44,7 +69,11 @@ export type HasilGambar =
  * SVG dilewatkan apa adanya: ia vektor, tidak punya ukuran piksel yang
  * bermakna dan tidak perlu disusutkan. Hanya dipakai untuk logo klien.
  */
-export async function siapkanGambar(file: File, aturan: Aturan): Promise<HasilGambar> {
+export async function siapkanGambar(
+  file: File,
+  aturan: Aturan,
+  potong?: Potong | null
+): Promise<HasilGambar> {
   const asli = Buffer.from(await file.arrayBuffer());
 
   if (file.type === 'image/svg+xml') {
@@ -73,16 +102,40 @@ export async function siapkanGambar(file: File, aturan: Aturan): Promise<HasilGa
   const salah = periksaUkuran(lebar, tinggi, aturan);
   if (salah) return { error: salah };
 
+  /* Bidang potong dari admin dipercaya hanya setelah dijepit ke dalam batas
+     gambar. Nilai dari browser tidak pernah dianggap sudah benar. */
+  const bidang = potong ? jepitBidang(potong, lebar, tinggi) : null;
+
+  if (bidang && aturan.rasio) {
+    /* Lebar setelah dipotong sendiri yang menentukan tajam atau tidak —
+       admin bisa memperbesar sampai bidangnya terlalu kecil. */
+    if (bidang.w < aturan.minLebar) {
+      return {
+        error:
+          `Potongannya terlalu kecil: ${bidang.w} px, minimal ${aturan.minLebar} px. ` +
+          `Kurangi perbesaran, atau pakai foto beresolusi lebih tinggi.`,
+      };
+    }
+  }
+
   /* Ukuran sasaran dihitung dari fungsi bersama, jadi angka yang dijanjikan
      kotak pratinjau dan angka yang benar-benar ditulis tidak bisa berbeda. */
-  const target = ukuranHasil(lebar, tinggi, aturan);
+  const target = bidang
+    ? ukuranHasil(bidang.w, bidang.h, aturan)
+    : ukuranHasil(lebar, tinggi, aturan);
 
-  /* `fit: cover` + `position: centre` = potong tengah lalu skala ke ukuran
-     sasaran. Karena target dihitung dari ukuran sumber, tidak akan pernah
-     memperbesar (memperbesar cuma menambah berat, bukan detail). */
   try {
-    const keluar = await sharp(asli)
-      .rotate() /* menerapkan orientasi EXIF; tanpa ini foto ponsel bisa miring */
+    let alur = sharp(asli).rotate(); /* orientasi EXIF; tanpa ini foto ponsel miring */
+
+    /* `.extract()` berjalan SESUDAH `.rotate()`, jadi koordinatnya sama
+       dengan yang dilihat admin di browser (naturalWidth/Height juga sudah
+       memperhitungkan EXIF). Tanpa urutan ini bidangnya meleset pada foto
+       potret dari ponsel. */
+    if (bidang) {
+      alur = alur.extract({ left: bidang.x, top: bidang.y, width: bidang.w, height: bidang.h });
+    }
+
+    const keluar = await alur
       .resize(target.w, target.h, { fit: 'cover', position: 'centre' })
       .webp({ quality: 82 })
       .toBuffer({ resolveWithObject: true });

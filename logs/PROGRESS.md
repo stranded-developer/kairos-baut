@@ -1038,3 +1038,69 @@ Sesudah dijalankan, yang perlu dicoba sendiri:
 3. Centang "Foto di kanan" pada blok Sejarah → kolomnya harus bertukar.
 4. Unggah foto ke slot Tentang — ingat rasionya (spanduk 16:9, sisanya 4:3);
    foto berasio lain akan dipotong dari tengah, sesuai pratinjau.
+
+
+---
+
+## Pemotong gambar diatur admin — bukan potong tengah lagi (2026-09-09)
+
+User bertanya: *"it autocrops? instead of telling me to crop isnt letting me
+crop naturaly better or what??"* — **betul, dan itu memang lebih baik.**
+
+Potong tengah otomatis memang bisa ditebak, tapi tetap **menebak**. Baut yang
+tidak persis di tengah kepalanya terpotong, dan admin tidak punya jalan
+memperbaikinya selain memotong ulang berkasnya di aplikasi lain. Sekarang
+admin sendiri yang menentukan bidangnya.
+
+Ini perubahan **ketiga** pada aturan gambar dalam dua hari — urutannya:
+tolak (8 Sep) → potong tengah (8 Sep) → **diatur admin (9 Sep)**.
+
+### Yang dikerjakan
+| Berkas | Isi |
+|---|---|
+| `components/PemotongGambar.tsx` **(baru)** | Kotak pandang berasio slot; gambar diskalakan minimal sampai menutup kotak, lalu bisa digeser & diperbesar (1–4×) |
+| `lib/image-rules.ts` | `siapkanGambar()` menerima `Potong` opsional; `.extract()` sesudah `.rotate()`; `bacaPotong()`; `jepitBidang()` |
+| `app/admin/*/actions.ts` | Meneruskan `bacaPotong(fd)` |
+| `MediaCard.tsx`, `ProductPhotos.tsx` | Memakai pemotong; pratinjau pasif dilepas |
+| `components/useGambarTerpilih.ts` | **Dihapus** — digantikan pemotong |
+
+### Keputusan yang perlu diingat
+1. **Bidang dikirim dalam piksel SUMBER**, dan `.extract()` dijalankan
+   **sesudah** `.rotate()`. Urutannya wajib begitu: `naturalWidth/Height` di
+   browser sudah memperhitungkan EXIF, jadi kalau `.extract()` jalan sebelum
+   `.rotate()` bidangnya meleset pada foto potret dari ponsel.
+2. **Nilai dari browser tidak pernah dipercaya.** `jepitBidang()` menjepitnya
+   ke batas gambar di server.
+3. **Potong tengah tetap ada sebagai cadangan.** Kalau `crop_*` tidak
+   terkirim (JavaScript mati), perilakunya persis seperti sebelumnya —
+   formulirnya tidak rusak.
+4. **Perbesaran dibatasi mutu, bukan angka.** Zoom sampai 4×, tapi begitu
+   bidangnya turun di bawah `minLebar` tombol Simpan mati dan alasannya
+   ditulis. Diperiksa di server juga.
+
+### Sudah diuji ✅
+- **14/14 uji server** memakai gambar penanda (kuadran kiri-atas merah,
+  sisanya hitam), jadi bisa dibuktikan piksel mana yang benar-benar terambil:
+  potong kiri-atas → hasilnya merah seluruhnya; kanan-bawah → tidak ada merah;
+  tanpa `crop` → potong tengah seperti dulu; bidang meluber → dijepit;
+  bidang terlalu kecil → ditolak; `bacaPotong` menolak masukan setengah jadi.
+- **Interaksinya dijalankan sungguhan di Chrome lewat CDP** (Node 22 punya
+  WebSocket bawaan), bukan cuma dibaca kodenya. Berkas dipasang ke `<input>`,
+  lalu tetikus diseret dan slider digerakkan:
+  - foto 3000×1500 di kotak 4:3 → bidang awal `2000×1500` di `x=0`;
+  - diseret → `x` naik ke `1000` lalu **berhenti di situ** (batas kanan);
+  - zoom 2,2× → bidang `909×682`, muncul galat "di bawah minimal 1200 px",
+    dan **tombol Simpan benar-benar `disabled`**.
+- `npx tsc --noEmit` bersih; `npx next build` sukses.
+
+Satu cacat tata letak ketahuan dari tangkapan layar dan sudah diperbaiki:
+`.adm-photo .btn { width: 100% }` dibuat waktu tiap kartu cuma punya satu
+tombol; sekarang ada dua (Unggah + Batal) sehingga menumpuk selebar kolom.
+Ditimpa khusus di dalam `.pot-tombol`.
+
+### BELUM diuji ⚠️
+- **Belum dicoba di layar sentuh.** Kodenya memakai Pointer Events dan
+  `touch-action: none`, jadi secara teori jalan — tapi belum dibuktikan.
+- Belum ada foto sungguhan yang diunggah lewat tombolnya (Server Action tidak
+  bisa dipicu curl). Yang teruji: bidangnya benar sampai ke sharp, dan
+  antarmukanya berperilaku benar di browser.

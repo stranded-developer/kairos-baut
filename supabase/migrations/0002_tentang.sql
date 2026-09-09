@@ -50,7 +50,7 @@ create policy about_blocks_public_read on public.about_blocks for select using (
 -- ---------------------------------------------------------------------------
 insert into public.site_media (key, label, grp, alt, note, sort_order) values
   ('tentang-banner', 'Tentang — spanduk atas',   'Tentang Kami', 'Gudang dan stok baut PT Kairos Multi Sejahtera', 'Tampil selebar layar di balik judul, digelapkan supaya tulisannya terbaca.', 20),
-  ('tentang-sejarah','Tentang — foto sejarah',   'Tentang Kami', 'Rak penyimpanan stok baut di gudang Kairos Baut',  'Mendampingi paragraf sejarah perusahaan.',                                  21),
+  ('tentang-sejarah','Tentang — foto sejarah',   'Tentang Kami', 'Fastener Kairos dipakai di lini perakitan otomotif','Mendampingi paragraf sejarah perusahaan.',                                  21),
   ('tentang-mutu',   'Tentang — foto mutu',      'Tentang Kami', 'Pemeriksaan mutu fastener di lini produksi',       'Mendampingi paragraf kepercayaan dan mutu.',                                22),
   ('tentang-industri','Tentang — foto industri', 'Tentang Kami', 'Fastener Kairos dipakai di proyek industri',       'Mendampingi paragraf ucapan terima kasih.',                                 23)
 on conflict (key) do nothing;

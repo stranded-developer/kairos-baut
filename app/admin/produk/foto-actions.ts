@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAdmin } from '@/lib/admin-guard';
 import { periksaBerkas, buatPath, unggah, hapusBerkas } from '@/lib/storage';
-import { siapkanGambar, ATURAN_PRODUK } from '@/lib/image-rules';
+import { siapkanGambar, bacaPotong, ATURAN_PRODUK } from '@/lib/image-rules';
 
 const BUCKET = 'product-photos';
 const JENIS = ['produk', 'teknis', 'kemasan'] as const;
@@ -36,7 +36,7 @@ export async function unggahFotoProduk(
 
   /* Rasio diperiksa DI SINI, sebelum apa pun ditulis. Kalau rasionya salah
      tidak ada berkas yang naik dan tidak ada baris basis data yang berubah. */
-  const gambar = await siapkanGambar(file, ATURAN_PRODUK);
+  const gambar = await siapkanGambar(file, ATURAN_PRODUK, bacaPotong(fd));
   if ('error' in gambar) return { error: gambar.error };
 
   const db = createAdminClient();

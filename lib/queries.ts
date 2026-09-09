@@ -114,7 +114,10 @@ export interface MediaSlot {
 /* Berkas cadangan di /public/img untuk tiap slot. Selama admin belum
    mengunggah foto, inilah yang tampil — jadi tampilan situs tidak berubah
    sedikit pun dibanding mockup. */
-const CADANGAN: Record<string, string> = {
+/* Diekspor supaya /admin/foto memakai peta yang SAMA, bukan salinan.
+   Sebelumnya ada dua salinan dan keduanya sempat berbeda: slot tentang-*
+   ditambahkan di sini tapi tidak di sana, sehingga pratinjaunya kosong. */
+export const CADANGAN: Record<string, string> = {
   'hero': '/img/hero.jpeg',
   'gudang': '/img/gudang.jpg',
   'industri-bg': '/img/machinery.jpg',

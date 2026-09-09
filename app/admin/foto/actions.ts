@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAdmin } from '@/lib/admin-guard';
 import { periksaBerkas, buatPath, unggah, hapusBerkas } from '@/lib/storage';
-import { siapkanGambar, aturanSlot } from '@/lib/image-rules';
+import { siapkanGambar, bacaPotong, aturanSlot } from '@/lib/image-rules';
 
 const BUCKET = 'site-photos';
 
@@ -29,7 +29,7 @@ export async function unggahFoto(_prev: FotoState, fd: FormData): Promise<FotoSt
   /* Tiap slot punya rasionya sendiri (lihat lib/image-rules.ts) — hero 3:2,
      gudang 2:1, panel industri 4:3, logo klien bebas. Diperiksa sebelum
      apa pun ditulis. */
-  const gambar = await siapkanGambar(file, aturanSlot(key));
+  const gambar = await siapkanGambar(file, aturanSlot(key), bacaPotong(fd));
   if ('error' in gambar) return { error: gambar.error };
 
   const db = createAdminClient();

@@ -1,9 +1,9 @@
 'use client';
 
-import { useActionState, useRef } from 'react';
+import { useActionState, useRef, useState } from 'react';
 import { unggahFoto, simpanAlt, hapusFoto, type FotoState } from './actions';
 import ConfirmSubmit from '@/components/ConfirmSubmit';
-import { useGambarTerpilih } from '@/components/useGambarTerpilih';
+import PemotongGambar from '@/components/PemotongGambar';
 import { aturanSlot, kalimatSyarat, rasioCss } from '@/lib/image-specs';
 
 export interface Slot {
@@ -21,19 +21,15 @@ export default function MediaCard({ slot }: { slot: Slot }) {
   const [altState, altAction] = useActionState<FotoState, FormData>(simpanAlt, {});
   const [hapusState, hapusAction] = useActionState<FotoState, FormData>(hapusFoto, {});
 
-  const fileRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   /* Tiap slot punya aturannya sendiri — hero 3:2, gudang 2:1, panel industri
-     4:3, logo klien bebas. Lihat lib/image-specs.ts. */
+     4:3, Tentang 16:9 & 4:3, logo klien bebas. Lihat lib/image-specs.ts. */
   const aturan = aturanSlot(slot.key);
-  const gambar = useGambarTerpilih(aturan);
-  const pratinjau = gambar.pratinjau;
+  const [siap, setSiap] = useState(false);
 
-  /* Galat dari browser didahulukan: ia muncul seketika saat berkas dipilih,
-     sedangkan pesan server baru ada setelah unggahan. */
-  const pesan = gambar.galat ?? unggahState.error ?? altState.error ?? hapusState.error
+  const pesan = unggahState.error ?? altState.error ?? hapusState.error
     ?? unggahState.ok ?? altState.ok ?? hapusState.ok;
-  const pesanSalah = !!(gambar.galat || unggahState.error || altState.error || hapusState.error);
+  const pesanSalah = !!(unggahState.error || altState.error || hapusState.error);
 
   return (
     <div className="adm-media">
@@ -45,10 +41,11 @@ export default function MediaCard({ slot }: { slot: Slot }) {
         className={`adm-media-pic${aturan.rasio ? '' : ' adm-media-pic--logo'}`}
         style={rasioCss(aturan) ? { aspectRatio: rasioCss(aturan)! } : undefined}
       >
+        {/* Foto yang SUDAH tersimpan. Pratinjau unggahan baru ada di kotak
+            pemotong, bukan di sini. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={pratinjau ?? slot.src} alt="" />
-        {slot.fallback && !pratinjau && <span className="adm-tag">Gambar cadangan</span>}
-        {pratinjau && <span className="adm-tag adm-tag--new">Belum disimpan</span>}
+        <img src={slot.src} alt="" />
+        {slot.fallback && <span className="adm-tag">Gambar cadangan</span>}
       </div>
 
       <div className="adm-media-body">
@@ -64,40 +61,13 @@ export default function MediaCard({ slot }: { slot: Slot }) {
             {pesan}
           </p>
         )}
-        {/* Keterangan pemotongan — pemberitahuan, bukan galat. */}
-        {!pesanSalah && gambar.catatanPotong && (
-          <p className="adm-crop">{gambar.catatanPotong}</p>
-        )}
-
         <form action={unggahAction} ref={formRef}>
           <input type="hidden" name="key" value={slot.key} />
-          <input
-            ref={fileRef}
-            type="file"
-            name="file"
-            accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml"
-            className="adm-file"
-            onChange={(e) => gambar.pilih(e.target.files?.[0] ?? null)}
-          />
-          {gambar.namaBerkas && <p className="adm-filename">{gambar.namaBerkas}</p>}
-          <div className="adm-media-btns">
-            {/* Tombol mati selama rasionya belum benar. */}
-            <button className="btn btn--sm" type="submit" disabled={unggahPending || !gambar.siap}>
+          <PemotongGambar aturan={aturan} onSiap={setSiap}>
+            <button className="btn btn--sm" type="submit" disabled={unggahPending || !siap}>
               {unggahPending ? 'Mengunggah…' : 'Unggah foto'}
             </button>
-            {pratinjau && (
-              <button
-                type="button"
-                className="btn btn--sm btn--ghost"
-                onClick={() => {
-                  gambar.reset();
-                  if (fileRef.current) fileRef.current.value = '';
-                }}
-              >
-                Batal
-              </button>
-            )}
-          </div>
+          </PemotongGambar>
         </form>
 
         <form action={altAction} className="adm-alt">

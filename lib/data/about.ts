@@ -87,7 +87,10 @@ export const BLOK_BAWAAN: Blok[] = [
    untuk memakai foto yang sudah dipunyai. */
 export const CADANGAN_TENTANG: Record<string, string> = {
   'tentang-banner': '/img/gudang.jpg',
-  'tentang-sejarah': '/img/gudang.jpg',
+  /* Bukan gudang.jpg lagi: spanduk dan baris pertama jadi foto yang sama
+     persis, dan terlihat jelas karena keduanya berdekatan. automotive.jpg
+     juga foto stok beresolusi paling besar (1600 px) di antara yang ada. */
+  'tentang-sejarah': '/img/automotive.jpg',
   'tentang-mutu': '/img/machinery.jpg',
   'tentang-industri': '/img/konstruski.jpeg',
 };
@@ -98,7 +101,7 @@ export const CADANGAN_TENTANG: Record<string, string> = {
    sekali sebelum migrasi. */
 export const ALT_TENTANG: Record<string, string> = {
   'tentang-banner': 'Gudang dan stok baut PT Kairos Multi Sejahtera',
-  'tentang-sejarah': 'Rak penyimpanan stok baut di gudang Kairos Baut',
+  'tentang-sejarah': 'Fastener Kairos dipakai di lini perakitan otomotif',
   'tentang-mutu': 'Pemeriksaan mutu fastener di lini produksi',
   'tentang-industri': 'Fastener Kairos dipakai di proyek industri',
 };

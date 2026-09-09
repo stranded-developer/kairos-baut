@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useRef, useState } from 'react';
+import { useActionState, useState } from 'react';
 import {
   unggahFotoProduk,
   hapusFotoProduk,
@@ -8,7 +8,7 @@ import {
   type FotoProdukState,
 } from './foto-actions';
 import ConfirmSubmit from '@/components/ConfirmSubmit';
-import { useGambarTerpilih } from '@/components/useGambarTerpilih';
+import PemotongGambar from '@/components/PemotongGambar';
 import { ATURAN_PRODUK, kalimatSyarat } from '@/lib/image-specs';
 
 export interface FotoProduk {
@@ -70,28 +70,25 @@ function PhotoSlotCard({
   const [naik, naikAction, pending] = useActionState<FotoProdukState, FormData>(unggahFotoProduk, {});
   const [buang, buangAction] = useActionState<FotoProdukState, FormData>(hapusFotoProduk, {});
   const [altState, altAction] = useActionState<FotoProdukState, FormData>(simpanAltProduk, {});
-  const fileRef = useRef<HTMLInputElement>(null);
-  const gambar = useGambarTerpilih(ATURAN_PRODUK);
-  const pratinjau = gambar.pratinjau;
+  const [siap, setSiap] = useState(false);
   /* Dikendalikan React supaya nilai yang diketik sebelum mengunggah ikut
      terkirim bersama berkasnya, bukan hilang. */
   const [alt, setAlt] = useState(photo?.alt ?? '');
 
-  /* Galat dari browser didahulukan: ia muncul seketika saat berkas dipilih,
-     sedangkan pesan server baru ada setelah unggahan. */
-  const pesan = gambar.galat ?? naik.error ?? buang.error ?? altState.error ?? naik.ok ?? buang.ok ?? altState.ok;
-  const salah = !!(gambar.galat || naik.error || buang.error || altState.error);
+  const pesan = naik.error ?? buang.error ?? altState.error ?? naik.ok ?? buang.ok ?? altState.ok;
+  const salah = !!(naik.error || buang.error || altState.error);
 
   return (
     <div className="adm-photo">
+      {/* Foto yang SUDAH tersimpan. Pratinjau unggahan baru tidak lagi di sini
+          — sudah jadi kotak pemotong di bawah. */}
       <div className="adm-photo-pic">
-        {pratinjau || photo ? (
+        {photo ? (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={pratinjau ?? photo!.url} alt="" />
+          <img src={photo.url} alt="" />
         ) : (
           <span className="adm-photo-empty">Belum ada foto</span>
         )}
-        {pratinjau && <span className="adm-tag adm-tag--new">Belum disimpan</span>}
       </div>
 
       <b>{label}</b>
@@ -100,37 +97,15 @@ function PhotoSlotCard({
       {pesan && (
         <p className={salah ? 'adm-error' : 'adm-ok'} role={salah ? 'alert' : 'status'}>{pesan}</p>
       )}
-      {/* Keterangan pemotongan — pemberitahuan, bukan galat. Kotak pratinjau
-          di atas sudah 4:3 + cover, jadi yang terlihat = yang tersimpan. */}
-      {!salah && gambar.catatanPotong && <p className="adm-crop">{gambar.catatanPotong}</p>}
-
       <form action={naikAction}>
         <input type="hidden" name="product_id" value={productId} />
         <input type="hidden" name="kind" value={kind} />
         <input type="hidden" name="alt" value={alt} />
-        <input
-          ref={fileRef}
-          type="file"
-          name="file"
-          accept="image/jpeg,image/png,image/webp,image/avif"
-          className="adm-file"
-          onChange={(e) => gambar.pilih(e.target.files?.[0] ?? null)}
-        />
-        {gambar.namaBerkas && <p className="adm-filename">{gambar.namaBerkas}</p>}
-        {/* Tombol mati selama rasionya belum benar — tidak ada gunanya
-            mengirim 8 MB hanya untuk ditolak server. */}
-        <button className="btn btn--sm" type="submit" disabled={pending || !gambar.siap}>
-          {pending ? 'Mengunggah…' : photo ? 'Ganti foto' : 'Unggah'}
-        </button>
-        {pratinjau && (
-          <button
-            type="button"
-            className="btn btn--sm btn--ghost"
-            onClick={() => { gambar.reset(); if (fileRef.current) fileRef.current.value = ''; }}
-          >
-            Batal
+        <PemotongGambar aturan={ATURAN_PRODUK} onSiap={setSiap}>
+          <button className="btn btn--sm" type="submit" disabled={pending || !siap}>
+            {pending ? 'Mengunggah…' : photo ? 'Ganti foto' : 'Unggah'}
           </button>
-        )}
+        </PemotongGambar>
       </form>
 
       {/* Teks alternatif — bisa disunting sendiri, tanpa mengunggah ulang.
