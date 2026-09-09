@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Logo from './Logo';
 
-export type NavKey = 'produk' | 'berita' | 'blog' | null;
+export type NavKey = 'produk' | 'berita' | 'blog' | 'tentang' | null;
 
 /* `home` menentukan ke mana jangkar #industri / #tentang menunjuk: di beranda
    cukup hash, di halaman lain harus lewat "/" dulu.
@@ -9,7 +9,6 @@ export type NavKey = 'produk' | 'berita' | 'blog' | null;
    tampilan E (lihat kairos.css, blok TAMPILAN E). */
 export default function Header({ home = false, current = null }: { home?: boolean; current?: NavKey }) {
   const industri = home ? '#industri' : '/#industri';
-  const tentang = home ? '#tentang' : '/#tentang';
   const kontak = home ? '#kontak' : '/#kontak';
   const mark = (k: NavKey) => (current === k ? { 'aria-current': 'page' as const } : {});
 
@@ -25,7 +24,9 @@ export default function Header({ home = false, current = null }: { home?: boolea
       <Link href="/blog" {...mark('blog')}>
         Blog
       </Link>
-      <a href={tentang}>Tentang Kami</a>
+      <Link href="/tentang" {...mark('tentang')}>
+        Tentang Kami
+      </Link>
       <a className={btnClass} href={kontak}>
         Minta Penawaran
       </a>

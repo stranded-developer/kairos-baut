@@ -1,26 +1,13 @@
 /* ============================================================================
    Isi contoh untuk halaman Berita.
 
-   SEMUA TEKS DI SINI KARANGAN — dipakai supaya ketiga rancangan bisa dinilai
-   dengan panjang naskah yang realistis. Belum ada tabel `news` di Supabase;
-   keputusan itu sengaja ditunda sampai satu rancangan dipilih (lihat Bagian 8
-   pada logs/PROGRESS.md). Mengikuti pola lib/data/posts.ts.
+   SEMUA TEKS DI SINI KARANGAN. Belum ada tabel `news` di Supabase — Berita
+   belum bisa disunting dari /admin, tidak seperti halaman Tentang Kami.
+   Mengikuti pola lib/data/posts.ts.
 
    Kalau nanti dipindah ke Supabase, bentuk datanya sudah cocok: satu tabel
    `news` dengan kolom tanggal, judul, ringkasan, kategori, dan slug.
    ========================================================================= */
-
-export type Kategori = { slug: string; nama: string; ket: string };
-
-/* Hub empat kolom pada rancangan "Ruang Berita" — meniru
-   Press releases · Stories · Media library · Media contacts di rujukan ASML,
-   diterjemahkan ke urusan yang benar-benar dipunyai Kairos. */
-export const KATEGORI: Kategori[] = [
-  { slug: 'siaran-pers', nama: 'Siaran pers', ket: 'Pengumuman resmi perusahaan: keagenan baru, sertifikasi, dan perluasan gudang.' },
-  { slug: 'kegiatan', nama: 'Kegiatan & pameran', ket: 'Jadwal pameran industri, pelatihan teknis, dan kunjungan pabrik yang kami ikuti.' },
-  { slug: 'berkas-media', nama: 'Berkas media', ket: 'Logo, foto gudang, dan foto produk resolusi tinggi — siap dipakai redaksi.' },
-  { slug: 'kontak-media', nama: 'Kontak media', ket: 'Nama dan nomor yang bisa dihubungi wartawan, tanpa lewat sentral.' },
-];
 
 export type Berita = {
   slug: string;
@@ -29,7 +16,7 @@ export type Berita = {
   judul: string;
   ringkas: string;
   kategori: string;
-  foto?: string;        // dipakai rancangan "Papan Berita"
+  foto?: string;
 };
 
 export const BERITA: Berita[] = [
@@ -98,42 +85,11 @@ export const BERITA: Berita[] = [
   },
 ];
 
-/* Butir ringkasan berbentuk poin pada rancangan "Kronik" — meniru ringkasan
-   di kepala siaran pers ASML. */
-export const UTAMA_BUTIR = [
-  'Gudang seluas 2.100 m² di Jababeka 1 mulai menerima barang sejak 25 Agustus.',
-  'Kapasitas simpan gabungan naik dari 1.500 menjadi 2.400 item siap kirim.',
-  'Pengiriman ke Jawa Barat dan Banten dipangkas rata-rata satu hari kerja.',
-];
-
 export const SARING = ['Semua', 'Siaran pers', 'Kegiatan', 'Produk baru', 'Sertifikasi'];
-export const TAHUN = ['Semua', '2026', '2025', '2024', '2023'];
 
 export type KontakMedia = { nama: string; peran: string; surel: string; telepon?: string };
 
 export const KONTAK_MEDIA: KontakMedia[] = [
   { nama: 'Rina Hapsari', peran: 'Komunikasi Perusahaan', surel: 'marketing@kairosbaut.com', telepon: '+62 21 6500 888' },
   { nama: 'Bagus Prakoso', peran: 'Teknis & Produk', surel: 'marketing@kairosbaut.com', telepon: '+62 21 8983 2622' },
-];
-
-/* Ketiga rancangan yang sedang dinilai. Dipakai halaman pemilih di /berita
-   dan batang pembanding di tiap rancangan. */
-export type Rancangan = { slug: string; nama: string; ringkas: string; ide: string };
-
-export const RANCANGAN: Rancangan[] = [
-  {
-    slug: 'ruang', nama: 'Ruang Berita',
-    ringkas: 'Paling dekat ke rujukan ASML.',
-    ide: 'Hub empat kolom, garis kolom vertikal, pita satu tombol, lalu kartu putih di atas pita hijau tua.',
-  },
-  {
-    slug: 'kronik', nama: 'Kronik',
-    ringkas: 'Daftar bertanggal, tanpa gambar.',
-    ide: 'Kolom tanggal di kiri, judul dan ringkasan di kanan, dipisah garis rambut. Paling tegas dan paling murah dirawat.',
-  },
-  {
-    slug: 'papan', nama: 'Papan Berita',
-    ringkas: 'Paling ramah foto.',
-    ide: 'Satu berita utama berfoto besar, lalu mosaik kartu. Meminjam kosakata kartu dari halaman Blog.',
-  },
 ];

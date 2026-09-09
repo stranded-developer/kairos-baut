@@ -59,6 +59,14 @@ const ATURAN_SLOT: Record<string, Aturan> = {
   'industri-automotive': { rasio: [4, 3],  minLebar: 1200, maksLebar: 1600 },
   'industri-konstruksi': { rasio: [4, 3],  minLebar: 1200, maksLebar: 1600 },
   'industri-electrical': { rasio: [4, 3],  minLebar: 1200, maksLebar: 1600 },
+
+  /* Tentang Kami (2026-09-09). Angkanya mengikuti kotak di tentang.css:
+     spanduk dipasang selebar layar sebagai latar (16:9 aman untuk dipotong
+     `cover`), tiga foto barisnya memakai .tt-shot yang aspect-ratio: 4 / 3. */
+  'tentang-banner':      { rasio: [16, 9], minLebar: 2000, maksLebar: 2400 },
+  'tentang-sejarah':     { rasio: [4, 3],  minLebar: 1200, maksLebar: 1600 },
+  'tentang-mutu':        { rasio: [4, 3],  minLebar: 1200, maksLebar: 1600 },
+  'tentang-industri':    { rasio: [4, 3],  minLebar: 1200, maksLebar: 1600 },
 };
 
 const LOGO_BEBAS: Aturan = { rasio: null, minLebar: 120, maksLebar: 900 };

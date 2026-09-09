@@ -942,3 +942,99 @@ diawali `.brt`.
 2. Hapus dua folder rancangan yang kalah + `Switch.tsx` + blok `.brt-switch`.
 3. Baru putuskan soal Supabase: tabel `news` sendiri, atau kolom `kind` di
    `posts` (lihat pertanyaan terbuka di Bagian 8).
+
+
+---
+
+## Berita dipilih + halaman Tentang Kami (2026-09-09)
+
+### 1. Berita — rancangan 3 dipilih
+User memilih **"Papan Berita"**. Isinya dipindah ke `app/berita/page.tsx`;
+`/berita/ruang`, `/berita/kronik`, dan `Switch.tsx` **dihapus**, begitu juga
+blok CSS `.brt-ruang`, `.brt-kronik`, `.brt-switch`, `.brt-pick`, serta ekspor
+`KATEGORI`, `UTAMA_BUTIR`, `TAHUN`, dan `RANCANGAN` yang jadi yatim.
+
+`/berita` masih memakai isi contoh dari `lib/data/news.ts` — **belum bisa
+disunting dari /admin**, tidak seperti Tentang Kami. Kalau nanti mau, tinggal
+ikuti pola `about_blocks`.
+
+### 2. Halaman Tentang Kami — baru
+Naskah dari user (surat Direktur Utama), **disalin apa adanya**. Satu-satunya
+penyuntingan: paragraf kedua dipotong pada kalimat motonya supaya moto bisa
+tampil sebagai kutipan besar. **Tidak ada kata yang hilang** — blok `mutu`
+meneruskan kalimat sesudah moto.
+
+Rancangan mengikuti **matraturbine.com/about-us** (`mockups/img/screenshot/`),
+diterjemahkan ke tema hijau–putih. Yang diambil:
+spanduk foto selebar layar bertirai warna merek · baris berselang-seling
+foto ↔ teks dengan foto menyentuh tepi layar, dibuat abu-abu, dan **meleleh**
+ke latar · naskah rata kiri-kanan · moto sebagai kutipan besar · pita penutup.
+
+**Nav "Tentang Kami" sekarang menuju `/tentang`**, bukan lagi jangkar
+`/#tentang`. Bagian Tentang di beranda **dibiarkan apa adanya** — tidak
+diminta diubah.
+
+### Berkas
+| Berkas | Isi |
+|---|---|
+| `supabase/migrations/0002_tentang.sql` | Tabel `about_blocks` + 4 slot foto di `site_media` + seed |
+| `lib/data/about.ts` | Isi bawaan (cadangan + sumber seed), cadangan foto & alt |
+| `lib/queries.ts` | `getAboutBlocks()`; `getSiteMedia()` kini melengkapi slot yang barisnya belum ada |
+| `app/tentang/` | Halaman publik + CSS (dibungkus `.tt`) |
+| `app/admin/tentang/` | Penyunting naskah + foto |
+| `lib/image-specs.ts` | Rasio 4 slot foto baru |
+
+### Keputusan yang perlu diingat
+1. **Slot bernama, bukan blok bebas.** Sama seperti `site_media` — barisnya
+   tetap, admin menyunting isinya. Ini pola yang sudah dipakai 0001 dan cocok
+   untuk pemakai non-teknis.
+2. **Foto TIDAK diurus tabel sendiri.** Memakai `site_media` (grp 'Tentang
+   Kami') supaya seluruh jalur unggah yang sudah teruji dipakai ulang —
+   rasio, pemotongan tengah, WebP, alt. `about_blocks.media_key` yang
+   menyambungkan. Nol kode unggah baru.
+3. **Halaman tetap tampil sebelum migrasi dijalankan.** `getAboutBlocks()`
+   sengaja tidak melempar kalau tabelnya belum ada; ia jatuh ke isi bawaan
+   yang sama persis. `/admin/tentang` menampilkan peringatan kuning berisi
+   langkah yang kurang.
+4. **Paragraf disimpan sebagai teks biasa**, dipisah baris kosong, dipecah
+   saat render. Admin mengetik di `<textarea>` — tidak ada HTML yang bisa
+   salah tulis atau disisipkan.
+
+### Sudah diuji ✅
+- `npx tsc --noEmit` bersih; `npx next build` sukses, 12 route.
+- `/tentang` 200 dan **dilihat di browser**: spanduk berfoto, tiga baris
+  foto↔teks berselang-seling, moto, tanda tangan, pita penutup.
+- `/admin/tentang` 200 dengan sesi, **307 tanpa sesi** (middleware
+  `/admin/:path*` sudah mencakupnya tanpa perubahan). Menampilkan 6 formulir
+  blok dengan label yang benar dan peringatan migrasi.
+- `/blog` diperiksa lagi — tidak terpengaruh penghapusan rancangan berita.
+- SQL 0002 diperiksa: kutip tunggal genap (144), 9 pernyataan, urutan
+  `site_media` sebelum `about_blocks` sudah benar untuk foreign key-nya.
+
+Dua cacat ketahuan dari render dan sudah diperbaiki:
+1. **Foto berhenti 40 px dari tepi layar.** `<figure>` punya margin bawaan
+   peramban `1em 40px` dan `kairos.css` tidak me-reset-nya. Justru menyentuh
+   tepi itu yang bikin tata letak rujukan terasa lapang → `.tt-shot { margin: 0 }`.
+2. **Foto tidak muncul sama sekali.** Slot `tentang-*` belum ada barisnya di
+   `site_media`, jadi hilang dari peta yang dikembalikan `getSiteMedia()` —
+   bukan cuma tanpa foto, tata letaknya ikut jatuh jadi satu kolom.
+   `getSiteMedia()` kini melengkapi slot yang punya cadangan tapi barisnya
+   belum ada.
+
+Juga disetel di muka, sebelum sempat jadi bug: tirai spanduk diturunkan dari
+.82/.88 ke .62/.74 (pada nilai lama fotonya hilang), dan `.btn--ghost`
+ditimpa di dalam pita gelap (warna bawaannya tinta gelap — nyaris tak terlihat).
+
+### LANGKAH MANUAL YANG MASIH KURANG ⚠️
+**Jalankan `supabase/migrations/0002_tentang.sql` di SQL editor Supabase.**
+Tidak ada psql maupun Supabase CLI di mesin ini, dan kunci layanan tidak bisa
+menjalankan DDL lewat PostgREST — jadi langkah ini tidak bisa dikerjakan dari
+sini. Sebelum dijalankan: halaman publik normal, tapi naskah & foto **belum
+bisa disunting**.
+
+Sesudah dijalankan, yang perlu dicoba sendiri:
+1. `/admin/tentang` — peringatan kuning harus hilang, 4 slot foto muncul.
+2. Ubah satu paragraf → Simpan → cek `/tentang`.
+3. Centang "Foto di kanan" pada blok Sejarah → kolomnya harus bertukar.
+4. Unggah foto ke slot Tentang — ingat rasionya (spanduk 16:9, sisanya 4:3);
+   foto berasio lain akan dipotong dari tengah, sesuai pratinjau.

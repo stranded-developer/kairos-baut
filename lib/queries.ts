@@ -2,6 +2,7 @@ import 'server-only';
 import { createPublicClient, storageUrl } from './supabase/public';
 import type { Product, StockStatus, ProductCategory } from './data/products';
 import type { Post, Topic } from './data/posts';
+import { BLOK_BAWAAN, CADANGAN_TENTANG, type Blok } from './data/about';
 
 /* ============================================================================
    Pembacaan data untuk halaman publik.
@@ -125,6 +126,7 @@ const CADANGAN: Record<string, string> = {
   'logo-karya-logam-agung': '/img/logo/karya-logam-agung.png',
   'logo-ihi-power-electric': '/img/logo/ihi-power-electric.png',
   'logo-wijaya-karya': '/img/logo/wijaya-karya.png',
+  ...CADANGAN_TENTANG,
 };
 
 interface MediaRow {
@@ -143,5 +145,57 @@ export async function getSiteMedia(): Promise<Record<string, MediaSlot>> {
       ? { src: storageUrl('site-photos', r.storage_path), alt: r.alt, fallback: false }
       : { src: CADANGAN[r.key] ?? '', alt: r.alt, fallback: true };
   }
+
+  /* Slot yang punya cadangan tapi BARISNYA belum ada di basis data tetap
+     dikembalikan. Tanpa ini, halaman Tentang Kami tampil tanpa foto sama
+     sekali sampai migrasi 0002 dijalankan manual di SQL editor — bukan cuma
+     kehilangan foto, tapi tata letaknya ikut berubah jadi satu kolom.
+     Baris yang ada di basis data selalu menang. */
+  for (const [key, src] of Object.entries(CADANGAN)) {
+    out[key] ??= { src, alt: '', fallback: true };
+  }
   return out;
+}
+
+
+/* ---- Tentang Kami ---- */
+interface BlokRow {
+  key: string; label: string; kind: string; heading: string; body: string;
+  media_key: string | null; flip: boolean; caption: string; note: string;
+  sort_order: number;
+}
+
+/**
+ * Blok naskah halaman Tentang Kami.
+ *
+ * Sengaja TIDAK melempar kalau tabelnya belum ada. Migrasi 0002 dijalankan
+ * manual lewat SQL editor Supabase (tidak ada psql/CLI di mesin ini), jadi
+ * ada jeda antara kode ini terpasang dan tabelnya terbentuk. Selama jeda itu
+ * halaman tetap tampil dengan isi bawaan dari lib/data/about.ts — isi yang
+ * sama persis dengan yang di-seed migrasi.
+ *
+ * Beda dengan getSiteMedia() yang memang melempar: di sana tabelnya sudah
+ * pasti ada sejak 0001.
+ */
+export async function getAboutBlocks(): Promise<Blok[]> {
+  const db = createPublicClient();
+  const { data, error } = await db
+    .from('about_blocks')
+    .select('key,label,kind,heading,body,media_key,flip,caption,note,sort_order')
+    .order('sort_order');
+
+  if (error || !data || data.length === 0) return BLOK_BAWAAN;
+
+  return (data as BlokRow[]).map((r) => ({
+    key: r.key,
+    label: r.label,
+    kind: r.kind as Blok['kind'],
+    heading: r.heading,
+    body: r.body,
+    mediaKey: r.media_key,
+    flip: r.flip,
+    caption: r.caption,
+    note: r.note,
+    sortOrder: r.sort_order,
+  }));
 }

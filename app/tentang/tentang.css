@@ -1,0 +1,181 @@
+/* ============================================================================
+   Tentang Kami.
+
+   Rancangan mengikuti matraturbine.com/about-us (tangkapan layar ada di
+   mockups/img/screenshot/), diterjemahkan ke tema hijau–putih Kairos.
+   Yang diambil dari rujukan:
+
+     · spanduk foto selebar layar bertirai warna merek, judul putih di tengah;
+     · baris berselang-seling foto ↔ teks. Fotonya menyentuh tepi layar,
+       dibuat abu-abu, dan MELELEH ke latar (bukan kotak berbatas tegas);
+     · naskah rata kiri-kanan (justify) — ciri paling khas rujukan;
+     · moto sebagai kutipan besar;
+     · penutup: pita gelap berisi ajakan.
+
+   Semua dibungkus `.tt` — sama alasannya dengan berita.css: CSS di App Router
+   itu global, dan nama seperti `.txt`, `.art`, `.row` sudah dipakai halaman
+   lain dengan aturan berbeda.
+
+   Warna, huruf, radius, dan bayangan seluruhnya token kairos.css. Tidak ada
+   nilai baru yang diperkenalkan di sini.
+   ========================================================================= */
+
+/* ------------------------------------------------------------- spanduk atas */
+.tt-banner {
+  position: relative;
+  min-height: clamp(220px, 30vw, 360px);
+  display: grid; place-items: center;
+  background: var(--green-deep) center/cover no-repeat;
+  text-align: center;
+  padding: clamp(40px, 6vw, 76px) var(--gut);
+  isolation: isolate;
+}
+/* Tirai hijau tua. Rujukan memakai satu warna merek yang pekat — bukan
+   gradasi — supaya judulnya selalu terbaca berapa pun terangnya foto.
+   Kepekatannya diturunkan ke .62/.74 setelah dilihat: pada .82/.88 fotonya
+   hilang sama sekali dan pitanya jadi kotak hijau polos. */
+.tt-banner::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgba(11,58,29,.62), rgba(11,58,29,.74));
+}
+.tt-banner h1 {
+  color: #fff; font-size: clamp(38px, 6vw, 76px); letter-spacing: -0.04em; margin: 0;
+}
+.tt-banner .crumbs {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .16em;
+  text-transform: uppercase; color: rgba(255,255,255,.62); margin: 0 0 16px;
+}
+.tt-banner .crumbs a { text-decoration: none; color: rgba(255,255,255,.62); }
+.tt-banner .crumbs a:hover { color: #fff; }
+.tt-banner .lede {
+  color: rgba(255,255,255,.80); margin: 18px auto 0; max-width: 56ch;
+}
+
+/* ------------------------------------------------ baris foto ↔ teks */
+.tt-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; gap: clamp(24px, 4vw, 60px);
+  padding-block: clamp(44px, 6vw, 92px);
+}
+/* Kolom teks disejajarkan dengan tepi dalam .wrap halaman lain, supaya
+   halaman ini tidak terasa lepas dari sisa situs. */
+.tt-row .tt-txt { padding-inline: var(--gut); }
+.tt-row:not(.flip) .tt-txt { padding-inline-end: max(var(--gut), calc((100vw - var(--maxw)) / 2)); }
+.tt-row.flip .tt-txt { padding-inline-start: max(var(--gut), calc((100vw - var(--maxw)) / 2)); }
+
+/* Foto dibalik ke kanan. `order` dipakai, bukan direction, supaya urutan
+   bacanya di pembaca layar tetap: teks dulu, foto belakangan. */
+.tt-row.flip .tt-shot { order: 2; }
+
+/* `margin: 0` WAJIB: elemen <figure> punya margin bawaan peramban
+   `1em 40px`, dan kairos.css tidak me-reset-nya. Tanpa ini foto berhenti
+   40 px dari tepi layar — padahal justru menyentuh tepi itu yang bikin
+   tata letak rujukan terasa lapang. */
+.tt-shot {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+  background: var(--off);
+  overflow: hidden;
+}
+.tt-shot img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  /* Abu-abu seperti rujukan — foto stok berwarna-warni jadi tenang dan
+     seragam, dan tidak bersaing dengan naskah. */
+  filter: grayscale(1) contrast(1.04);
+}
+/* MELELEH ke latar. Rujukan tidak memakai bingkai: fotonya memudar di sisi
+   yang menghadap teks, juga sedikit di atas dan bawah. Dua mask ditumpuk
+   lewat mask-composite supaya pudarnya dua arah sekaligus. */
+.tt-shot::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to right, transparent 55%, var(--white) 96%);
+}
+.tt-row.flip .tt-shot::after {
+  background: linear-gradient(to left, transparent 55%, var(--white) 96%);
+}
+/* Pudar lembut di tepi atas & bawah, ditumpuk di atas yang mendatar. */
+.tt-shot::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, var(--white) 0%, transparent 14%, transparent 86%, var(--white) 100%);
+}
+
+.tt-txt h2 { font-size: clamp(24px, 2.8vw, 40px); margin-bottom: 20px; }
+/* Rata kiri-kanan seperti rujukan. `hyphens` dinyalakan karena tanpa itu
+   kolom sesempit ini melebarkan spasi sampai muncul "sungai" putih. */
+.tt-txt p {
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.75; color: var(--body);
+  text-align: justify; hyphens: auto;
+  margin: 0 0 1.1em;
+}
+.tt-txt p:last-child { margin-bottom: 0; }
+
+@media (max-width: 860px) {
+  .tt-row { grid-template-columns: 1fr; gap: 0; padding-block: clamp(30px, 6vw, 48px); }
+  .tt-row .tt-txt,
+  .tt-row.flip .tt-txt { padding-inline: var(--gut); padding-block-start: clamp(22px, 5vw, 34px); }
+  .tt-row.flip .tt-shot { order: 0; }
+  .tt-shot { aspect-ratio: 16 / 10; }
+  /* Di satu kolom, pudarnya pindah ke bawah — ke arah teks. */
+  .tt-shot::after { background: linear-gradient(180deg, transparent 60%, var(--white) 97%); }
+  .tt-shot::before { background: none; }
+  /* Justify pada kolom sempit merusak lebih banyak daripada menolong. */
+  .tt-txt p { text-align: left; }
+}
+
+/* ------------------------------------------------------------------ moto */
+.tt-quote {
+  background: var(--off); border-block: 1px solid var(--line);
+  padding-block: clamp(48px, 7vw, 96px);
+  text-align: center;
+}
+.tt-quote blockquote {
+  margin: 0 auto; max-width: 22ch;
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(28px, 4.4vw, 58px); line-height: 1.08;
+  letter-spacing: -0.035em; color: var(--ink);
+}
+/* Tanda kutip dibuat sebagai hiasan, bukan huruf — supaya tidak ikut terbaca
+   pembaca layar dan tidak menggeser perataan tengah. */
+.tt-quote blockquote::before,
+.tt-quote blockquote::after { content: '"'; color: var(--green); }
+.tt-quote p {
+  margin: 22px auto 0; max-width: 52ch;
+  font-size: clamp(15px, 1.15vw, 17px); color: var(--body);
+}
+.tt-quote i {
+  display: block; width: 44px; height: 3px; background: var(--green);
+  margin: 0 auto 26px;
+}
+
+/* ------------------------------------------------------- tanda tangan */
+.tt-sign { padding-block: clamp(44px, 6vw, 84px); text-align: center; }
+.tt-sign .salam { font-size: 16px; color: var(--body); margin: 0 0 10px; }
+.tt-sign .nama {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(22px, 2.4vw, 32px); letter-spacing: -0.03em; color: var(--ink);
+  margin: 0;
+}
+.tt-sign .jabatan {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--green-ink); margin: 10px 0 0;
+}
+.tt-sign .garis {
+  display: block; width: 56px; height: 2px; background: var(--line);
+  margin: 26px auto 0;
+}
+
+/* ------------------------------------------------------------- penutup */
+.tt-cta { text-align: center; }
+.tt-cta h2 { font-size: clamp(24px, 3vw, 40px); max-width: 20ch; margin: 0 auto; }
+.tt-cta .lede { margin: 18px auto 0; }
+.tt-cta .tombol {
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  margin-top: clamp(26px, 3.4vw, 38px);
+}
+
+/* `.btn--ghost` bawaan berwarna tinta gelap dengan garis tepi terang — di
+   atas pita hijau tua ia nyaris tak terlihat. Ditimpa khusus di sini. */
+.tt-cta .btn--ghost { color: #fff; border-color: rgba(255,255,255,.34); background: transparent; }
+.tt-cta .btn--ghost:hover { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.62); color: #fff; box-shadow: none; }

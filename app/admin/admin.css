@@ -333,3 +333,34 @@
   border-left: 3px solid var(--green); border-radius: 0 var(--r-sm) var(--r-sm) 0;
   padding: 8px 11px; margin: 8px 0 0;
 }
+
+/* ---- Tentang Kami (2026-09-09) ---- */
+.adm-bloks { display: grid; gap: 18px; }
+.adm-blok {
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 22px 22px 24px; display: grid; gap: 14px;
+}
+.adm-blok-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.adm-blok-head h3 { font-size: 16px; margin: 0; }
+.adm-blok-head code {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+  color: var(--muted); background: var(--off); border-radius: 999px; padding: 3px 9px;
+}
+.adm-blok textarea {
+  font-family: inherit; font-size: 14.5px; line-height: 1.6; resize: vertical;
+}
+.adm-blok .btn { justify-self: start; }
+.adm-check { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--body); }
+.adm-check input { width: 16px; height: 16px; accent-color: var(--green-btn); }
+
+.adm-warn {
+  background: #FFF7E6; border: 1px solid #F0DCA8; border-left: 4px solid #C98A00;
+  border-radius: var(--r-sm); padding: 16px 18px; margin: 22px 0 8px;
+}
+.adm-warn b { display: block; margin-bottom: 8px; color: var(--ink); }
+.adm-warn p { font-size: 14px; color: var(--body); margin: 0 0 .5em; line-height: 1.65; }
+.adm-warn p:last-child { margin-bottom: 0; }
+.adm-warn code {
+  font-family: var(--mono); font-size: 12.5px;
+  background: rgba(0,0,0,.05); border-radius: 4px; padding: 1px 5px;
+}
