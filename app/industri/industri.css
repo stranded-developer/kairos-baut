@@ -1,0 +1,108 @@
+/* ============================================================================
+   Industri — daftar proyek yang pernah dipasok Kairos.
+
+   Rancangannya mengambil satu ciri dari halaman "OUR PROJECTS" di
+   public/KAIROS 2.pdf: **kartu berisi foto dengan pita hijau pekat berisi
+   nama proyek di bawahnya**. Itu bentuk yang sudah dipakai company profile,
+   jadi cetak dan situsnya terasa satu keluarga.
+
+   Yang TIDAK ditiru: latar hitam dan susunan zig-zag bergaris penghubung.
+   Situs ini berlatar terang (keputusan dari notes.pdf — "the black vibes
+   makes everything feel so techy"), dan zig-zag hanya masuk akal di halaman
+   cetak berukuran tetap, bukan di kisi yang jumlah kolomnya berubah.
+
+   Semua dibungkus `.ind` — CSS di App Router itu global dan nama seperti
+   `.grid`, `.card`, `.tabs` gampang bentrok dengan halaman lain.
+   ========================================================================= */
+
+.ind .phead {
+  background: var(--off); border-bottom: 1px solid var(--line);
+  padding-block: clamp(38px, 5.4vw, 70px) clamp(30px, 4vw, 48px);
+}
+.ind .crumbs {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 18px;
+}
+.ind .crumbs a { text-decoration: none; }
+.ind .crumbs a:hover { color: var(--green-ink); }
+.ind .phead h1 { font-size: clamp(38px, 5.4vw, 68px); }
+.ind .phead .lede { margin-top: 16px; margin-bottom: 0; max-width: 54ch; }
+
+/* ---------- angka ringkas ---------- */
+.ind-stat { display: flex; gap: clamp(22px, 4vw, 54px); flex-wrap: wrap; margin-top: 26px; }
+.ind-stat div { display: grid; gap: 2px; }
+.ind-stat b {
+  font-family: var(--display); font-weight: 800; font-size: clamp(26px, 3vw, 38px);
+  letter-spacing: -0.03em; color: var(--ink); line-height: 1;
+}
+.ind-stat span {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* ---------- saring sektor ---------- */
+.ind-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: clamp(22px, 3vw, 32px); }
+.ind-tab {
+  font-size: 13.5px; font-weight: 600; color: var(--body);
+  background: var(--white); border: 1px solid var(--line); border-radius: 999px;
+  padding: 9px 16px; text-decoration: none; cursor: pointer;
+  font-family: inherit; transition: border-color .2s, color .2s, background .2s;
+}
+.ind-tab:hover { border-color: var(--green); color: var(--green-ink); }
+.ind-tab[aria-pressed="true"] { background: var(--green-btn); border-color: var(--green-btn); color: #fff; }
+.ind-tab i {
+  font-style: normal; opacity: .55; margin-left: 6px;
+  font-family: var(--mono); font-size: 11px;
+}
+
+/* ---------- kisi proyek ---------- */
+.ind-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 980px) { .ind-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .ind-grid { grid-template-columns: 1fr; } }
+
+.ind-card {
+  display: flex; flex-direction: column;
+  border-radius: var(--r); overflow: hidden;
+  background: var(--green-btn);
+  box-shadow: var(--shadow);
+  transition: transform .3s var(--ease), box-shadow .3s;
+}
+.ind-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+
+/* Foto dikunci 5:4 — rasio asli potongan dari company profile (≈1,23), jadi
+   foto bawaannya nyaris tidak terpotong sama sekali. */
+.ind-card .foto {
+  aspect-ratio: 5 / 4; background: var(--off);
+  border: 6px solid var(--green-btn); border-bottom: 0;
+  border-radius: var(--r) var(--r) 0 0; overflow: hidden;
+}
+.ind-card .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.ind-card .nama {
+  padding: 16px 18px 20px; text-align: center;
+  display: flex; flex-direction: column; gap: 7px; flex: 1;
+  justify-content: center;
+}
+.ind-card h3 {
+  color: #fff; font-size: 16.5px; line-height: 1.3; letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.ind-card p { color: rgba(255,255,255,.82); font-size: 13.5px; margin: 0; }
+.ind-card .sektor {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .16em;
+  text-transform: uppercase; color: rgba(255,255,255,.72);
+}
+
+.ind-kosong {
+  grid-column: 1 / -1; text-align: center; color: var(--muted);
+  padding: clamp(30px, 5vw, 56px) 0; font-size: 15px;
+}
+
+/* ---------- penutup ---------- */
+.ind-cta { text-align: center; }
+.ind-cta h2 { font-size: clamp(24px, 3vw, 40px); max-width: 22ch; margin: 0 auto; }
+.ind-cta .lede { margin: 18px auto 0; }
+.ind-cta .tombol { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: clamp(26px, 3.4vw, 38px); }
+/* `.btn--ghost` bawaan bertinta gelap — tak terlihat di atas pita hijau tua. */
+.ind-cta .btn--ghost { color: #fff; border-color: rgba(255,255,255,.34); background: transparent; }
+.ind-cta .btn--ghost:hover { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.62); color: #fff; box-shadow: none; }

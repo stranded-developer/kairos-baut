@@ -32,13 +32,19 @@ type Props = {
   name?: string;
   /** Dipanggil tiap kesiapan berubah, supaya tombol Simpan bisa dimatikan. */
   onSiap?: (siap: boolean) => void;
+  /**
+   * `true` = formulirnya boleh dikirim TANPA berkas (mis. menyunting teks
+   * proyek tanpa mengganti fotonya). Tanpa ini, memilih berkas lalu menekan
+   * Batal akan mematikan tombol Simpan selamanya.
+   */
+  opsional?: boolean;
   /** Tombol-tombol milik formulir induk. */
   children?: React.ReactNode;
 };
 
 const ZOOM_MAKS = 4;
 
-export default function PemotongGambar({ aturan, name = 'file', onSiap, children }: Props) {
+export default function PemotongGambar({ aturan, name = 'file', onSiap, opsional = false, children }: Props) {
   const kotakRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const urlRef = useRef<string | null>(null);
@@ -97,7 +103,7 @@ export default function PemotongGambar({ aturan, name = 'file', onSiap, children
   const pilih = (f: File | null) => {
     bersih();
     setGalat(null); setAlam(null); setZoom(1); setOff({ x: 0, y: 0 });
-    if (!f) { setSrc(null); setNama(null); onSiap?.(false); return; }
+    if (!f) { setSrc(null); setNama(null); onSiap?.(opsional); return; }
 
     const url = URL.createObjectURL(f);
     urlRef.current = url;

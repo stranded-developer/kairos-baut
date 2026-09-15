@@ -3,6 +3,7 @@ import { createPublicClient, storageUrl } from './supabase/public';
 import type { Product, StockStatus, ProductCategory } from './data/products';
 import type { Post, Topic } from './data/posts';
 import { BLOK_BAWAAN, CADANGAN_TENTANG, type Blok } from './data/about';
+import { PROYEK, type Proyek } from './data/projects';
 
 /* ============================================================================
    Pembacaan data untuk halaman publik.
@@ -200,5 +201,41 @@ export async function getAboutBlocks(): Promise<Blok[]> {
     caption: r.caption,
     note: r.note,
     sortOrder: r.sort_order,
+  }));
+}
+
+
+/* ---- proyek (halaman Industri) ---- */
+interface ProyekRow {
+  slug: string; nama: string; sektor: string; ringkas: string;
+  alt: string; storage_path: string | null; urutan: number;
+}
+
+/**
+ * Daftar proyek. Seperti getAboutBlocks(), sengaja tidak melempar kalau
+ * tabelnya belum ada — migrasi 0003 dijalankan manual di SQL editor, jadi
+ * halaman harus tetap tampil dengan daftar bawaan selama jeda itu.
+ */
+export async function getProjects(): Promise<Proyek[]> {
+  const db = createPublicClient();
+  const { data, error } = await db
+    .from('projects')
+    .select('slug,nama,sektor,ringkas,alt,storage_path,urutan')
+    .order('urutan');
+
+  if (error || !data || data.length === 0) return PROYEK;
+
+  return (data as ProyekRow[]).map((r) => ({
+    slug: r.slug,
+    nama: r.nama,
+    sektor: r.sektor as Proyek['sektor'],
+    ringkas: r.ringkas,
+    /* Foto yang diunggah admin menang; kalau belum ada, pakai foto hasil
+       ekstraksi dari company profile. */
+    foto: r.storage_path
+      ? storageUrl('site-photos', r.storage_path)
+      : `/img/proyek/${r.slug}.jpg`,
+    alt: r.alt,
+    urutan: r.urutan,
   }));
 }

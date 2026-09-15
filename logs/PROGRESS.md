@@ -1104,3 +1104,92 @@ Ditimpa khusus di dalam `.pot-tombol`.
 - Belum ada foto sungguhan yang diunggah lewat tombolnya (Server Action tidak
   bisa dipicu curl). Yang teruji: bidangnya benar sampai ke sharp, dan
   antarmukanya berperilaku benar di browser.
+
+
+---
+
+## Halaman Industri & proyek (2026-09-15)
+
+User minta tab "Industri" di navbar menampilkan semua proyek yang pernah
+dipasok, mengacu bagian **OUR PROJECTS** di `public/KAIROS 2.pdf`, dan bisa
+disunting dari backoffice.
+
+Sebelumnya "Industri" cuma jangkar ke pita gelap di beranda (`/#industri`).
+Sekarang jadi halaman sendiri: **`/industri`**. Pita Industri di beranda
+dibiarkan apa adanya — tidak diminta diubah.
+
+### Fotonya diambil dari PDF, bukan dicari sendiri
+PDF halaman 11–14 memuat 13 proyek. Halamannya **gepeng** — tiap halaman satu
+gambar raster, bukan foto-foto terpisah — jadi `pdfimages` saja tidak cukup.
+Yang dikerjakan:
+
+1. `pdftoppm -r 200` merender empat halaman itu;
+2. kartu hijaunya dideteksi dari warna (`g−r>40 && g−b>40 && g>90`) lewat
+   flood-fill → ketemu 4+4+4+1 = **13 kartu**;
+3. di dalam tiap kartu, pita baris yang didominasi bukan-hijau dicari dulu
+   (itu area fotonya), baru kolomnya dihitung **di dalam pita itu**;
+4. hasilnya dipotong ke `/public/img/proyek/<slug>.jpg`, ~635×515 (1,3 MB).
+
+**Satu jebakan:** proyek JIS itu stadion sepak bola — **lapangannya hijau**,
+jadi ikut terbaca sebagai warna kartu dan fotonya terpotong jadi 635×312
+(rasio 2,04, padahal 12 lainnya konsisten ~1,23). Dipulihkan dengan memakai
+kotak foto relatif hasil median dari 12 kartu yang sehat. Semua hasil akhirnya
+diperiksa mata lewat lembar kontak — ketiga belasnya cocok dengan namanya.
+
+### Tiga hal yang BUKAN dari PDF
+Ditulis terang-terangan di `lib/data/projects.ts`, semuanya bisa disunting:
+1. **`sektor`** — PDF tidak mengelompokkan proyeknya sama sekali. Dibuat
+   supaya saringan di halaman ada gunanya; disimpulkan dari nama & foto.
+2. **`ringkas` dikosongkan** — PDF tidak memuat keterangan apa pun selain
+   nama. Mengisinya berarti mengarang.
+3. Dua salah ketik PDF diperbaiki ("Projecct", "Exihibition"), dan "JIS"
+   dipanjangkan jadi "Jakarta International Stadium (JIS)".
+
+### Berkas
+| Berkas | Isi |
+|---|---|
+| `supabase/migrations/0003_proyek.sql` | Tabel `projects` + seed 13 baris. **SQL-nya dibangkitkan dari `lib/data/projects.ts`**, tidak diketik ulang |
+| `lib/data/projects.ts` | Data bawaan + daftar sektor |
+| `lib/queries.ts` | `getProjects()` — jatuh ke bawaan kalau tabelnya belum ada |
+| `app/industri/` | Halaman publik + `ProjectGrid` (saringan) + CSS |
+| `app/admin/industri/` | CRUD penuh: ubah, tambah, hapus |
+| `lib/image-specs.ts` | `ATURAN_PROYEK` 5:4 |
+
+### Beda dengan about_blocks — disengaja
+`about_blocks` barisnya **dikunci** (bagian halaman Tentang memang tetap).
+`projects` barisnya **boleh ditambah & dihapus** — daftar proyek memang
+tumbuh. Karena itu ada `published` dan `urutan`, dan `/admin/industri` punya
+formulir "Tambah proyek".
+
+Proyek baru sengaja dibuat dalam keadaan **belum terbit** supaya tidak muncul
+tanpa foto di halaman publik sebelum admin sempat melengkapinya.
+
+### Sudah diuji ✅
+- `npx tsc --noEmit` bersih; `npx next build` sukses, 13 route.
+- Ketujuh route publik 200; `/admin/industri` **200 dengan sesi, 307 tanpa**.
+- `/industri` **dilihat di browser**: 13 kartu, foto benar semua, pita hijau
+  bernama, angka ringkas (13 proyek / 5 sektor / 2007).
+- **Saringan sektor dijalankan sungguhan lewat CDP**, bukan cuma dibaca:
+  Semua→13, Energi & Petrokimia→3, Infrastruktur→1, Olahraga & Publik→2,
+  balik ke Semua→13. Cocok dengan angka di tiap chip.
+- `/admin/industri` menampilkan 13 kartu dengan nama terisi, 13 tombol hapus,
+  dan peringatan migrasi; formulir "Tambah" sengaja disembunyikan selama
+  tabelnya belum ada.
+- SQL 0003 diperiksa: kutip tunggal genap (134), 13 baris values.
+
+Satu cacat dicegah sebelum jadi masalah: `PemotongGambar` dulu selalu
+melaporkan "belum siap" saat berkas dikosongkan. Di kartu proyek, fotonya
+opsional — memilih berkas lalu menekan Batal akan mematikan tombol Simpan
+selamanya. Ditambahi prop `opsional`.
+
+### LANGKAH MANUAL ⚠️
+**Jalankan `supabase/migrations/0003_proyek.sql`** di SQL editor Supabase —
+sama seperti 0002 yang (kalau belum) juga masih menunggu. Sebelum dijalankan
+`/industri` tampil normal dengan 13 proyek bawaan, tapi belum bisa disunting.
+
+### BELUM diuji ⚠️
+- Belum ada proyek yang benar-benar ditambah/dihapus lewat tombolnya —
+  Server Action tidak bisa dipicu curl.
+- Foto proyek hasil ekstraksi lebarnya 635 px; `ATURAN_PROYEK.minLebar` 600,
+  jadi kalau diunggah ulang lolos — tapi tipis. Foto pengganti sebaiknya
+  lebih besar.

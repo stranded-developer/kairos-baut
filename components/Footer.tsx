@@ -13,6 +13,7 @@ export default function Footer() {
             </p>
             <nav aria-label="Tautan halaman" style={{ marginTop: 16 }}>
               <Link href="/produk">Indeks produk</Link>
+              <Link href="/industri">Industri &amp; proyek</Link>
               <Link href="/tentang">Tentang Kami</Link>
               <Link href="/berita">Berita</Link>
               <Link href="/blog">Blog</Link>

@@ -13,6 +13,7 @@ export default function AdminBar({ current }: { current?: string }) {
           <Link href="/admin/produk" {...mark('produk')}>Produk</Link>
           <Link href="/admin/foto" {...mark('foto')}>Foto situs</Link>
           <Link href="/admin/blog" {...mark('blog')}>Blog</Link>
+          <Link href="/admin/industri" {...mark('industri')}>Industri</Link>
           <Link href="/admin/tentang" {...mark('tentang')}>Tentang Kami</Link>
           <Link href="/" target="_blank">Lihat situs ↗</Link>
         </nav>

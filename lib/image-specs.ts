@@ -55,6 +55,11 @@ export const TOLERANSI = 0.01;
    .mini / .dshot / .dthumb yang semuanya aspect-ratio: 4 / 3. */
 export const ATURAN_PRODUK: Aturan = { rasio: [4, 3], minLebar: 1200, maksLebar: 1600 };
 
+/* Foto proyek di /industri. 5:4 mengikuti kotak `.ind-card .foto` di
+   industri.css — dan itu sendiri dipilih karena hasil potongan dari company
+   profile rasionya ~1,23, jadi foto bawaannya nyaris tidak terpotong. */
+export const ATURAN_PROYEK: Aturan = { rasio: [5, 4], minLebar: 600, maksLebar: 1400 };
+
 /* Slot foto situs. Angkanya mengikuti kotak yang sudah ada di kairos.css —
    bukan angka baru. Logo klien sengaja dibiarkan bebas: logonya wordmark
    dengan lebar berbeda-beda dan tampil dengan object-fit: contain, jadi
