@@ -20,6 +20,9 @@ export default function ProyekForm({
   const [buang, buangAction] = useActionState<ProyekState, FormData>(hapusProyek, {});
   /* Foto boleh tidak diganti — tombol Simpan tetap hidup tanpa berkas baru. */
   const [fotoSiap, setFotoSiap] = useState(true);
+  const sudahAdaRincian = !!(
+    proyek.lokasi || proyek.tahun || proyek.klien || proyek.lingkup || proyek.body
+  );
 
   const pesan = simpan.error ?? buang.error ?? simpan.ok ?? buang.ok;
   const salah = !!(simpan.error || buang.error);
@@ -63,9 +66,39 @@ export default function ProyekForm({
           </datalist>
 
           <label className="adm-field">
-            <span>Keterangan singkat <small>(opsional)</small></span>
-            <input name="ringkas" defaultValue={proyek.ringkas} placeholder="Kosongkan kalau tidak perlu" />
+            <span>Keterangan singkat <small>(tampil di dialog, bukan di kartu)</small></span>
+            <input name="ringkas" defaultValue={proyek.ringkas} placeholder="Satu kalimat" />
           </label>
+
+          {/* Rincian. Semuanya opsional — company profile tidak memuat satu
+              pun keterangan ini, jadi awalnya kosong. Baris yang dibiarkan
+              kosong TIDAK muncul di halaman publik. */}
+          <details className="adm-proyek-rinci">
+            <summary>Rincian proyek {sudahAdaRincian && <b>· terisi</b>}</summary>
+            <div className="adm-proyek-baris">
+              <label className="adm-field">
+                <span>Lokasi</span>
+                <input name="lokasi" defaultValue={proyek.lokasi} placeholder="mis. Gresik, Jawa Timur" />
+              </label>
+              <label className="adm-field adm-field--kecil">
+                <span>Tahun</span>
+                <input name="tahun" defaultValue={proyek.tahun} placeholder="2023" />
+              </label>
+            </div>
+            <label className="adm-field">
+              <span>Pemberi kerja</span>
+              <input name="klien" defaultValue={proyek.klien} placeholder="mis. PT Wijaya Karya" />
+            </label>
+            <label className="adm-field">
+              <span>Lingkup pasokan</span>
+              <input name="lingkup" defaultValue={proyek.lingkup} placeholder="mis. Baut struktur M16–M36 mutu 8.8, angkur" />
+            </label>
+            <label className="adm-field">
+              <span>Uraian panjang</span>
+              <textarea name="body" defaultValue={proyek.body} rows={5} />
+              <small>Pisahkan paragraf dengan satu baris kosong. Boleh dikosongkan.</small>
+            </label>
+          </details>
 
           <label className="adm-field">
             <span>Teks alternatif foto</span>

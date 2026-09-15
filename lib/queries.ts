@@ -209,6 +209,9 @@ export async function getAboutBlocks(): Promise<Blok[]> {
 interface ProyekRow {
   slug: string; nama: string; sektor: string; ringkas: string;
   alt: string; storage_path: string | null; urutan: number;
+  /* Kolom rincian baru ada setelah migrasi 0004 — dibaca sebagai opsional
+     supaya halaman tetap jalan (dan data admin tidak hilang) sebelum itu. */
+  lokasi?: string; tahun?: string; klien?: string; lingkup?: string; body?: string;
 }
 
 /**
@@ -218,10 +221,10 @@ interface ProyekRow {
  */
 export async function getProjects(): Promise<Proyek[]> {
   const db = createPublicClient();
-  const { data, error } = await db
-    .from('projects')
-    .select('slug,nama,sektor,ringkas,alt,storage_path,urutan')
-    .order('urutan');
+  /* `*`, bukan daftar kolom: kalau migrasi 0004 belum dijalankan, menyebut
+     kolom `lokasi` dkk. membuat seluruh kueri gagal — dan itu berarti jatuh
+     ke data bawaan, MENGHILANGKAN suntingan admin dari layar. */
+  const { data, error } = await db.from('projects').select('*').order('urutan');
 
   if (error || !data || data.length === 0) return PROYEK;
 
@@ -237,5 +240,10 @@ export async function getProjects(): Promise<Proyek[]> {
       : `/img/proyek/${r.slug}.jpg`,
     alt: r.alt,
     urutan: r.urutan,
+    lokasi: r.lokasi ?? '',
+    tahun: r.tahun ?? '',
+    klien: r.klien ?? '',
+    lingkup: r.lingkup ?? '',
+    body: r.body ?? '',
   }));
 }

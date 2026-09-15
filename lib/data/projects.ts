@@ -34,78 +34,94 @@ export type Sektor = (typeof SEKTOR)[number];
 export type Proyek = {
   slug: string;
   nama: string;
-  sektor: Sektor;
+  sektor: Sektor | string;
   ringkas: string;
   foto: string;       // cadangan di /public/img/proyek
   alt: string;
   urutan: number;
+
+  /* ---- rincian (migrasi 0004) ----
+     SEMUANYA KOSONG dari sini. Company profile hanya memuat foto + nama
+     proyek; tidak ada lokasi, tahun, pemberi kerja, maupun lingkup di sana.
+     Diperiksa dua cara: halamannya dibaca dengan di-zoom, dan `pdftotext`
+     pada halaman 11–14 tidak mengembalikan apa pun (halamannya gambar
+     gepeng). Diisi admin lewat /admin/industri; halaman publik hanya
+     menampilkan yang terisi. */
+  lokasi: string;
+  tahun: string;
+  klien: string;
+  lingkup: string;
+  body: string;
 };
+
+/* Nilai kosong untuk kelima kolom rincian — dipakai data bawaan di bawah. */
+const TANPA_RINCIAN = { lokasi: '', tahun: '', klien: '', lingkup: '', body: '' };
 
 export const PROYEK: Proyek[] = [
   {
     slug: 'amman-mineral', nama: 'Amman Mineral Smelting', sektor: 'Pertambangan & Smelter',
     ringkas: '', foto: '/img/proyek/amman-mineral.jpg',
-    alt: 'Kawasan smelter Amman Mineral dilihat dari udara', urutan: 1,
+    ...TANPA_RINCIAN, alt: 'Kawasan smelter Amman Mineral dilihat dari udara', urutan: 1,
   },
   {
     slug: 'lotte-chemical', nama: 'Lotte Chemical', sektor: 'Energi & Petrokimia',
     ringkas: '', foto: '/img/proyek/lotte-chemical.jpg',
-    alt: 'Tangki bulat raksasa dalam pembangunan di kompleks Lotte Chemical', urutan: 2,
+    ...TANPA_RINCIAN, alt: 'Tangki bulat raksasa dalam pembangunan di kompleks Lotte Chemical', urutan: 2,
   },
   {
     slug: 'aeon-mall-cikarang', nama: 'Aeon Mall Cikarang', sektor: 'Komersial & Properti',
     ringkas: '', foto: '/img/proyek/aeon-mall-cikarang.jpg',
-    alt: 'Bangunan Aeon Mall Cikarang dari sisi jalan utama', urutan: 3,
+    ...TANPA_RINCIAN, alt: 'Bangunan Aeon Mall Cikarang dari sisi jalan utama', urutan: 3,
   },
   {
     slug: 'jis', nama: 'Jakarta International Stadium (JIS)', sektor: 'Olahraga & Publik',
     ringkas: '', foto: '/img/proyek/jis.jpg',
-    alt: 'Lapangan dan tribun Jakarta International Stadium', urutan: 4,
+    ...TANPA_RINCIAN, alt: 'Lapangan dan tribun Jakarta International Stadium', urutan: 4,
   },
   {
     slug: 'sumbawa-lng', nama: 'Sumbawa LNG Terminal & Regas Facility', sektor: 'Energi & Petrokimia',
     ringkas: '', foto: '/img/proyek/sumbawa-lng.jpg',
-    alt: 'Fasilitas terminal LNG di tepi pantai Sumbawa', urutan: 5,
+    ...TANPA_RINCIAN, alt: 'Fasilitas terminal LNG di tepi pantai Sumbawa', urutan: 5,
   },
   {
     slug: 'summarecon-bekasi', nama: 'Summarecon Mall Bekasi Tahap 2', sektor: 'Komersial & Properti',
     ringkas: '', foto: '/img/proyek/summarecon-bekasi.jpg',
-    alt: 'Fasad Summarecon Mall Bekasi pada malam hari', urutan: 6,
+    ...TANPA_RINCIAN, alt: 'Fasad Summarecon Mall Bekasi pada malam hari', urutan: 6,
   },
   {
     slug: 'tangguh-expansion', nama: 'Tangguh Expansion', sektor: 'Energi & Petrokimia',
     ringkas: '', foto: '/img/proyek/tangguh-expansion.jpg',
-    alt: 'Kilang Tangguh dilihat dari udara pada malam hari', urutan: 7,
+    ...TANPA_RINCIAN, alt: 'Kilang Tangguh dilihat dari udara pada malam hari', urutan: 7,
   },
   {
     slug: 'freeport-manyar', nama: 'Freeport Manyar', sektor: 'Pertambangan & Smelter',
     ringkas: '', foto: '/img/proyek/freeport-manyar.jpg',
-    alt: 'Pembangunan smelter Freeport di Manyar, Gresik', urutan: 8,
+    ...TANPA_RINCIAN, alt: 'Pembangunan smelter Freeport di Manyar, Gresik', urutan: 8,
   },
   {
     slug: 'ikea-jakarta-garden-city', nama: 'IKEA Jakarta Garden City', sektor: 'Komersial & Properti',
     ringkas: '', foto: '/img/proyek/ikea-jakarta-garden-city.jpg',
-    alt: 'Gedung IKEA Jakarta Garden City', urutan: 9,
+    ...TANPA_RINCIAN, alt: 'Gedung IKEA Jakarta Garden City', urutan: 9,
   },
   {
     slug: 'kcic', nama: 'Kereta Cepat Jakarta–Bandung (KCIC)', sektor: 'Infrastruktur',
     ringkas: '', foto: '/img/proyek/kcic.jpg',
-    alt: 'Pembangunan jalur layang kereta cepat di sisi jalan tol', urutan: 10,
+    ...TANPA_RINCIAN, alt: 'Pembangunan jalur layang kereta cepat di sisi jalan tol', urutan: 10,
   },
   {
     slug: 'velodrome-rawamangun', nama: 'Velodrome Rawamangun', sektor: 'Olahraga & Publik',
     ringkas: '', foto: '/img/proyek/velodrome-rawamangun.jpg',
-    alt: 'Lintasan kayu dan atap rangka baja Velodrome Rawamangun', urutan: 11,
+    ...TANPA_RINCIAN, alt: 'Lintasan kayu dan atap rangka baja Velodrome Rawamangun', urutan: 11,
   },
   {
     slug: 'kemang-village', nama: 'Kemang Village', sektor: 'Komersial & Properti',
     ringkas: '', foto: '/img/proyek/kemang-village.jpg',
-    alt: 'Menara apartemen Kemang Village dilihat dari udara', urutan: 12,
+    ...TANPA_RINCIAN, alt: 'Menara apartemen Kemang Village dilihat dari udara', urutan: 12,
   },
   {
     slug: 'nice-pik-2', nama: 'Nusantara International Convention Exhibition (NICE) PIK 2',
     sektor: 'Komersial & Properti',
     ringkas: '', foto: '/img/proyek/nice-pik-2.jpg',
-    alt: 'Gambar rancangan kawasan konvensi NICE di PIK 2', urutan: 13,
+    ...TANPA_RINCIAN, alt: 'Gambar rancangan kawasan konvensi NICE di PIK 2', urutan: 13,
   },
 ];

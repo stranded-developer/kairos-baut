@@ -10,6 +10,8 @@ export const dynamic = 'force-dynamic';
 type Row = {
   slug: string; nama: string; sektor: string; ringkas: string;
   alt: string; storage_path: string | null; urutan: number; published: boolean;
+  /* Opsional — baru ada setelah migrasi 0004. */
+  lokasi?: string; tahun?: string; klien?: string; lingkup?: string; body?: string;
 };
 
 export default async function AdminIndustri() {
@@ -17,10 +19,9 @@ export default async function AdminIndustri() {
 
   /* Tanpa filter `published` — backoffice harus melihat yang disembunyikan
      juga, tidak seperti halaman publik. */
-  const { data, error } = await db
-    .from('projects')
-    .select('slug,nama,sektor,ringkas,alt,storage_path,urutan,published')
-    .order('urutan');
+  /* `*` — sama alasannya dengan getProjects(): menyebut kolom yang belum ada
+     membuat seluruh kueri gagal dan suntingan admin hilang dari layar. */
+  const { data, error } = await db.from('projects').select('*').order('urutan');
 
   const belumMigrasi = !!error || (data ?? []).length === 0;
 
@@ -28,11 +29,13 @@ export default async function AdminIndustri() {
     ? PROYEK.map((p) => ({ p, terbit: true }))
     : (data as Row[]).map((r) => ({
         p: {
-          slug: r.slug, nama: r.nama, sektor: r.sektor as Proyek['sektor'],
+          slug: r.slug, nama: r.nama, sektor: r.sektor,
           ringkas: r.ringkas, alt: r.alt, urutan: r.urutan,
           foto: r.storage_path
             ? storageUrl('site-photos', r.storage_path)
             : `/img/proyek/${r.slug}.jpg`,
+          lokasi: r.lokasi ?? '', tahun: r.tahun ?? '', klien: r.klien ?? '',
+          lingkup: r.lingkup ?? '', body: r.body ?? '',
         },
         terbit: r.published,
       }));

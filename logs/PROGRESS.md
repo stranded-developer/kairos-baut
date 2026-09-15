@@ -1193,3 +1193,67 @@ sama seperti 0002 yang (kalau belum) juga masih menunggu. Sebelum dijalankan
 - Foto proyek hasil ekstraksi lebarnya 635 px; `ATURAN_PROYEK.minLebar` 600,
   jadi kalau diunggah ulang lolos — tapi tipis. Foto pengganti sebaiknya
   lebih besar.
+
+
+---
+
+## Proyek bisa diklik + rincian (2026-09-15, lanjutan)
+
+### Jawaban atas pertanyaan user: PDF TIDAK punya info tambahan
+Diperiksa dua cara, dan hasilnya sama:
+1. kartu di halaman 11–14 di-zoom dan dibaca — isinya **hanya foto + nama
+   proyek**. Tidak ada tanggal, lokasi, pemberi kerja, nilai, maupun lingkup;
+2. `pdftotext -f 11 -l 14` mengembalikan **kosong sama sekali** — halamannya
+   memang gambar gepeng, jadi tidak ada lapisan teks yang terlewat.
+
+Jadi tidak ada apa pun untuk dipindahkan. Yang dibangun adalah **tempatnya**;
+isinya diketik admin.
+
+### Yang dikerjakan
+- `0004_proyek_detail.sql` — lima kolom baru: `lokasi`, `tahun`, `klien`,
+  `lingkup`, `body`. **Semua kosong**, dengan alasannya ditulis di berkas itu.
+- Kartu `/industri` jadi **`<button>`** yang membuka `<dialog>` berisi foto
+  besar + rincian. Pola dialognya sama persis dengan dialog produk di
+  `/produk` (showModal, Esc, klik backdrop).
+- **Baris rincian yang kosong tidak dirender.** Sebagian besar proyek awalnya
+  kosong; "Lokasi: —" berderet cuma jadi sampah visual. Kalau semuanya kosong,
+  dialog menampilkan satu kalimat yang mengatakan rinciannya belum diisi.
+- Label kartu ikut menyesuaikan: "Lihat rincian" kalau ada isinya, "Lihat
+  foto" kalau belum — jadi tidak menjanjikan yang tidak ada.
+- `/admin/industri` dapat bagian "Rincian proyek" (tertutup secara bawaan),
+  dengan penanda "· terisi" kalau sudah ada isinya.
+
+### Migrasi 0002 & 0003 SUDAH dijalankan user
+Diperiksa lewat PostgREST: `products` 9, `site_media` 15, `about_blocks` 6,
+`projects` 13 baris. Jadi Tentang Kami dan Industri **sudah benar-benar bisa
+disunting** sekarang. Tinggal 0004.
+
+### Dua bug ketahuan karena menjalankan tombolnya sungguhan
+1. **`PGRST204`, bukan `42703`.** Penanganan "kolom belum ada" semula memeriksa
+   kode Postgres mentah `42703`. Yang benar-benar sampai lewat PostgREST adalah
+   **`PGRST204`** ("Could not find the 'body' column ... in the schema cache").
+   Akibatnya menyimpan proyek **gagal total** sebelum 0004 dijalankan — bukan
+   cuma rinciannya. Ketahuan dari menekan Simpan lewat CDP, tidak mungkin
+   kelihatan dari membaca kode.
+2. Panggilan `hapusBerkas` terduplikasi di cabang galat — dibersihkan.
+
+Sekarang menyimpan **berdegradasi**: kolom dasar (nama, sektor, foto, urutan,
+tampilkan) tetap tersimpan, dan pesannya mengatakan rinciannya belum bisa
+ikut karena 0004 belum jalan.
+
+### Sudah diuji ✅ — CRUD dijalankan sungguhan lewat browser
+Server Action akhirnya benar-benar dipicu (lewat CDP), bukan cuma logikanya:
+- **Ubah**: `ringkas` diisi penanda unik → Simpan → **terverifikasi di basis
+  data** lewat PostgREST → dikembalikan lagi ke kosong.
+- **Tambah**: proyek baru dibuat → muncul sebagai kartu ke-14, di basis data
+  tercatat `published=false`, `urutan=14` (ditaruh paling belakang, sesuai
+  rancangan) → dihapus lagi. Kembali 13 baris.
+- **Dialog**: kartu diklik → `dialog.open===true`, judul benar, **0 baris
+  rincian** (benar — memang belum diisi), pesan "belum diisi" muncul, dan
+  **Esc menutupnya**.
+- Saringan sektor masih benar; `npx tsc` bersih; `next build` sukses.
+
+### LANGKAH MANUAL ⚠️
+**Jalankan `supabase/migrations/0004_proyek_detail.sql`.** Sebelum itu:
+halaman publik normal, dialog tetap terbuka, menyimpan proyek tetap jalan —
+hanya kelima kolom rincian yang belum bisa disimpan, dan pesannya jelas.

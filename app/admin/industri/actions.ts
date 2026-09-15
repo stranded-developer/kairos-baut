@@ -52,6 +52,11 @@ export async function simpanProyek(_prev: ProyekState, fd: FormData): Promise<Pr
   const sektor = String(fd.get('sektor') ?? '').trim();
   const ringkas = String(fd.get('ringkas') ?? '').trim();
   const alt = String(fd.get('alt') ?? '').trim();
+  const lokasi = String(fd.get('lokasi') ?? '').trim();
+  const tahun = String(fd.get('tahun') ?? '').trim();
+  const klien = String(fd.get('klien') ?? '').trim();
+  const lingkup = String(fd.get('lingkup') ?? '').trim();
+  const body = String(fd.get('body') ?? '').trim();
   const urutan = Number(fd.get('urutan') ?? 0);
   const published = fd.get('published') === 'on';
 
@@ -82,10 +87,28 @@ export async function simpanProyek(_prev: ProyekState, fd: FormData): Promise<Pr
   const { data: lama } = await db
     .from('projects').select('storage_path').eq('slug', slug).maybeSingle();
 
-  const { error } = await db
-    .from('projects')
-    .update({ nama, sektor, ringkas, alt, urutan, published, ...(path ? { storage_path: path } : {}) })
-    .eq('slug', slug);
+  const dasar = {
+    nama, sektor, ringkas, alt, urutan, published,
+    ...(path ? { storage_path: path } : {}),
+  };
+  const rinci = { lokasi, tahun, klien, lingkup, body };
+
+  let { error } = await db.from('projects').update({ ...dasar, ...rinci }).eq('slug', slug);
+
+  /* Kolom rincian belum ada → migrasi 0004 belum dijalankan. Menyimpan tidak
+     boleh ikut gagal gara-gara itu: kolom dasarnya dicoba lagi sendirian,
+     supaya nama/sektor/foto tetap bisa disunting seperti sebelum 0004 ada.
+     Yang gagal cuma kelima kolom rincian, dan itu dikatakan apa adanya.
+
+     DUA KODE, bukan satu. Postgres mentah memakai 42703, tapi yang benar-
+     benar sampai ke sini lewat PostgREST adalah **PGRST204** ("Could not
+     find the 'body' column ... in the schema cache"). Ketahuan dari menjalankan
+     tombol Simpan sungguhan — memeriksa 42703 saja tidak pernah kena. */
+  let rinciGagal = false;
+  if (error?.code === '42703' || error?.code === 'PGRST204') {
+    rinciGagal = true;
+    ({ error } = await db.from('projects').update(dasar).eq('slug', slug));
+  }
 
   if (error) {
     if (path) await hapusBerkas(BUCKET, path);
@@ -96,6 +119,14 @@ export async function simpanProyek(_prev: ProyekState, fd: FormData): Promise<Pr
   if (path && lama?.storage_path) await hapusBerkas(BUCKET, lama.storage_path);
 
   segarkan();
+  if (rinciGagal) {
+    return {
+      ok:
+        'Tersimpan — tapi kolom rincian (lokasi, tahun, pemberi kerja, lingkup, uraian) ' +
+        'belum ada di basis data. Jalankan supabase/migrations/0004_proyek_detail.sql ' +
+        'di SQL editor Supabase supaya bagian itu ikut tersimpan.',
+    };
+  }
   return { ok: path ? 'Tersimpan, foto diperbarui.' : 'Tersimpan.' };
 }
 
