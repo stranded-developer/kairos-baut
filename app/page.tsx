@@ -225,32 +225,21 @@ export default async function HomePage() {
               cukup: same-origin, browser langsung menyimpan, bukan membuka
               pratinjau PDF di tab baru. Link biasa (bukan next/link) karena
               ini berkas statis, bukan rute. */}
-          <a
-            className="profile rv"
-            href="/KAIROS%202.pdf"
-            download="Profil Perusahaan - PT Kairos Multi Sejahtera.pdf"
-          >
-            <span className="profile-ic" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8z" />
-                <path d="M14 3v5h5" />
-                <path d="M9 13h6M9 17h4" />
-              </svg>
-            </span>
-            <span className="profile-txt">
-              <strong>Profil Perusahaan</strong>
-              <span>Sekilas perusahaan, kapabilitas, dan daftar proyek yang sudah kami kerjakan.</span>
-            </span>
-            <span className="profile-meta">PDF · 3,8 MB</span>
-            <span className="btn btn--ghost btn--sm">
-              Unduh
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <div className="profile rv">
+            <a
+              className="btn"
+              href="/KAIROS%202.pdf"
+              download="Profil Perusahaan - PT Kairos Multi Sejahtera.pdf"
+            >
+              Profil Perusahaan
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M12 4v11" />
                 <path d="m7 11 5 5 5-5" />
                 <path d="M5 20h14" />
               </svg>
-            </span>
-          </a>
+            </a>
+            <span className="profile-meta">PDF · 3,8 MB</span>
+          </div>
         </div>
       </section>
 

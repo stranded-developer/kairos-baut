@@ -52,36 +52,18 @@
 
   /* ---------- Unduhan profil perusahaan ----------
      Tambahan di luar mockup: permintaan agar profil perusahaan
-     (public/KAIROS 2.pdf) bisa diunduh langsung dari beranda. Diletakkan
-     tepat di bawah .stats, memakai kosakata kartu yang sama dengan .cat dan
-     .trust supaya tidak terasa ditempel belakangan. */
-  .profile {
-    display: flex; align-items: center; gap: clamp(14px, 1.6vw, 20px); flex-wrap: wrap;
-    margin-top: clamp(28px, 3vw, 40px); padding: 20px 22px;
-    background: var(--white); border: 1px solid var(--line); border-radius: var(--r);
-    box-shadow: var(--shadow); text-decoration: none; color: inherit;
-    transition: transform .3s var(--ease), box-shadow .3s, border-color .3s;
-  }
-  .profile:hover { transform: translateY(-4px); border-color: var(--line-2); box-shadow: var(--shadow-lift); }
-  .profile-ic {
-    flex: none; display: grid; place-items: center; width: 46px; height: 46px;
-    border-radius: var(--r-sm); background: var(--wash); color: var(--green);
-  }
-  .profile-txt { flex: 1 1 240px; min-width: 0; }
-  .profile-txt strong { display: block; font-size: 16px; letter-spacing: -0.01em; color: var(--ink); }
-  .profile-txt span { display: block; margin-top: 4px; font-size: 13.5px; color: var(--muted); }
+     (public/KAIROS 2.pdf) bisa diunduh langsung dari beranda. Tombolnya
+     memakai .btn apa adanya — pil hijau yang sama dengan "Minta Penawaran" —
+     supaya tidak ada kosakata tombol baru yang harus dijaga. */
+  .profile { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: clamp(28px, 3vw, 40px); }
+  /* Panah turun ikut bergerak ke bawah saat disorot — isyarat "menyimpan",
+     bukan "pindah halaman" seperti panah kanan di tombol lain. */
+  .profile .btn svg { flex: none; transition: transform .25s var(--ease); }
+  .profile .btn:hover svg { transform: translateY(2px); }
   .profile-meta {
-    flex: none; font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--green-ink);
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted);
   }
-  .profile .btn { flex: none; }
-  /* Seluruh kartu yang jadi tautan, jadi tombolnya ikut menyala saat kartu
-     disorot — kalau tidak, tombol tampak mati padahal area klik satu. */
-  .profile:hover .btn--ghost { background: var(--green-btn); border-color: var(--green-btn); color: #fff; }
-  .profile:hover .btn--ghost svg { transform: translateY(2px); }
-  .profile .btn svg { transition: transform .25s var(--ease); }
-  @media (max-width: 620px) {
-    .profile { padding: 18px; }
-    .profile-meta { display: none; }
+  @media (max-width: 560px) {
     .profile .btn { width: 100%; }
   }
