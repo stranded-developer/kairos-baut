@@ -1257,3 +1257,334 @@ Server Action akhirnya benar-benar dipicu (lewat CDP), bukan cuma logikanya:
 **Jalankan `supabase/migrations/0004_proyek_detail.sql`.** Sebelum itu:
 halaman publik normal, dialog tetap terbuka, menyimpan proyek tetap jalan —
 hanya kelima kolom rincian yang belum bisa disimpan, dan pesannya jelas.
+
+
+---
+
+## BAGIAN 10 — Lebih banyak isi bisa disunting dari /admin (mulai 2026-10-28)
+
+### Yang diminta user
+1. Semua teks, logo, dan font beranda
+2. Logo + teks navbar
+3. Halaman Berita
+4. Menambah pelanggan di pita "Kami telah bekerja sama dengan"
+5. Teks, isi, dan format formulir penawaran
+6. Teks kaki halaman — alamat, rincian, dll.
+7. Nomor tombol WhatsApp
+
+### Jawaban user atas pertanyaan klarifikasi
+| Pertanyaan | Jawaban |
+|---|---|
+| Font | **Pilihan 2–4 pasangan font** yang sudah diperiksa, bukan bebas |
+| "Format" formulir | **Ditunda** — user masih memastikan maksudnya ke klien |
+| Kiriman formulir | **Email ke alamat yang diatur di backoffice** |
+| Berita | **Halaman artikel penuh** per berita; blok "Untuk media" juga bisa disunting |
+| Teks beranda | **Semuanya**, termasuk placeholder cari, pil, pita kepercayaan, angka |
+
+### Temuan yang disampaikan ke user
+- Formulir penawaran **tidak mengirim ke mana pun** — kirimannya hilang.
+- Kontak (telepon, email, alamat) tertulis **dua kali**: blok Penawaran
+  beranda + kaki halaman. Disatukan di Bagian 10.1.
+- Kaki halaman masih bertuliskan "Mockup v5 — revisi catatan".
+
+### Email: butuh layanan luar
+`vercel integration discover --category messaging` (CLI 65.5.0 lewat npx —
+CLI terpasang 52.2.1 terlalu lama, tidak kenal `--category`) hanya
+mengembalikan **Resend**. Jadi itu yang dipakai. Butuh dari user:
+proyek Vercel ditaut (`vercel link` — belum ada `.vercel/` di repo),
+memasang integrasinya dengan akun user, dan verifikasi domain
+kairosbaut.com di Resend (catatan DNS SPF/DKIM). Dikerjakan di 10.6.
+
+### Peta sub-bagian
+| # | Isi | Status |
+|---|---|---|
+| 10.1 | Pengaturan situs: WhatsApp, telepon, email, alamat, jam kerja, teks kaki halaman | **✅ kode selesai — tunggu migrasi 0005** |
+| 10.2 | Daftar pelanggan: tambah / hapus / urutkan, logo atau nama | **✅ kode selesai — tunggu migrasi 0006** |
+| 10.3 | Logo + teks navbar (logo vektor sekarang jadi cadangan) | **✅ kode selesai — tunggu migrasi 0007** |
+| 10.4 | Semua teks beranda + pilihan pasangan font | **✅ kode selesai — tunggu migrasi 0008** |
+| 10.5 | Berita: tabel, editor admin, halaman artikel, kontak media | **✅ kode selesai — tunggu migrasi 0009** |
+| 10.6 | Formulir: teks + kiriman ke email (Resend) | **teks ✅ (ikut 0008)** · kiriman email ⏸ tunggu Resend · "format" ⏸ tunggu user |
+
+
+### 10.1 — Kontak & kaki halaman (2026-10-28)
+
+**Dibuat**
+- `supabase/migrations/0005_pengaturan.sql` — tabel `site_settings`
+  (slot bernama, pola sama dengan `about_blocks`), 13 kunci, isi awal =
+  persis teks lama.
+- `lib/data/settings.ts` — isi bawaan (cadangan sebelum migrasi), `telHref`,
+  `rapikanWa` (0877… / +62 877… / 877… → 62877…), `baris`.
+- `getSettings()` di `lib/queries.ts`, dibungkus `cache()` — satu kueri per
+  render walau dipanggil kaki halaman, tombol WA, dan beranda. Tidak melempar.
+- `/admin/pengaturan` (menu "Kontak", ubin 04 di Ringkasan) — dua formulir:
+  Kontak dan Kaki halaman.
+- Yang sekarang membaca pengaturan: `Footer`, `WhatsAppFab`, blok Penawaran
+  beranda, tombol "Tanya via WhatsApp" di `/produk` (`WA_NUMBER` dihapus,
+  nomor dioper sebagai prop dari `app/produk/page.tsx`).
+- Menyimpan memanggil `revalidatePath('/', 'layout')` — kaki halaman ada di
+  semua halaman, termasuk `/berita` yang statis tanpa `revalidate`.
+
+**Satu perubahan tampilan yang disengaja:** "Mockup v5 — revisi catatan"
+di pojok kanan bawah kaki halaman hilang (`catatan_kaki` kosong → tidak
+dirender). Bisa diisi lagi dari admin.
+
+**Sudah diuji ✅**
+- `tsc` bersih, `next build` sukses.
+- Keenam halaman publik 200. HTML kaki halaman, blok kontak beranda, dan
+  tautan wa.me di beranda + `/produk` dibandingkan — **sama persis** dengan
+  sebelumnya (kecuali baris Mockup v5).
+- `rapikanWa` dengan 6 masukan — benar semua, termasuk menolak "12345".
+- Sebelum migrasi PostgREST mengembalikan **`PGRST205`** — kode itu yang
+  ditangani aksi simpan (pelajaran dari PGRST204 di Industri).
+- `/admin/pengaturan` tanpa sesi → 307 ke login.
+
+**BELUM diuji ⚠️**
+- Halaman `/admin/pengaturan` belum dibuka dalam keadaan login, dan
+  menyimpan belum pernah dijalankan sungguhan — perlu migrasi 0005 dulu.
+- Belum dicek bahwa situs live langsung berubah setelah simpan.
+
+**LANGKAH MANUAL ⚠️** Jalankan `supabase/migrations/0005_pengaturan.sql` di
+SQL editor Supabase.
+
+**Berikutnya:** 10.2 — daftar pelanggan.
+
+
+### 10.2 — Daftar pelanggan (2026-10-28)
+
+User: "continue keep continuing, remember to test to ensure nothing breaks"
+— jadi sub-bagian dikerjakan beruntun tanpa berhenti, tapi tiap sub-bagian
+tetap diuji dan dicatat sebelum lanjut.
+
+**Dibuat**
+- `0006_pelanggan.sql` — tabel `clients` (id, nama, storage_path, urutan,
+  published). Seed 4 nama lama, **path logo dari site_media ikut disalin**
+  (diperiksa: keempatnya memang masih null, belum pernah diunggah). Seed
+  hanya kalau tabel kosong → aman diulang.
+- `lib/data/clients.ts` (cadangan), `getClients()` di `lib/queries.ts`.
+  Tabel ada tapi kosong → daftar kosong → **pita disembunyikan** di beranda.
+- `/admin/pelanggan` (menu "Pelanggan", ubin 04): tambah (nama + logo
+  opsional, langsung terbit), ubah nama/urutan/tampilkan, ganti logo, hapus
+  logo (kembali ke teks), hapus pelanggan (konfirmasi dua klik).
+- Logo memakai input berkas biasa, **bukan** PemotongGambar — rasionya bebas.
+- Slot `logo-*` disembunyikan dari `/admin/foto` (barisnya tetap di DB) +
+  catatan yang menunjuk ke Pelanggan.
+
+**Dua cacat lama ikut diperbaiki**
+1. `siapkanGambar` memotong logo: PemotongGambar mengirim bidang dari kotak
+   pratinjau 3:2 walau rasio logo bebas, dan bidang itu dipakai `.extract()`.
+   Wordmark lebar terpangkas. Sekarang bidang diabaikan kalau `rasio` null.
+   **Diuji langsung**: PNG 1600×400 + bidang 600×400 → hasil 900×225 (utuh,
+   cuma disusutkan); foto proyek + bidang → tetap dipotong 1000×800.
+2. `.adm-warn b { display:block }` ikut mengenai `<b>` di dalam paragraf, jadi
+   "tetap tampil normal" terpotong ke baris sendiri — di semua kotak
+   peringatan (Tentang, Industri juga). Dipersempit ke `.adm-warn > b`.
+   Ketahuan dari tangkapan layar.
+
+**Sudah diuji ✅**
+- `tsc` bersih, `next build` sukses, 6 halaman publik 200.
+- HTML marquee: 4 nama + 4 salinan `aria-hidden`, sama dengan sebelumnya
+  (beda: tidak ada lagi `<img>` ke `/img/logo/*.png` yang memang 404).
+- Admin dibuka dengan cookie sesi asli (dibuat lewat `createSessionValue`):
+  `/admin`, `/admin/pelanggan`, `/admin/pengaturan`, `/admin/foto` → 200;
+  peringatan migrasi tampil; grup "Logo klien" hilang dari Foto situs.
+- Tangkapan layar headless (skrip CDP di scratchpad) — `/admin/pelanggan`,
+  `/admin/pengaturan`, beranda 1280 px: tata letak rapi.
+
+**BELUM diuji ⚠️**
+- Tambah/ubah/hapus/unggah logo sungguhan — butuh migrasi 0006.
+
+**LANGKAH MANUAL ⚠️** Jalankan `0006_pelanggan.sql` (sesudah 0005).
+
+
+### 10.3 — Logo & teks merek (2026-10-28)
+
+**Keputusan:** navbar selalu gelap, kaki halaman/kartu login selalu terang,
+jadi ada **dua slot logo** (`merek-gelap`, `merek-terang`) — satu berkas
+tidak terbaca di dua latar. Gambar unggahan menggantikan **ikon vektor**;
+teks merek (dua bagian: "Kairos" + "Baut" hijau) tetap bisa disunting, dan
+kalau keduanya dikosongkan hanya gambarnya yang tampil (untuk logo wordmark).
+
+**Dibuat**
+- `0007_merek.sql` — 2 kunci `site_settings` + 2 slot `site_media`.
+  **Butuh 0005 sudah jalan.**
+- `getMerek()` (cache) di `lib/queries.ts`; `components/Logo.tsx` jadi async
+  dengan prop `latar` ('gelap' di Header & AdminBar, 'terang' di Footer &
+  login).
+- `/admin/pengaturan` dapat kelompok "Navbar & logo" + dua kartu unggah
+  (MediaCard apa adanya; pratinjau logo gelap berlatar hijau tua). Slotnya
+  juga tampil di `/admin/foto`, grup "Logo situs". Urutan kelompok di
+  halaman itu ditetapkan eksplisit (sort_order cuma berlaku per kelompok).
+- `.logo .logo-img` (tinggi 30 px, maks lebar 200 px) — **ditambahkan di
+  ujung kairos.css**, tidak mengubah aturan mockup.
+
+**Cacat lama ikut diperbaiki:** `segarkan()` di `/admin/foto/actions.ts`
+cuma menyegarkan `/` — foto Tentang Kami baru tampil setelah 5 menit.
+Sekarang `revalidatePath('/', 'layout')` (dibutuhkan juga oleh logo).
+MediaCard tidak lagi memasang `<img src="">` pecah untuk slot tanpa cadangan.
+
+**Sudah diuji ✅**
+- `tsc` bersih, `next build` sukses, 7 rute 200.
+- HTML `<a class="logo">` di `/` dan `/produk` **identik** sebelum vs sesudah
+  (tanpa migrasi → teks & vektor lama).
+- Jalur "logo diunggah" diuji dengan menambal `getMerek` sementara di
+  `next dev` (PNG uji putih & hijau tua, teks dikosongkan): navbar memakai
+  versi gelap, kaki halaman versi terang, `alt` jatuh ke "Kairos Baut".
+  Tangkapan layar rapi. **Tambalan dan berkas uji sudah dikembalikan**
+  (diperiksa: tidak ada "__uji" tersisa).
+
+**BELUM diuji ⚠️** Unggah logo sungguhan lewat MediaCard — butuh 0007.
+
+
+### 10.4 — Naskah beranda + pasangan font (2026-10-28)
+
+**Keputusan**
+- Disimpan di `site_settings` (kunci `b_*`), bukan tabel baru — polanya
+  sama-sama slot bernama, dan aksi `simpanSetelan` dipakai ulang.
+- Yang bisa disunting: **teks**. Susunan tetap (6 pil, 4 poin, 3 angka,
+  4 panel, 8 kartu; ikon & gambar & tujuan tautan kartu). Pil boleh diubah
+  tautannya; pil yang teksnya dikosongkan tidak dirender.
+- Teks keterangan foto `.hshot` ("Gudang Cikarang · 2.400 item ready stock")
+  **tidak** dimasukkan — elemennya disembunyikan Tampilan E, jadi tidak
+  terlihat siapa pun.
+- Font: 4 pasangan (Archivo+Roboto Mono bawaan, Plus Jakarta Sans+JetBrains
+  Mono, Inter Tight+IBM Plex Mono, Manrope+JetBrains Mono), semuanya punya
+  tebal 800; URL Google Fonts keempatnya diperiksa 200. **Berlaku seluruh
+  situs.** Pilihan bawaan tidak memasang gaya inline apa pun → kairos.css
+  murni seperti mockup; pilihan lain menimpa `--sans`/`--mono` di `<html>`.
+
+**Dibuat**
+- `lib/data/home.ts` — 96 isian dalam 8 kelompok (label, petunjuk, isi
+  bawaan = teks lama) + `FONT`. `lib/angka.ts` — `bacaAngka` dipisah supaya
+  Stats (klien) tidak membawa seluruh naskah ke bundel browser.
+- `scripts/sql-beranda.ts` → **`0008_beranda.sql` dibuat dari home.ts**
+  (97 baris), bukan diketik ulang.
+- `getBeranda()` mengembalikan `t(kunci)`; kunci tak dikenal **melempar** →
+  salah ketik ketahuan saat build. `getSettings` & `getBeranda` berbagi satu
+  kueri (`bacaSemuaSetelan`, cache).
+- `app/page.tsx` — semua literal teks diganti `t(...)` lewat penggantian
+  tepat-satu-kali (SVG tidak disentuh). `Stats` menerima `items`.
+- `app/layout.tsx` — async, memasang font terpilih.
+- `/admin/beranda` (menu "Beranda", ubin 04): pemilih font berpratinjau +
+  8 bagian terlipat. `/admin/pengaturan` menyaring `b_*` dan `font`.
+  Ubin Ringkasan dinomori ulang 01–06.
+
+**Sudah diuji ✅**
+- `tsc` bersih, `next build` sukses.
+- **HTML keenam halaman publik identik** dengan rekaman sebelum bagian ini
+  (setelah membuang build-id/nama chunk). Satu-satunya beda: dua
+  `<link rel=preconnect>` kini di bawah `<title>`, tetap sebelum stylesheet
+  font — tidak berpengaruh.
+- Semua 9 halaman admin 200 dengan sesi. Tangkapan layar `/admin/beranda`:
+  pratinjau keempat font benar-benar tampil dalam font-nya masing-masing.
+- **Jalur "admin sudah mengubah"** diuji dengan menambal `bacaSemuaSetelan`
+  sementara di `next dev`: font Jakarta terpasang di `<html>` + URL font
+  berganti + computed style h1/eyebrow benar; judul & sorotan berubah;
+  `b_cari_tombol_lebar` kosong → `<span>` hilang; pil 6 kosong → 5 pil;
+  angka "ISO" → tampil apa adanya tanpa `data-to`; judul Industri dua baris
+  → `<br/>`. Tangkapan layar rapi. **Tambalan dikembalikan** (0 sisa).
+
+**BELUM diuji ⚠️** Menyimpan sungguhan dari `/admin/beranda` — butuh 0005 +
+0008.
+
+**LANGKAH MANUAL ⚠️** `0008_beranda.sql` (sesudah 0005).
+
+
+### 10.5 — Berita (2026-10-28)
+
+**Dibuat**
+- `0009_berita.sql` — dibuat `scripts/sql-berita.ts` dari `lib/data/news.ts`:
+  tabel `news` (slug, judul, ringkas, body, kategori, tanggal, lokasi, foto,
+  alt, unggulan [unik], published, **contoh**), tabel `press_contacts`,
+  13 kunci naskah `n_*` di site_settings. **Butuh 0005.**
+- **9 berita lama = karangan mockup.** Di-seed apa adanya (halaman tidak
+  berubah) dengan `contoh = true` → label "Contoh" + peringatan di
+  /admin/berita. Tanda hilang saat berita disimpan dari backoffice.
+  Foto contoh menunjuk `/img/*.jpg` di /public lewat `storage_path`
+  berawalan "/"; berkas seperti itu tidak pernah dihapus dari bucket.
+- Publik: `/berita` dari basis data (+ `revalidate 300`), **`/berita/[slug]`
+  baru** (statis lewat generateStaticParams, baru → dirender saat diminta,
+  slug salah → 404; metadata + Open Graph), `UntukMedia` dipakai bersama,
+  `components/Naskah.tsx` (paragraf, `## ` subjudul, `- ` butir — tanpa HTML).
+- Admin: `/admin/berita` (daftar + Teks halaman + Kontak media),
+  `/baru`, `/[slug]` (foto 16:9 lewat PemotongGambar, hapus foto, satu
+  utama, tampilkan). Menu "Berita", ubin 03.
+
+**Perubahan yang disengaja di /berita** (semuanya dulu tautan mati `#`):
+kartu → artikel; tab saringan **bekerja** (tab kategori menampilkan semua
+berita kategori itu); "Muat kabar lainnya" bekerja dan hanya muncul kalau
+masih ada yang tersembunyi (dengan 9 contoh → tidak muncul); **"Lihat
+menurut tahun" dihapus** (tidak ada tujuan); kartu "Berkas foto" dan
+"Berlangganan" → mailto berisi subjek, bisa diganti/dikosongkan dari admin.
+
+**Ikut diperbaiki:** menu admin dengan 11 tautan tidak muat di 1280 px
+("Keluar" terlempar ke baris dua). Menu kini baris sendiri di bawah logo,
+geser-samping di ponsel. `/admin/pengaturan` kini juga menyaring `n_*`.
+
+**Sudah diuji ✅**
+- **Semua migrasi 0001–0009 dijalankan sungguhan** di PGlite (Postgres
+  WASM, dipasang di scratchpad, bukan di proyek) — **dua putaran**, jadi
+  idempoten. Isinya diperiksa: jumlah kunci per kelompok, 4 pelanggan,
+  9 berita (9 contoh), 2 kontak, nilai banyak baris utuh, slot merek ada,
+  **unggulan kedua ditolak indeks unik**. Ketahuan satu cacat lewat bacaan
+  sebelum dijalankan: tanggal di VALUES perlu `::date`.
+- `tsc` bersih, `next build` sukses; 9 artikel dirender statis.
+- Beranda, produk, tentang, industri, blog: HTML **identik** dengan rekaman.
+  `/berita`: beda hanya yang disengaja di atas (diff diperiksa per baris).
+- Tab dijalankan di browser headless: klik "Kegiatan" → tepat 2 berita
+  kegiatan, aria-current pindah, font tombol = Archivo; kembali "Semua" → 6.
+- `/berita/<slug>` 200, slug salah 404, `<title>` benar, 3 kabar lainnya.
+- `Naskah`: paragraf/subjudul/butir benar, `<script>` jadi teks biasa.
+  `bacaFormBerita`: slug berspasi, tanggal 2026-13-45, kategori kosong → ditolak.
+- Tangkapan layar `/berita`, artikel, `/admin/berita/baru`, menu admin
+  1280 & 390 px (tanpa gulir mendatar).
+
+**BELUM diuji ⚠️** Buat/ubah/hapus berita, unggah foto, kontak media
+sungguhan — butuh 0009. `/admin/berita/<slug>` 404 sampai tabelnya ada
+(daftarnya memang belum menautkan apa pun sebelum itu).
+
+**LANGKAH MANUAL ⚠️** `0009_berita.sql` (sesudah 0005).
+
+
+### 10.6a — Teks formulir penawaran (2026-10-28)
+
+- 18 isian baru `b_form_*` di `lib/data/home.ts` (kelompok "Formulir
+  penawaran", tampil di /admin/beranda): label, teks samar, penanda
+  "(opsional)", **pilihan kategori (satu per baris)**, tombol, catatan, pesan
+  galat & berhasil. `0008_beranda.sql` dibuat ulang (kini 115 baris) —
+  aman karena belum dijalankan user.
+- `QuoteForm` menerima `teks`. Kalau admin mengganti nama pilihan, tautan
+  `?produk=…` dari /produk yang menunjuk kategori yang sudah tidak ada
+  dibiarkan ke pilihan pertama, bukan memilih yang tak tampil.
+- **Perilaku kirim SENGAJA belum diubah** — masih hanya menampilkan pesan
+  "Permintaan diterima" tanpa mengirim apa pun (sejak mockup). Diganti saat
+  email (Resend) dipasang.
+
+**Sudah diuji ✅** `tsc`, `next build`; HTML beranda (termasuk formulir)
+**identik** dengan rekaman; migrasi 0001–0009 di PGlite tetap lolos 2 putaran;
+di browser headless: `?produk=snap-ring` → "Snap Ring" terpilih, 7 pilihan
+sama, kirim kosong → pesan galat, kirim terisi → pesan berhasil + "Terkirim ✓".
+
+---
+
+## Ringkasan Bagian 10 (2026-10-28) — urutan LANGKAH MANUAL
+
+Jalankan di SQL editor Supabase, **berurutan**:
+`0005_pengaturan` → `0006_pelanggan` → `0007_merek` → `0008_beranda` →
+`0009_berita`. (0006 berdiri sendiri; 0007–0009 butuh 0005.) Semuanya sudah
+dijalankan dua kali di PGlite tanpa galat.
+
+Sebelum dijalankan pun situs **tampil sama** — semua pembacaan jatuh ke isi
+bawaan, dan halaman admin menyebut migrasi mana yang kurang.
+
+### Yang masih menunggu
+1. **Email formulir (Resend)** — butuh dari user: `vercel link`, memasang
+   integrasi Resend dengan akunnya, verifikasi domain kairosbaut.com (DNS).
+   Lalu: Server Action kirim + kunci "email penerima" di /admin/pengaturan.
+   Selama itu formulir **masih tidak mengirim apa pun**.
+2. **"Format" formulir** — user sedang memastikan maksudnya ke klien.
+3. **9 berita contoh karangan** — harus diganti/dihapus klien.
+4. Uji sungguhan setelah migrasi: simpan dari tiap halaman admin baru,
+   unggah logo/foto, lalu lihat situs berubah.
+
+### Belum dikomit
+Semua perubahan Bagian 10 masih di working tree — belum ada commit.

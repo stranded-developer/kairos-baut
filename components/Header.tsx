@@ -39,7 +39,7 @@ export default function Header({ home = false, current = null }: { home?: boolea
   return (
     <header id="hdr">
       <div className="bar">
-        <Logo ariaLabel="Kairos Baut — beranda" />
+        <Logo ariaLabel="Kairos Baut — beranda" latar="gelap" />
         <nav className="main">{links('btn btn--sm')}</nav>
         <button className="burger" id="burger" type="button" aria-expanded="false" aria-controls="mobnav">
           <i aria-hidden="true" />

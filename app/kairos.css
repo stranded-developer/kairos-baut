@@ -618,3 +618,9 @@ header :focus-visible { outline-color: #9FE9B9; }
 @media (max-width: 1000px) {
   .shell[data-hero] .hero { padding-top: calc(66px + clamp(44px, 6vw, 80px)); }
 }
+
+/* ---------- Logo unggahan (2026-10-28) ----------
+   Ditambahkan di atas mockup, bukan mengubahnya. Hanya berlaku kalau admin
+   mengunggah logo di /admin/pengaturan; selama belum, gambar vektor lama
+   yang tampil dan aturan ini tidak mengenai apa pun. */
+.logo .logo-img { display: block; height: 30px; width: auto; max-width: 200px; object-fit: contain; }

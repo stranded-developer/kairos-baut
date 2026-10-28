@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ART, CATEGORIES, STOCK, VIEWS, type Product } from '@/lib/data/products';
-import { WA_NUMBER } from '@/components/WhatsAppFab';
 
 /* Tiga "foto" pada panel detail — produk, gambar teknis, kemasan.
    Masih grafik vektor; diganti foto asli dari Supabase di Bagian 6. */
@@ -48,7 +47,7 @@ function Gambar({ p, kind }: { p: Product; kind: 'produk' | 'teknis' | 'kemasan'
   return <Art inner={view(p, kind)} />;
 }
 
-export default function ProductIndex({ products }: { products: Product[] }) {
+export default function ProductIndex({ products, wa }: { products: Product[]; wa: string }) {
   const PRODUCTS = products;
   const params = useSearchParams();
   const [term, setTerm] = useState('');
@@ -354,7 +353,7 @@ export default function ProductIndex({ products }: { products: Product[] }) {
                 <a
                   className="btn btn--ghost"
                   id="dwa"
-                  href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+                  href={`https://wa.me/${wa}?text=${encodeURIComponent(
                     `Halo Kairos Baut, saya mau tanya soal ${active.name} (${active.std}).`
                   )}`}
                 >

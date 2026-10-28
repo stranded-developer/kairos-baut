@@ -38,14 +38,18 @@ export default function MediaCard({ slot }: { slot: Slot }) {
           Slot logo dikecualikan: logo tidak dipotong dan latarnya transparan,
           jadi tetap object-fit: contain. */}
       <div
-        className={`adm-media-pic${aturan.rasio ? '' : ' adm-media-pic--logo'}`}
+        className={`adm-media-pic${aturan.rasio ? '' : ' adm-media-pic--logo'}${slot.key === 'merek-gelap' ? ' adm-media-pic--gelap' : ''}`}
         style={rasioCss(aturan) ? { aspectRatio: rasioCss(aturan)! } : undefined}
       >
         {/* Foto yang SUDAH tersimpan. Pratinjau unggahan baru ada di kotak
             pemotong, bukan di sini. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={slot.src} alt="" />
-        {slot.fallback && <span className="adm-tag">Gambar cadangan</span>}
+        {/* Slot merek-* tidak punya berkas cadangan (cadangannya vektor di
+            components/Logo.tsx) — jangan pasang <img src=""> yang pecah. */}
+        {slot.src && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={slot.src} alt="" />
+        )}
+        {slot.fallback && <span className="adm-tag">{slot.src ? 'Gambar cadangan' : 'Belum diunggah'}</span>}
       </div>
 
       <div className="adm-media-body">

@@ -10,9 +10,11 @@ const BUCKET = 'site-photos';
 
 export type FotoState = { error?: string; ok?: string };
 
+/* Seluruh situs, bukan hanya beranda: slot merek-* tampil di navbar semua
+   halaman, dan slot tentang-* di /tentang (dulu baru tampil setelah jendela
+   revalidate 5 menit habis). */
 function segarkan() {
-  revalidatePath('/');
-  revalidatePath('/admin/foto');
+  revalidatePath('/', 'layout');
 }
 
 export async function unggahFoto(_prev: FotoState, fd: FormData): Promise<FotoState> {

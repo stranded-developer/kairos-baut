@@ -15,7 +15,10 @@ export default async function AdminFoto() {
     .select('key,label,grp,alt,note,storage_path,sort_order')
     .order('sort_order');
 
-  const slots: Slot[] = (data ?? []).map((r) => ({
+  /* Slot logo-* sudah pensiun (2026-10-28): logo pelanggan pindah ke tabel
+     `clients` di /admin/pelanggan, yang bisa ditambah. Barisnya dibiarkan di
+     basis data, hanya tidak ditampilkan di sini. */
+  const slots: Slot[] = (data ?? []).filter((r) => !r.key.startsWith('logo-')).map((r) => ({
     key: r.key,
     label: r.label,
     grp: r.grp,
@@ -36,6 +39,9 @@ export default async function AdminFoto() {
           Slotnya tetap — yang diganti hanya fotonya. Selama sebuah slot belum
           diisi, situs memakai gambar cadangan, jadi tata letak tidak pernah
           kosong.
+        </p>
+        <p className="adm-note-sm">
+          Logo pelanggan sekarang diatur di <a href="/admin/pelanggan">Pelanggan</a>.
         </p>
 
         {grup.map((g) => (

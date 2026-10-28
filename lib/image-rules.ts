@@ -104,7 +104,10 @@ export async function siapkanGambar(
 
   /* Bidang potong dari admin dipercaya hanya setelah dijepit ke dalam batas
      gambar. Nilai dari browser tidak pernah dianggap sudah benar. */
-  const bidang = potong ? jepitBidang(potong, lebar, tinggi) : null;
+  /* Rasio bebas (logo) tidak pernah dipotong. Pemotong di browser tetap
+     mengirim bidang dari kotak pratinjau 3:2-nya, dan dulu bidang itu ikut
+     dipakai — wordmark lebar terpangkas ujungnya. */
+  const bidang = potong && aturan.rasio ? jepitBidang(potong, lebar, tinggi) : null;
 
   if (bidang && aturan.rasio) {
     /* Lebar setelah dipotong sendiri yang menentukan tajam atau tidak —

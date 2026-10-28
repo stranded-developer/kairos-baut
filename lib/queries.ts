@@ -1,9 +1,14 @@
 import 'server-only';
+import { cache } from 'react';
 import { createPublicClient, storageUrl } from './supabase/public';
 import type { Product, StockStatus, ProductCategory } from './data/products';
 import type { Post, Topic } from './data/posts';
 import { BLOK_BAWAAN, CADANGAN_TENTANG, type Blok } from './data/about';
 import { PROYEK, type Proyek } from './data/projects';
+import { PENGATURAN_BAWAAN, type Pengaturan } from './data/settings';
+import { PELANGGAN_BAWAAN, type Pelanggan } from './data/clients';
+import { BERANDA_BAWAAN } from './data/home';
+import { BERITA, BERITA_TEKS_BAWAAN, KONTAK_MEDIA, tanggalPanjang, type Berita, type KontakMedia } from './data/news';
 
 /* ============================================================================
    Pembacaan data untuk halaman publik.
@@ -247,3 +252,184 @@ export async function getProjects(): Promise<Proyek[]> {
     body: r.body ?? '',
   }));
 }
+
+
+/* ---- pengaturan situs ---- */
+
+/**
+ * Kontak, WhatsApp, dan teks kaki halaman.
+ *
+ * Seperti getAboutBlocks(), sengaja tidak melempar kalau tabelnya belum ada
+ * (migrasi 0005 dijalankan manual) — isi bawaan dipakai. Per kunci juga:
+ * kunci yang belum punya baris tetap dapat nilai bawaan.
+ *
+ * Dibungkus cache() karena satu halaman memanggilnya beberapa kali (kaki
+ * halaman, tombol WhatsApp, blok Penawaran) — cukup satu kueri per render.
+ */
+export const getSettings = cache(async (): Promise<Pengaturan> => {
+  const semua = await bacaSemuaSetelan();
+  const out: Pengaturan = { ...PENGATURAN_BAWAAN };
+  for (const k of Object.keys(out) as (keyof Pengaturan)[]) {
+    const v = semua.get(k);
+    if (v !== undefined) out[k] = v;
+  }
+  return out;
+});
+
+/* Seluruh isi site_settings dalam satu kueri — dipakai bersama oleh
+   getSettings() dan getBeranda(). Peta kosong kalau tabelnya belum ada. */
+const bacaSemuaSetelan = cache(async (): Promise<Map<string, string>> => {
+  const db = createPublicClient();
+  const { data, error } = await db.from('site_settings').select('key,value');
+  if (error || !data) return new Map();
+  return new Map((data as { key: string; value: string }[]).map((r) => [r.key, r.value]));
+});
+
+/**
+ * Naskah beranda (kunci `b_*`, migrasi 0008). Mengembalikan fungsi `t(kunci)`
+ * yang jatuh ke isi bawaan kalau barisnya belum ada.
+ *
+ * Kunci yang tidak dikenal MELEMPAR, bukan mengembalikan teks kosong: beranda
+ * dirender saat build, jadi salah ketik nama kunci ketahuan di `next build`,
+ * bukan diam-diam jadi lubang di halaman.
+ */
+export const getBeranda = cache(async (): Promise<(kunci: string) => string> => {
+  const semua = await bacaSemuaSetelan();
+  return (kunci: string) => {
+    if (!(kunci in BERANDA_BAWAAN)) throw new Error(`Kunci naskah beranda tidak dikenal: ${kunci}`);
+    return semua.get(kunci) ?? BERANDA_BAWAAN[kunci];
+  };
+});
+
+
+/* ---- pelanggan (marquee beranda) ---- */
+
+/**
+ * Pelanggan yang terbit, urut. Tidak melempar: kalau tabelnya belum ada
+ * (migrasi 0006 belum dijalankan) dipakai empat nama bawaan.
+ *
+ * Tabel yang ADA tapi kosong dikembalikan apa adanya (daftar kosong) — itu
+ * keputusan admin, bukan keadaan rusak. Beranda lalu menyembunyikan pitanya.
+ */
+export async function getClients(): Promise<Pelanggan[]> {
+  const db = createPublicClient();
+  const { data, error } = await db
+    .from('clients')
+    .select('id,nama,storage_path')
+    .order('urutan');
+
+  if (error || !data) return PELANGGAN_BAWAAN;
+
+  return (data as { id: string; nama: string; storage_path: string | null }[]).map((r) => ({
+    id: r.id,
+    nama: r.nama,
+    logo: r.storage_path ? storageUrl('site-photos', r.storage_path) : null,
+  }));
+}
+
+
+/* ---- merek (logo navbar & kaki halaman) ---- */
+export interface Merek {
+  depan: string;
+  belakang: string;
+  /** URL logo unggahan per latar; null = gambar vektor bawaan. */
+  gelap: string | null;
+  terang: string | null;
+  alt: string;
+}
+
+/**
+ * Teks merek dari site_settings + dua slot logo dari site_media. Dipakai
+ * components/Logo.tsx yang muncul 2–3 kali per halaman, jadi di-cache().
+ * Tidak melempar: sebelum migrasi 0007, hasilnya = merek lama apa adanya.
+ */
+export const getMerek = cache(async (): Promise<Merek> => {
+  const db = createPublicClient();
+  const [setelan, { data }] = await Promise.all([
+    getSettings(),
+    db.from('site_media').select('key,alt,storage_path').in('key', ['merek-gelap', 'merek-terang']),
+  ]);
+
+  const url = (key: string) => {
+    const r = (data ?? []).find((m) => m.key === key);
+    return r?.storage_path ? storageUrl('site-photos', r.storage_path) : null;
+  };
+  const alt = (data ?? []).find((m) => m.alt)?.alt
+    || `${setelan.merek_depan} ${setelan.merek_belakang}`.trim()
+    || 'Beranda';
+
+  return {
+    depan: setelan.merek_depan,
+    belakang: setelan.merek_belakang,
+    gelap: url('merek-gelap'),
+    terang: url('merek-terang'),
+    alt,
+  };
+});
+
+
+/* ---- berita ---- */
+interface BeritaRow {
+  slug: string; judul: string; ringkas: string; body: string; kategori: string;
+  tanggal: string; lokasi: string; storage_path: string | null; alt: string;
+  unggulan: boolean;
+}
+
+function petaBerita(r: BeritaRow): Berita {
+  return {
+    slug: r.slug,
+    iso: r.tanggal,
+    tanggal: tanggalPanjang(r.tanggal),
+    judul: r.judul,
+    ringkas: r.ringkas,
+    kategori: r.kategori,
+    lokasi: r.lokasi,
+    body: r.body,
+    /* Berita contoh hasil seed menunjuk foto stok lewat storage_path
+       berawalan "/" — itu berkas di /public, bukan di bucket. */
+    foto: r.storage_path
+      ? r.storage_path.startsWith('/') ? r.storage_path : storageUrl('site-photos', r.storage_path)
+      : undefined,
+    alt: r.alt,
+  };
+}
+
+/**
+ * Berita terbit, terbaru dulu — kecuali yang ditandai unggulan, yang selalu
+ * jadi yang pertama (kartu besar). Tidak melempar: sebelum migrasi 0009,
+ * dipakai isi bawaan.
+ */
+export const getBerita = cache(async (): Promise<Berita[]> => {
+  const db = createPublicClient();
+  const { data, error } = await db
+    .from('news')
+    .select('slug,judul,ringkas,body,kategori,tanggal,lokasi,storage_path,alt,unggulan')
+    .order('unggulan', { ascending: false })
+    .order('tanggal', { ascending: false });
+
+  if (error || !data) return BERITA;
+  return (data as BeritaRow[]).map(petaBerita);
+});
+
+export async function getBeritaSatu(slug: string): Promise<Berita | null> {
+  return (await getBerita()).find((b) => b.slug === slug) ?? null;
+}
+
+export const getKontakMedia = cache(async (): Promise<KontakMedia[]> => {
+  const db = createPublicClient();
+  const { data, error } = await db
+    .from('press_contacts')
+    .select('id,nama,peran,surel,telepon')
+    .order('urutan');
+  if (error || !data) return KONTAK_MEDIA;
+  return (data as KontakMedia[]).map((k) => ({ ...k, telepon: k.telepon || undefined }));
+});
+
+/** Naskah halaman /berita (kunci `n_*`). Sama dengan getBeranda(). */
+export const getTeksBerita = cache(async (): Promise<(kunci: string) => string> => {
+  const semua = await bacaSemuaSetelan();
+  return (kunci: string) => {
+    if (!(kunci in BERITA_TEKS_BAWAAN)) throw new Error(`Kunci naskah berita tidak dikenal: ${kunci}`);
+    return semua.get(kunci) ?? BERITA_TEKS_BAWAAN[kunci];
+  };
+});

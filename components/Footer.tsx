@@ -1,16 +1,30 @@
 import Link from 'next/link';
+import { Fragment } from 'react';
 import Logo from './Logo';
+import { getSettings } from '@/lib/queries';
+import { baris, telHref } from '@/lib/data/settings';
 
-export default function Footer() {
+/* Baris alamat/jam dipisah <br>, persis seperti sebelum isinya pindah ke
+   site_settings. */
+function Baris({ teks }: { teks: string }) {
+  return baris(teks).map((b, i) => (
+    <Fragment key={i}>
+      {i > 0 && <br />}
+      {b}
+    </Fragment>
+  ));
+}
+
+export default async function Footer() {
+  const s = await getSettings();
+
   return (
     <footer>
       <div className="wrap">
         <div className="fg">
           <div>
             <Logo />
-            <p style={{ marginTop: 15, maxWidth: '32ch' }}>
-              PT Kairos Multi Sejahtera — distributor baut &amp; mur untuk industri Indonesia.
-            </p>
+            <p style={{ marginTop: 15, maxWidth: '32ch' }}>{s.tagline_kaki}</p>
             <nav aria-label="Tautan halaman" style={{ marginTop: 16 }}>
               <Link href="/produk">Indeks produk</Link>
               <Link href="/industri">Industri &amp; proyek</Link>
@@ -21,46 +35,42 @@ export default function Footer() {
             </nav>
           </div>
           <div>
-            <h4>Kantor</h4>
+            <h4>{s.judul_kantor}</h4>
             <p>
-              Perkantoran Mega Sunter Blok B No. 32
-              <br />
-              Jl. Danau Sunter Selatan
-              <br />
-              Jakarta 14350
+              <Baris teks={s.alamat_kantor} />
             </p>
-            <p>
-              <a href="tel:+62216500888">+62 21 6500 888</a>
-            </p>
+            {s.telepon_kantor && (
+              <p>
+                <a href={telHref(s.telepon_kantor)}>{s.telepon_kantor}</a>
+              </p>
+            )}
           </div>
           <div>
-            <h4>Workshop</h4>
+            <h4>{s.judul_workshop}</h4>
             <p>
-              Kawasan Industri Jababeka 1 Blok C 17 A
-              <br />
-              Pasirgombong, Cikarang Utara
-              <br />
-              Bekasi 17530
+              <Baris teks={s.alamat_workshop} />
             </p>
-            <p>
-              <a href="tel:+622189832622">+62 21 8983 2622</a>
-            </p>
+            {s.telepon_workshop && (
+              <p>
+                <a href={telHref(s.telepon_workshop)}>{s.telepon_workshop}</a>
+              </p>
+            )}
           </div>
           <div>
-            <h4>Jam Kerja</h4>
+            <h4>{s.judul_jam}</h4>
             <p>
-              Senin – Jumat 08.00 – 17.00
-              <br />
-              Sabtu 08.00 – 12.00
+              <Baris teks={s.jam_kerja} />
             </p>
-            <p>
-              <a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a>
-            </p>
+            {s.email && (
+              <p>
+                <a href={`mailto:${s.email}`}>{s.email}</a>
+              </p>
+            )}
           </div>
         </div>
         <div className="fb">
-          <span>© 2026 PT Kairos Multi Sejahtera</span>
-          <span>Mockup v5 — revisi catatan</span>
+          <span>{s.hak_cipta}</span>
+          {s.catatan_kaki && <span>{s.catatan_kaki}</span>}
         </div>
       </div>
     </footer>

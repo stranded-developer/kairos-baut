@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Shell from '@/components/Shell';
 import ProductIndex from './ProductIndex';
-import { getProducts } from '@/lib/queries';
+import { getProducts, getSettings } from '@/lib/queries';
 import './produk.css';
 
 export const metadata: Metadata = {
@@ -17,12 +17,12 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function ProdukPage() {
-  const products = await getProducts();
+  const [products, { wa }] = await Promise.all([getProducts(), getSettings()]);
 
   return (
     <Shell current="produk">
       <Suspense fallback={null}>
-        <ProductIndex products={products} />
+        <ProductIndex products={products} wa={wa} />
       </Suspense>
     </Shell>
   );

@@ -60,6 +60,11 @@ export const ATURAN_PRODUK: Aturan = { rasio: [4, 3], minLebar: 1200, maksLebar:
    profile rasionya ~1,23, jadi foto bawaannya nyaris tidak terpotong. */
 export const ATURAN_PROYEK: Aturan = { rasio: [5, 4], minLebar: 600, maksLebar: 1400 };
 
+/* Foto berita (2026-10-28). 16:9 mengikuti kotak `.post .art` di berita.css
+   dan foto besar di halaman artikel; kartu utama (`.hero-news`) memakai
+   `cover` jadi 16:9 juga aman di sana. */
+export const ATURAN_BERITA: Aturan = { rasio: [16, 9], minLebar: 1200, maksLebar: 2000 };
+
 /* Slot foto situs. Angkanya mengikuti kotak yang sudah ada di kairos.css —
    bukan angka baru. Logo klien sengaja dibiarkan bebas: logonya wordmark
    dengan lebar berbeda-beda dan tampil dengan object-fit: contain, jadi
@@ -82,10 +87,12 @@ const ATURAN_SLOT: Record<string, Aturan> = {
   'tentang-industri':    { rasio: [4, 3],  minLebar: 1200, maksLebar: 1600 },
 };
 
-const LOGO_BEBAS: Aturan = { rasio: null, minLebar: 120, maksLebar: 900 };
+/* Diekspor untuk logo pelanggan di /admin/pelanggan (2026-10-28). */
+export const ATURAN_LOGO: Aturan = { rasio: null, minLebar: 120, maksLebar: 900 };
+const LOGO_BEBAS = ATURAN_LOGO;
 
 export function aturanSlot(key: string): Aturan {
-  if (key.startsWith('logo-')) return LOGO_BEBAS;
+  if (key.startsWith('logo-') || key.startsWith('merek-')) return LOGO_BEBAS;
   return ATURAN_SLOT[key] ?? { rasio: null, minLebar: 600, maksLebar: 2000 };
 }
 

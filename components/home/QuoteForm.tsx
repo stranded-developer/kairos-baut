@@ -17,22 +17,22 @@ const CATEGORY_BY_PRODUCT: Record<string, string> = {
   'baut-struktur': 'Lainnya',
 };
 
-const OPTIONS = [
-  'Hex Bolt',
-  'Carriage Bolt',
-  'Mur & Ring',
-  'As Drat / Stud',
-  'Anchor Bolt',
-  'Snap Ring',
-  'Lainnya',
-];
+/* Semua teks formulir — dari naskah beranda (b_form_*), diatur di
+   /admin/beranda. `pilihan` = satu pilihan per baris. */
+export type TeksForm = {
+  labelNama: string; phNama: string; labelPerusahaan: string; phPerusahaan: string;
+  opsional: string; labelEmail: string; phEmail: string; labelWa: string; phWa: string;
+  labelKategori: string; pilihan: string[]; labelSpek: string; phSpek: string;
+  tombol: string; tombolTerkirim: string; catatan: string; galat: string; berhasil: string;
+};
 
-export default function QuoteForm() {
+export default function QuoteForm({ teks }: { teks: TeksForm }) {
+  const OPTIONS = teks.pilihan;
   const formRef = useRef<HTMLFormElement>(null);
-  const [kategori, setKategori] = useState('Hex Bolt');
+  const [kategori, setKategori] = useState(OPTIONS[0] ?? '');
   const [sent, setSent] = useState(false);
   const [status, setStatus] = useState<{ text: string; color?: string }>({
-    text: 'Dibalas dalam 1×24 jam kerja.',
+    text: teks.catatan,
   });
 
   const params = useSearchParams();
@@ -41,8 +41,10 @@ export default function QuoteForm() {
   useEffect(() => {
     if (!produk) return;
     const want = CATEGORY_BY_PRODUCT[produk];
-    if (want) setKategori(want);
-  }, [produk]);
+    /* Pilihan bisa diganti admin — kalau nama kategorinya tidak ada lagi,
+       biarkan pilihan bawaan daripada memilih sesuatu yang tidak tampil. */
+    if (want && OPTIONS.includes(want)) setKategori(want);
+  }, [produk, OPTIONS]);
 
   /* Mockup: belum dikirim ke mana pun. Diganti Server Action di bagian
      berikutnya, begitu tabel penawaran ada di Supabase. */
@@ -51,13 +53,13 @@ export default function QuoteForm() {
     const form = formRef.current;
     if (!form) return;
     if (!form.checkValidity()) {
-      setStatus({ text: 'Lengkapi dulu kolom yang wajib diisi.', color: '#B4342A' });
+      setStatus({ text: teks.galat, color: '#B4342A' });
       form.querySelector<HTMLElement>(':invalid')?.focus();
       return;
     }
     setSent(true);
     setStatus({
-      text: 'Permintaan diterima. Tim kami membalas dalam 1×24 jam kerja.',
+      text: teks.berhasil,
       color: 'var(--green-ink)',
     });
   }
@@ -66,42 +68,42 @@ export default function QuoteForm() {
     <form className="form" id="qform" noValidate ref={formRef} onSubmit={onSubmit}>
       <div className="r2">
         <div className="f">
-          <label htmlFor="t1">Nama</label>
-          <input id="t1" name="nama" autoComplete="name" placeholder="Nama lengkap" required />
+          <label htmlFor="t1">{teks.labelNama}</label>
+          <input id="t1" name="nama" autoComplete="name" placeholder={teks.phNama} required />
         </div>
         <div className="f">
           <label htmlFor="t2">
-            Perusahaan <span className="opt">(opsional)</span>
+            {teks.labelPerusahaan} <span className="opt">{teks.opsional}</span>
           </label>
-          <input id="t2" name="perusahaan" autoComplete="organization" placeholder="PT / CV" />
+          <input id="t2" name="perusahaan" autoComplete="organization" placeholder={teks.phPerusahaan} />
         </div>
       </div>
       <div className="r2">
         <div className="f">
-          <label htmlFor="t3">Email</label>
+          <label htmlFor="t3">{teks.labelEmail}</label>
           <input
             id="t3"
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="nama@perusahaan.co.id"
+            placeholder={teks.phEmail}
             required
           />
         </div>
         <div className="f">
-          <label htmlFor="t4">Nomor WhatsApp</label>
+          <label htmlFor="t4">{teks.labelWa}</label>
           <input
             id="t4"
             name="wa"
             type="tel"
             autoComplete="tel"
-            placeholder="08xx xxxx xxxx"
+            placeholder={teks.phWa}
             required
           />
         </div>
       </div>
       <div className="f">
-        <label htmlFor="t5">Kategori produk</label>
+        <label htmlFor="t5">{teks.labelKategori}</label>
         <select id="t5" name="kategori" value={kategori} onChange={(e) => setKategori(e.target.value)}>
           {OPTIONS.map((o) => (
             <option key={o}>{o}</option>
@@ -109,18 +111,18 @@ export default function QuoteForm() {
         </select>
       </div>
       <div className="f">
-        <label htmlFor="t6">Spesifikasi &amp; jumlah</label>
+        <label htmlFor="t6">{teks.labelSpek}</label>
         <textarea
           id="t6"
           name="spesifikasi"
           rows={3}
-          placeholder="Hex bolt M16 × 60, grade 8.8, HDG — 500 pcs"
+          placeholder={teks.phSpek}
           required
         />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
         <button className="btn" type="submit">
-          {sent ? 'Terkirim ✓' : 'Kirim Permintaan'}
+          {sent ? teks.tombolTerkirim : teks.tombol}
         </button>
         <p className="formnote" role="status" id="qstatus" style={{ color: status.color }}>
           {status.text}

@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Fragment, Suspense } from 'react';
 import Link from 'next/link';
 import Shell from '@/components/Shell';
 import PhotoSlot from '@/components/PhotoSlot';
@@ -6,58 +6,47 @@ import Stats from '@/components/home/Stats';
 import IndustryPanels from '@/components/home/IndustryPanels';
 import QuoteForm from '@/components/home/QuoteForm';
 import { ART } from '@/lib/data/products';
-import { getSiteMedia } from '@/lib/queries';
+import { getSiteMedia, getSettings, getClients, getBeranda } from '@/lib/queries';
+import type { Pelanggan } from '@/lib/data/clients';
+import { baris, telHref } from '@/lib/data/settings';
 import type { Panel } from '@/components/home/IndustryPanels';
 import './home.css';
 
 /* Kartu kategori — gambar vektornya sama dengan yang dipakai indeks produk,
-   jadi diambil dari ART, bukan disalin ulang. */
+   jadi diambil dari ART, bukan disalin ulang. Teksnya (standar, judul,
+   keterangan, ajakan) dari naskah beranda: kunci b_kartu_<n>_*. */
 const CATS = [
-  { href: '/produk#hex-bolt', art: ART.hex, std: 'DIN 933 · M4–M48', h3: 'Hex Bolt', p: 'Grade 4.8 sampai 12.9.', go: 'Lihat detail' },
-  { href: '/produk#carriage-bolt', art: ART.carriage, std: 'DIN 603 · M6–M20', h3: 'Carriage Bolt', p: 'Kepala bulat, leher persegi.', go: 'Lihat detail' },
-  { href: '/produk#hex-nut', art: ART.nut, std: 'DIN 934 · M4–M48', h3: 'Hex Nut & Mur', p: 'Biasa, nylock, dan flange.', go: 'Lihat detail' },
-  { href: '/produk#ring-washer', art: ART.ring, std: 'DIN 125 · M4–M42', h3: 'Ring / Washer', p: 'Plat, per, dan ring gigi.', go: 'Lihat detail' },
-  { href: '/produk#snap-ring', art: ART.snap, std: 'DIN 471 · 3–120 mm', h3: 'Snap Ring', p: 'External, internal, E-clip.', go: 'Lihat detail' },
-  { href: '/produk#as-drat', art: ART.stud, std: 'DIN 975 · M6–M36', h3: 'As Drat / Stud', p: 'Batang ulir 1 meter.', go: 'Lihat detail' },
-  { href: '/produk#anchor-bolt', art: ART.anchor, std: 'ASTM F1554 · M12–M42', h3: 'Anchor Bolt', p: 'J-bolt, L-bolt, angkur kimia.', go: 'Lihat detail' },
+  { href: '/produk#hex-bolt', art: ART.hex },
+  { href: '/produk#carriage-bolt', art: ART.carriage },
+  { href: '/produk#hex-nut', art: ART.nut },
+  { href: '/produk#ring-washer', art: ART.ring },
+  { href: '/produk#snap-ring', art: ART.snap },
+  { href: '/produk#as-drat', art: ART.stud },
+  { href: '/produk#anchor-bolt', art: ART.anchor },
   {
     href: '#kontak',
     art: '<path d="M40 40 L56 24 L56 34 L88 34 L88 46 L56 46 L56 56 Z" fill="#8A968F"/><circle cx="30" cy="40" r="8" fill="none" stroke="#C6D0C9" stroke-width="3"/>',
-    std: 'Custom · Indent',
-    h3: 'Pesanan Khusus',
-    p: 'Ukuran & material non-standar.',
-    go: 'Kirim spesifikasi',
   },
 ];
 
-const CLIENTS = [
-  { key: 'logo-adhi-karya', name: 'Adhi Karya' },
-  { key: 'logo-karya-logam-agung', name: 'Karya Logam Agung' },
-  { key: 'logo-ihi-power-electric', name: 'IHI Power Electric' },
-  { key: 'logo-wijaya-karya', name: 'Wijaya Karya' },
-];
-
-/* Naskah panel Industri — tetap di halaman, bukan di basis data. Ini teks
-   pemasaran beranda, bukan data produk; yang bisa disunting dari backoffice
-   adalah fotonya (lewat site_media). */
-const INDUSTRI = [
-  { key: 'industri-machinery',  idx: '01 — Machinery',  h3: 'Mesin produksi', body: 'Fastener presisi dengan toleransi ketat dan stok berkelanjutan, supaya penggantian saat downtime tidak perlu menunggu impor.' },
-  { key: 'industri-automotive', idx: '02 — Automotive', h3: 'Otomotif',       body: 'Baut bodi, chassis, dan engine mounting untuk workshop maupun manufaktur komponen kendaraan.' },
-  { key: 'industri-konstruksi', idx: '03 — Konstruksi', h3: 'Konstruksi',     body: 'Baut struktur A325 dan A490, angkur, serta as drat galvanis untuk proyek gedung dan infrastruktur.' },
-  { key: 'industri-electrical', idx: '04 — Elektrikal', h3: 'Kelistrikan',    body: 'Fastener tahan korosi untuk tower transmisi, panel distribusi, dan instalasi luar ruang.' },
-];
+/* Foto panel Industri dari site_media; naskahnya (b_panel_<n>_*) dari
+   naskah beranda di /admin/beranda. */
+const INDUSTRI = ['industri-machinery', 'industri-automotive', 'industri-konstruksi', 'industri-electrical'];
 
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const media = await getSiteMedia();
+  const [media, setelan, klien, t] = await Promise.all([getSiteMedia(), getSettings(), getClients(), getBeranda()]);
+  /* Di sini alamat tampil dua baris: baris pertama tebal, sisanya disambung
+     koma — sama dengan tulisan aslinya sebelum pindah ke site_settings. */
+  const [alamat1, ...alamatSisa] = baris(setelan.alamat_kantor);
 
-  const panels: Panel[] = INDUSTRI.map((p) => ({
-    img: media[p.key].src,
-    alt: media[p.key].alt,
-    idx: p.idx,
-    h3: p.h3,
-    body: p.body,
+  const panels: Panel[] = INDUSTRI.map((key, i) => ({
+    img: media[key].src,
+    alt: media[key].alt,
+    idx: t(`b_panel_${i + 1}_idx`),
+    h3: t(`b_panel_${i + 1}_judul`),
+    body: t(`b_panel_${i + 1}_isi`),
   }));
 
   /* Foto hero jadi latar lewat CSS, bukan <img>. Variabelnya hanya dipasang
@@ -74,33 +63,32 @@ export default async function HomePage() {
         <div className="wrap">
           <div className="hero-in">
             <div>
-              <p className="eyebrow">PT Kairos Multi Sejahtera · Sejak 2009</p>
+              <p className="eyebrow">{t('b_hero_eyebrow')}</p>
               <h1>
-                Cari baut yang tepat, <mark>sekali jalan.</mark>
+                {t('b_hero_judul')} {t('b_hero_sorotan') && <mark>{t('b_hero_sorotan')}</mark>}
               </h1>
-              <p className="lede">
-                2.400 item baut, mur, dan ring siap kirim ke seluruh Indonesia — lengkap dengan
-                sertifikat material. Cari langsung di bawah, atau kirim spesifikasi Anda ke tim kami.
-              </p>
+              <p className="lede">{t('b_hero_lede')}</p>
 
               <form className="search" role="search" action="/produk" method="get">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <circle cx="11" cy="11" r="7" />
                   <path d="m20 20-3.5-3.5" />
                 </svg>
-                <input type="search" name="q" aria-label="Cari produk" placeholder="Cari: hex bolt M16, as drat SS304, snap ring…" />
+                <input type="search" name="q" aria-label="Cari produk" placeholder={t('b_cari_placeholder')} />
                 <button className="btn" type="submit">
-                  Cari<span> Produk</span>
+                  {t('b_cari_tombol')}
+                  {t('b_cari_tombol_lebar') && <span> {t('b_cari_tombol_lebar')}</span>}
                 </button>
               </form>
 
               <div className="pills">
-                <Link className="pill" href="/produk?q=hex%20bolt">Hex Bolt</Link>
-                <Link className="pill" href="/produk?f=mur">Mur &amp; Ring</Link>
-                <Link className="pill" href="/produk?f=batang">As Drat</Link>
-                <Link className="pill" href="/produk?f=angkur">Anchor Bolt</Link>
-                <Link className="pill" href="/produk?q=SS304">Stainless 304</Link>
-                <Link className="pill" href="/produk?q=HDG">Galvanis</Link>
+                {[1, 2, 3, 4, 5, 6].map((n) =>
+                  t(`b_pil_${n}_label`) ? (
+                    <Link className="pill" key={n} href={t(`b_pil_${n}_tautan`) || '/produk'}>
+                      {t(`b_pil_${n}_label`)}
+                    </Link>
+                  ) : null
+                )}
               </div>
             </div>
 
@@ -143,7 +131,7 @@ export default async function HomePage() {
               <path d="m9 12 2 2 4-4" />
             </svg>
             <div>
-              <strong>Sertifikat lengkap</strong>Mill cert &amp; uji tarik per batch
+              <strong>{t('b_trust_1_judul')}</strong>{t('b_trust_1_isi')}
             </div>
           </div>
           <div>
@@ -154,7 +142,7 @@ export default async function HomePage() {
               <circle cx="17" cy="18" r="1.8" />
             </svg>
             <div>
-              <strong>Kirim 34 provinsi</strong>Dari Jakarta &amp; Cikarang
+              <strong>{t('b_trust_2_judul')}</strong>{t('b_trust_2_isi')}
             </div>
           </div>
           <div>
@@ -163,7 +151,7 @@ export default async function HomePage() {
               <path d="M12 7v5l3.5 2" />
             </svg>
             <div>
-              <strong>Balas 1×24 jam</strong>Penawaran pada hari kerja
+              <strong>{t('b_trust_3_judul')}</strong>{t('b_trust_3_isi')}
             </div>
           </div>
           <div>
@@ -172,7 +160,7 @@ export default async function HomePage() {
               <path d="M9 20v-6h6v6" />
             </svg>
             <div>
-              <strong>Gudang sendiri</strong>Stok fisik, bukan dropship
+              <strong>{t('b_trust_4_judul')}</strong>{t('b_trust_4_isi')}
             </div>
           </div>
         </div>
@@ -183,18 +171,13 @@ export default async function HomePage() {
         <div className="wrap">
           <div className="about rv">
             <div>
-              <p className="eyebrow">Tentang kami</p>
-              <h2>Satu baut yang salah grade sudah cukup.</h2>
+              <p className="eyebrow">{t('b_tentang_eyebrow')}</p>
+              <h2>{t('b_tentang_judul')}</h2>
             </div>
             <div>
-              <p className="lede">
-                Itu sebabnya setiap pengiriman kami disertai mill certificate, hasil uji tarik, dan
-                laporan dimensi. Bukan formalitas — itu yang membedakan pemasok baut dengan mitra
-                teknis. Lima belas tahun kami melayani kontraktor dan pabrik yang tidak punya ruang
-                untuk menebak.
-              </p>
+              <p className="lede">{t('b_tentang_lede')}</p>
               <a className="textlink" href="#kontak" style={{ marginTop: 6 }}>
-                Bicara dengan tim teknis kami <span aria-hidden="true">→</span>
+                {t('b_tentang_tautan')} <span aria-hidden="true">→</span>
               </a>
             </div>
           </div>
@@ -216,10 +199,12 @@ export default async function HomePage() {
                 </g>
               </svg>
             </div>
-            <figcaption>Gudang Cikarang · Jababeka 1</figcaption>
+            <figcaption>{t('b_gudang_keterangan')}</figcaption>
           </PhotoSlot>
 
-          <Stats />
+          <Stats
+            items={[1, 2, 3].map((n) => ({ nilai: t(`b_angka_${n}`), label: t(`b_angka_${n}_label`) }))}
+          />
 
           {/* Profil perusahaan — berkasnya ada di public/, jadi <a download>
               cukup: same-origin, browser langsung menyimpan, bukan membuka
@@ -231,42 +216,38 @@ export default async function HomePage() {
               href="/KAIROS%202.pdf"
               download="Profil Perusahaan - PT Kairos Multi Sejahtera.pdf"
             >
-              Profil Perusahaan
+              {t('b_profil_tombol')}
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M12 4v11" />
                 <path d="m7 11 5 5 5-5" />
                 <path d="M5 20h14" />
               </svg>
             </a>
-            <span className="profile-meta">PDF · 3,8 MB</span>
+            <span className="profile-meta">{t('b_profil_meta')}</span>
           </div>
         </div>
       </section>
 
       {/* ============ KLIEN ============ */}
-      <section className="sec sec--tight" style={{ paddingTop: 0 }} aria-label="Klien">
-        <div className="wrap" style={{ marginBottom: 22 }}>
-          <p className="eyebrow rv" style={{ margin: 0 }}>
-            Kami telah bekerja sama dengan
-          </p>
-        </div>
-        <div className="marquee">
-          {/* Logo klien belum ada — selama itu nama perusahaan yang tampil.
-              Lihat mockups/standalone/img/README.md. */}
-          <div className="marquee-track">
-            {CLIENTS.map((c) => (
-              <PhotoSlot as="span" key={c.key} className="lg" src={media[c.key].src} alt={c.name}>
-                <b>{c.name}</b>
-              </PhotoSlot>
-            ))}
-            {CLIENTS.map((c) => (
-              <PhotoSlot as="span" key={`dup-${c.key}`} className="lg" src={media[c.key].src} alt="" aria-hidden="true">
-                <b>{c.name}</b>
-              </PhotoSlot>
-            ))}
+      {/* Daftarnya dari tabel `clients` (/admin/pelanggan). Kosong = pitanya
+          tidak dirender sama sekali, bukan marquee kosong. */}
+      {klien.length > 0 && (
+        <section className="sec sec--tight" style={{ paddingTop: 0 }} aria-label="Klien">
+          <div className="wrap" style={{ marginBottom: 22 }}>
+            <p className="eyebrow rv" style={{ margin: 0 }}>
+              {t('b_klien_eyebrow')}
+            </p>
           </div>
-        </div>
-      </section>
+          <div className="marquee">
+            {/* Isi digandakan supaya animasi geser menyambung tanpa jeda;
+                salinan kedua disembunyikan dari pembaca layar. */}
+            <div className="marquee-track">
+              {klien.map((c) => <Klien key={c.id} c={c} />)}
+              {klien.map((c) => <Klien key={`dup-${c.id}`} c={c} dup />)}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ============ INDUSTRI ============ */}
       <section
@@ -277,16 +258,13 @@ export default async function HomePage() {
         <div className="wrap">
           <div className="sechead row rv">
             <div>
-              <p className="eyebrow">Industri</p>
+              <p className="eyebrow">{t('b_industri_eyebrow')}</p>
               <h2>
-                Empat sektor,
-                <br />
-                satu standar.
+                <Baris teks={t('b_industri_judul')} />
               </h2>
             </div>
             <p className="lede" style={{ maxWidth: '44ch', margin: 0 }}>
-              Kami berkomitmen memberikan pelayanan yang lebih dari yang diharapkan — mulai dari
-              konsultasi spesifikasi sampai pengiriman ke lokasi proyek.
+              {t('b_industri_lede')}
             </p>
           </div>
 
@@ -299,26 +277,26 @@ export default async function HomePage() {
         <div className="wrap">
           <div className="sechead row rv">
             <div>
-              <p className="eyebrow">Katalog</p>
-              <h2>Kategori produk.</h2>
+              <p className="eyebrow">{t('b_katalog_eyebrow')}</p>
+              <h2>{t('b_katalog_judul')}</h2>
             </div>
             <Link className="textlink" href="/produk">
-              Lihat indeks lengkap <span aria-hidden="true">→</span>
+              {t('b_katalog_tautan')} <span aria-hidden="true">→</span>
             </Link>
           </div>
 
           <div className="cats rv">
-            {CATS.map((c) => (
-              <Link className="cat" href={c.href} key={c.h3}>
+            {CATS.map((c, i) => (
+              <Link className="cat" href={c.href} key={c.href}>
                 <div className="pic">
                   <svg viewBox="0 0 120 80" aria-hidden="true" dangerouslySetInnerHTML={{ __html: c.art }} />
                 </div>
                 <div className="txt">
-                  <div className="std">{c.std}</div>
-                  <h3>{c.h3}</h3>
-                  <p>{c.p}</p>
+                  <div className="std">{t(`b_kartu_${i + 1}_std`)}</div>
+                  <h3>{t(`b_kartu_${i + 1}_judul`)}</h3>
+                  <p>{t(`b_kartu_${i + 1}_isi`)}</p>
                   <div className="go">
-                    {c.go} <span aria-hidden="true">→</span>
+                    {t(`b_kartu_${i + 1}_ajakan`)} <span aria-hidden="true">→</span>
                   </div>
                 </div>
               </Link>
@@ -332,12 +310,10 @@ export default async function HomePage() {
         <div className="wrap">
           <div className="qbox qbox--dark rv">
             <div>
-              <p className="eyebrow">Penawaran</p>
-              <h2>Minta penawaran.</h2>
+              <p className="eyebrow">{t('b_penawaran_eyebrow')}</p>
+              <h2>{t('b_penawaran_judul')}</h2>
               <p className="lede" style={{ marginTop: 16 }}>
-                Isi formulir ini, atau langsung chat WhatsApp kalau butuh cepat. Belum yakin
-                spesifikasinya? Kirim gambar kerja atau foto barang lama — tim kami bantu
-                identifikasi.
+                {t('b_penawaran_lede')}
               </p>
               <div className="contacts">
                 <div className="cc">
@@ -346,9 +322,9 @@ export default async function HomePage() {
                   </svg>
                   <div>
                     <strong>
-                      <a href="tel:+62216500888">+62 21 6500 888</a>
+                      <a href={telHref(setelan.telepon_kantor)}>{setelan.telepon_kantor}</a>
                     </strong>
-                    Kantor Jakarta
+                    {t('b_kontak_telepon_ket')}
                   </div>
                 </div>
                 <div className="cc">
@@ -358,9 +334,9 @@ export default async function HomePage() {
                   </svg>
                   <div>
                     <strong>
-                      <a href="mailto:marketing@kairosbaut.com">marketing@kairosbaut.com</a>
+                      <a href={`mailto:${setelan.email}`}>{setelan.email}</a>
                     </strong>
-                    Balas 1×24 jam kerja
+                    {t('b_kontak_email_ket')}
                   </div>
                 </div>
                 <div className="cc">
@@ -369,19 +345,62 @@ export default async function HomePage() {
                     <circle cx="12" cy="10" r="2.6" />
                   </svg>
                   <div>
-                    <strong>Perkantoran Mega Sunter Blok B No. 32</strong>
-                    Jl. Danau Sunter Selatan, Jakarta 14350
+                    <strong>{alamat1}</strong>
+                    {alamatSisa.join(', ')}
                   </div>
                 </div>
               </div>
             </div>
 
             <Suspense fallback={null}>
-              <QuoteForm />
+              <QuoteForm
+                teks={{
+                  labelNama: t('b_form_label_nama'), phNama: t('b_form_ph_nama'),
+                  labelPerusahaan: t('b_form_label_perusahaan'), phPerusahaan: t('b_form_ph_perusahaan'),
+                  opsional: t('b_form_opsional'),
+                  labelEmail: t('b_form_label_email'), phEmail: t('b_form_ph_email'),
+                  labelWa: t('b_form_label_wa'), phWa: t('b_form_ph_wa'),
+                  labelKategori: t('b_form_label_kategori'),
+                  pilihan: baris(t('b_form_pilihan')),
+                  labelSpek: t('b_form_label_spek'), phSpek: t('b_form_ph_spek'),
+                  tombol: t('b_form_tombol'), tombolTerkirim: t('b_form_tombol_terkirim'),
+                  catatan: t('b_form_catatan'), galat: t('b_form_galat'), berhasil: t('b_form_berhasil'),
+                }}
+              />
             </Suspense>
           </div>
         </div>
       </section>
     </Shell>
   );
+}
+
+/* Satu pelanggan di marquee. Tanpa logo: nama sebagai teks, sama dengan
+   marquee sejak awal. Dengan logo: PhotoSlot — kalau gambarnya gagal dimuat,
+   namanya tetap tampil (lihat .lg di kairos.css). */
+function Klien({ c, dup = false }: { c: Pelanggan; dup?: boolean }) {
+  const sembunyi = dup ? { 'aria-hidden': 'true' as const } : {};
+  if (!c.logo) {
+    return (
+      <span className="lg" {...sembunyi}>
+        <b>{c.nama}</b>
+      </span>
+    );
+  }
+  return (
+    <PhotoSlot as="span" className="lg" src={c.logo} alt={dup ? '' : c.nama} {...sembunyi}>
+      <b>{c.nama}</b>
+    </PhotoSlot>
+  );
+}
+
+/* Teks banyak baris → baris dipisah <br>. Dipakai judul Industri, yang
+   aslinya "Empat sektor,<br />satu standar." */
+function Baris({ teks }: { teks: string }) {
+  return teks.split('\n').map((b, i) => (
+    <Fragment key={i}>
+      {i > 0 && <br />}
+      {b}
+    </Fragment>
+  ));
 }
