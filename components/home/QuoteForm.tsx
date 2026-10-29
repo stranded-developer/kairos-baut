@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { kirimPenawaran } from './actions';
 
 /* Peta id produk → pilihan kategori pada formulir. Dipakai saat pengunjung
    datang dari panel detail di /produk (…?produk=hex-bolt#kontak). */
@@ -24,6 +25,7 @@ export type TeksForm = {
   opsional: string; labelEmail: string; phEmail: string; labelWa: string; phWa: string;
   labelKategori: string; pilihan: string[]; labelSpek: string; phSpek: string;
   tombol: string; tombolTerkirim: string; catatan: string; galat: string; berhasil: string;
+  gagal: string;
 };
 
 export default function QuoteForm({ teks }: { teks: TeksForm }) {
@@ -31,6 +33,7 @@ export default function QuoteForm({ teks }: { teks: TeksForm }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [kategori, setKategori] = useState(OPTIONS[0] ?? '');
   const [sent, setSent] = useState(false);
+  const [pending, startTransition] = useTransition();
   const [status, setStatus] = useState<{ text: string; color?: string }>({
     text: teks.catatan,
   });
@@ -46,21 +49,26 @@ export default function QuoteForm({ teks }: { teks: TeksForm }) {
     if (want && OPTIONS.includes(want)) setKategori(want);
   }, [produk, OPTIONS]);
 
-  /* Mockup: belum dikirim ke mana pun. Diganti Server Action di bagian
-     berikutnya, begitu tabel penawaran ada di Supabase. */
+  /* Dikirim ke email lewat Server Action (./actions.ts → Resend). Validasi
+     browser tetap jalan dulu supaya pesan "lengkapi" muncul tanpa menunggu. */
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = formRef.current;
-    if (!form) return;
+    if (!form || pending) return;
     if (!form.checkValidity()) {
       setStatus({ text: teks.galat, color: '#B4342A' });
       form.querySelector<HTMLElement>(':invalid')?.focus();
       return;
     }
-    setSent(true);
-    setStatus({
-      text: teks.berhasil,
-      color: 'var(--green-ink)',
+    const fd = new FormData(form);
+    startTransition(async () => {
+      const hasil = await kirimPenawaran(fd).catch(() => ({ ok: false }));
+      if (hasil.ok) {
+        setSent(true);
+        setStatus({ text: teks.berhasil, color: 'var(--green-ink)' });
+      } else {
+        setStatus({ text: teks.gagal, color: '#B4342A' });
+      }
     });
   }
 
@@ -120,8 +128,16 @@ export default function QuoteForm({ teks }: { teks: TeksForm }) {
           required
         />
       </div>
+      {/* Kolom jebakan bot — tidak terlihat dan tidak bisa difokus manusia. */}
+      <input
+        name="situs"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: 'absolute', left: -9999, width: 1, height: 1, opacity: 0 }}
+      />
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
-        <button className="btn" type="submit">
+        <button className="btn" type="submit" disabled={pending} aria-busy={pending}>
           {sent ? teks.tombolTerkirim : teks.tombol}
         </button>
         <p className="formnote" role="status" id="qstatus" style={{ color: status.color }}>

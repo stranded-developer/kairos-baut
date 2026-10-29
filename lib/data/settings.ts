@@ -9,7 +9,7 @@
    ========================================================================= */
 
 export type KunciPengaturan =
-  | 'wa' | 'email' | 'telepon_kantor' | 'alamat_kantor' | 'telepon_workshop'
+  | 'wa' | 'email' | 'email_penawaran' | 'telepon_kantor' | 'alamat_kantor' | 'telepon_workshop'
   | 'alamat_workshop' | 'jam_kerja'
   | 'tagline_kaki' | 'judul_kantor' | 'judul_workshop' | 'judul_jam'
   | 'hak_cipta' | 'catatan_kaki'
@@ -21,6 +21,7 @@ export type Pengaturan = Record<KunciPengaturan, string>;
 export const PENGATURAN_BAWAAN: Pengaturan = {
   wa: '6287784085400',
   email: 'marketing@kairosbaut.com',
+  email_penawaran: '',   // kosong = dikirim ke `email`; diisi lewat 0010
   telepon_kantor: '+62 21 6500 888',
   alamat_kantor: 'Perkantoran Mega Sunter Blok B No. 32\nJl. Danau Sunter Selatan\nJakarta 14350',
   telepon_workshop: '+62 21 8983 2622',
@@ -57,4 +58,11 @@ export function rapikanWa(masukan: string): string | null {
 /** Teks banyak baris → daftar baris, tanpa baris kosong. */
 export function baris(teks: string): string[] {
   return teks.split('\n').map((s) => s.trim()).filter(Boolean);
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** "a@x.com, b@y.com" atau satu per baris → daftar alamat yang valid. */
+export function daftarEmail(teks: string): string[] {
+  return teks.split(/[,;\n]/).map((s) => s.trim()).filter((s) => EMAIL_RE.test(s));
 }

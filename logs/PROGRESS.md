@@ -1577,14 +1577,53 @@ Sebelum dijalankan pun situs **tampil sama** — semua pembacaan jatuh ke isi
 bawaan, dan halaman admin menyebut migrasi mana yang kurang.
 
 ### Yang masih menunggu
-1. **Email formulir (Resend)** — butuh dari user: `vercel link`, memasang
-   integrasi Resend dengan akunnya, verifikasi domain kairosbaut.com (DNS).
-   Lalu: Server Action kirim + kunci "email penerima" di /admin/pengaturan.
-   Selama itu formulir **masih tidak mengirim apa pun**.
+1. ~~Email formulir (Resend)~~ — selesai di 10.6b. Sisa: jalankan 0010.
 2. **"Format" formulir** — user sedang memastikan maksudnya ke klien.
 3. **9 berita contoh karangan** — harus diganti/dihapus klien.
-4. Uji sungguhan setelah migrasi: simpan dari tiap halaman admin baru,
-   unggah logo/foto, lalu lihat situs berubah.
 
-### Belum dikomit
-Semua perubahan Bagian 10 masih di working tree — belum ada commit.
+### Komit
+User mengomit + push sendiri (`c68e0da new`), Vercel deploy Ready. 10.6b
+belum dikomit.
+
+---
+
+### 10.6b — Kiriman formulir ke email lewat Resend (2026-10-28)
+
+User memasang Resend **sendiri** di resend.com (integrasi Vercel meminta
+upgrade untuk region non-US). Domain kairosbaut.com Verified (DNS di
+Jetorbit; MX/SPF lama di domain utama tidak disentuh). `RESEND_API_KEY` ada
+di `.env.local` dan di Vercel (Production saja). Kunci = "Sending access"
+saja, jadi `GET /domains` ditolak 401 — wajar.
+
+Catatan: salah satu NS domain tertulis `ns2jetorbit.net` (tanpa titik) —
+salah ketik di registrar, sudah disampaikan ke user.
+
+- `components/home/actions.ts` — Server Action `kirimPenawaran`: kolom jebakan
+  `situs`, batas panjang per kolom, validasi, kirim lewat `fetch` ke REST
+  Resend (tanpa SDK), `reply_to` = email pengunjung, teks + HTML (di-escape).
+  Pengirim `Website Kairos Baut <noreply@kairosbaut.com>` (ubah lewat env
+  `RESEND_FROM`). Penerima `email_penawaran` → kalau kosong/tidak ada, `email`.
+- `lib/data/settings.ts` — kunci `email_penawaran` (bawaan kosong), `daftarEmail`.
+- `lib/data/home.ts` — `b_form_gagal`; 0008 dibuat ulang (+1 baris, untuk DB baru).
+- `supabase/migrations/0010_formulir_email.sql` — dua baris di atas.
+- `QuoteForm.tsx` — `useTransition`, tombol nonaktif selama kirim, pesan gagal.
+- Pengaturan: kelompok "Formulir penawaran"; beberapa alamat dipisah koma,
+  semua harus valid. Pesan "belum ada di basis data" kini menyebut 0010.
+- `.env.example` — `RESEND_API_KEY`, `RESEND_FROM`.
+
+**Sudah diuji ✅** `tsc`, `next build`. Di browser headless terhadap DB
+produksi, penerima sementara dialihkan ke `delivered@resend.dev` (tambalan
+uji, sudah dicabut — 0 sisa): kirim kosong → galat; terisi → Resend 200 +
+pesan berhasil (penerima asli terbaca: marketing@kairosbaut.com); jebakan
+terisi → "berhasil" tanpa panggilan Resend; kunci salah → Resend 401 + pesan
+gagal. Tampilan formulir sama. Situs live: semua halaman 200, slug berita
+200, slug ngawur 404. Admin (dev, DB produksi): semua halaman 200; simpan
+tanpa perubahan Navbar/Kontak/Kaki/Font/Penawaran → "Tersimpan.", nilai DB
+tetap; Formulir penawaran → pesan minta 0010 (benar, 0010 belum dijalankan).
+
+**Belum diuji ❌** email sampai di kotak masuk sungguhan (perlu user kirim 1
+permintaan setelah deploy); simpan/unggah di Pelanggan & Berita (tidak diuji
+di DB produksi supaya data klien tidak berubah).
+
+**Langkah user:** jalankan `0010_formulir_email.sql`; isi Email penerima di
+/admin/pengaturan; komit + push; kirim satu permintaan uji di situs live.

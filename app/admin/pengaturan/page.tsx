@@ -40,7 +40,7 @@ export default async function AdminPengaturan() {
   /* sort_order hanya berlaku DI DALAM kelompok (tiap kelompok mulai dari 1),
      jadi urutan kelompoknya ditetapkan di sini. Kelompok baru yang belum
      disebut jatuh ke belakang. */
-  const URUT = ['Navbar & logo', 'Kontak', 'Kaki halaman'];
+  const URUT = ['Navbar & logo', 'Kontak', 'Formulir penawaran', 'Kaki halaman'];
   const pos = (g: string) => (URUT.indexOf(g) + 1 || 99);
   const grup = new Map<string, Setelan[]>();
   for (const r of [...rows].sort((x, y) => pos(x.grp) - pos(y.grp))) {
@@ -54,7 +54,8 @@ export default async function AdminPengaturan() {
       <div className="adm-main">
         <h1>Kontak, logo &amp; kaki halaman.</h1>
         <p className="lede">
-          Nomor WhatsApp, telepon, email, alamat, jam kerja, dan logo. Kontak tampil di blok
+          Nomor WhatsApp, telepon, email, alamat, jam kerja, logo, dan penerima formulir
+          penawaran. Kontak tampil di blok
           Penawaran beranda, kaki halaman semua halaman, dan tombol WhatsApp — cukup diubah
           sekali di sini.
         </p>

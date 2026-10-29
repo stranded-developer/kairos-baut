@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAdmin } from '@/lib/admin-guard';
-import { rapikanWa } from '@/lib/data/settings';
+import { rapikanWa, daftarEmail } from '@/lib/data/settings';
 import { FONT } from '@/lib/data/home';
 
 /* ============================================================================
@@ -49,6 +49,16 @@ export async function simpanSetelan(
   if (nilai.email && !EMAIL_RE.test(nilai.email)) {
     return { error: 'Alamat email tidak valid.' };
   }
+  if (nilai.email_penawaran) {
+    /* Beberapa alamat boleh, dipisah koma atau satu per baris. Semuanya
+       harus valid — alamat salah ketik berarti permintaan yang hilang. */
+    const potong = nilai.email_penawaran.split(/[,;\n]/).map((s) => s.trim()).filter(Boolean);
+    const sah = daftarEmail(nilai.email_penawaran);
+    if (sah.length !== potong.length) {
+      return { error: 'Ada alamat email penerima yang tidak valid. Pisahkan beberapa alamat dengan koma.' };
+    }
+    nilai.email_penawaran = sah.join(', ');
+  }
 
   const db = createAdminClient();
   for (const [key, value] of Object.entries(nilai)) {
@@ -69,7 +79,13 @@ export async function simpanSetelan(
       }
       return { error: `Gagal menyimpan "${key}": ${error.message}` };
     }
-    if (count === 0) return { error: `Pengaturan "${key}" tidak ada di basis data.` };
+    if (count === 0) {
+      return {
+        error:
+          `Pengaturan "${key}" belum ada di basis data. Jalankan migrasi terbaru di ` +
+          'supabase/migrations/ (0010_formulir_email.sql) di SQL editor Supabase, lalu coba lagi.',
+      };
+    }
   }
 
   /* Kontak tampil di kaki halaman SEMUA halaman, jadi seluruh situs

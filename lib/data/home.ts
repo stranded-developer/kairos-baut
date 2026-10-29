@@ -175,6 +175,7 @@ export const BERANDA: Kelompok[] = [
       { key: 'b_form_catatan', label: 'Catatan di samping tombol', value: 'Dibalas dalam 1×24 jam kerja.' },
       { key: 'b_form_galat', label: 'Pesan kalau kolom wajib kosong', value: 'Lengkapi dulu kolom yang wajib diisi.' },
       { key: 'b_form_berhasil', label: 'Pesan setelah terkirim', value: 'Permintaan diterima. Tim kami membalas dalam 1×24 jam kerja.' },
+      { key: 'b_form_gagal', label: 'Pesan kalau pengiriman gagal', value: 'Gagal mengirim. Coba lagi sebentar, atau hubungi kami lewat WhatsApp.' },
     ],
   },
 ];

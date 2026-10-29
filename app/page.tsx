@@ -365,6 +365,7 @@ export default async function HomePage() {
                   labelSpek: t('b_form_label_spek'), phSpek: t('b_form_ph_spek'),
                   tombol: t('b_form_tombol'), tombolTerkirim: t('b_form_tombol_terkirim'),
                   catatan: t('b_form_catatan'), galat: t('b_form_galat'), berhasil: t('b_form_berhasil'),
+                  gagal: t('b_form_gagal'),
                 }}
               />
             </Suspense>

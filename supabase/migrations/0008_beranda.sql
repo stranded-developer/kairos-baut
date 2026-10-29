@@ -132,5 +132,6 @@ Lainnya', 'Satu pilihan per baris. Yang pertama terpilih sebagai bawaan.', 11),
   ('b_form_catatan', 'Catatan di samping tombol', 'Beranda · Formulir penawaran', 'Dibalas dalam 1×24 jam kerja.', '', 16),
   ('b_form_galat', 'Pesan kalau kolom wajib kosong', 'Beranda · Formulir penawaran', 'Lengkapi dulu kolom yang wajib diisi.', '', 17),
   ('b_form_berhasil', 'Pesan setelah terkirim', 'Beranda · Formulir penawaran', 'Permintaan diterima. Tim kami membalas dalam 1×24 jam kerja.', '', 18),
+  ('b_form_gagal', 'Pesan kalau pengiriman gagal', 'Beranda · Formulir penawaran', 'Gagal mengirim. Coba lagi sebentar, atau hubungi kami lewat WhatsApp.', '', 19),
   ('font', 'Pasangan font', 'Tampilan', 'archivo', 'Berlaku untuk seluruh situs.', 1)
 on conflict (key) do nothing;
